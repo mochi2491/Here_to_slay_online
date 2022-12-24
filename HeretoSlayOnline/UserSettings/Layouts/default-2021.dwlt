@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 1037
   m_ShowMode: 4
-  m_Title: Inspector
+  m_Title: Hierarchy
   m_RootView: {fileID: 2}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 200}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 15068
+  controlID: 55626
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 15045
+  controlID: 55617
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -650,9 +650,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.2632881, y: 1.3070984, z: 301.0655}
+    m_Target: {x: 0.21845815, y: -1.0112879, z: 116.526085}
     speed: 2
-    m_Value: {x: -0.2632881, y: 1.3070984, z: 301.0655}
+    m_Value: {x: 0.21845815, y: -1.0112879, z: 116.526085}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -703,9 +703,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 7.4472537
+    m_Target: 6.7138596
     speed: 2
-    m_Value: 7.4472537
+    m_Value: 6.7138596
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -791,7 +791,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 009fffffeebcffff46ccffff52ccffffd2cfffff56dcffff82eaffff02ebffff90f1ffff0cfaffff2afbffff
+      m_ExpandedIDs: e264ffffb47affff947cffffe283fffff083ffff0e98ffff1c98ffff2898fffffca2ffff40a7ffff80aaffff26b3ffffe2f7fffff0f7fffffcf7ffff2afbffffa26300007864000082640000a66400001265000016650000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -856,22 +856,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/TextMesh Pro/Resources/Fonts & Materials
+    - Assets/Images
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/TextMesh Pro/Resources/Fonts & Materials
+  - Assets/Images
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Unity\Here_to_slay_online\HeretoSlayOnline
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 0c640000
-    m_LastClickedID: 25612
-    m_ExpandedIDs: 000000000a630000006400001e64000000ca9a3b
+    m_SelectedIDs: 689e0000
+    m_LastClickedID: 40552
+    m_ExpandedIDs: 00000000ba650000bc65000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -899,7 +899,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000a6300000064000000ca9a3b
+    m_ExpandedIDs: 00000000ba650000bc65000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
