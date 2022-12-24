@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using UniRx;
+using Newtonsoft.Json;
 
-public class GameCore : MonoBehaviour
+public class GameCore : SingletonMonoBehaviour<GameCore>
 {
     public ServerConnector connector;
+    GameBoardData currentGameBoard;
     void Start()
     {
         connector._receivedMessage.Subscribe(
             x => {
-                ApplyRecentBoard(x);
-                }
+                ApplyRecentBoard(JsonToGameBoard(x));
+            }
         );
     }
 
@@ -22,10 +24,18 @@ public class GameCore : MonoBehaviour
         
     }
 
-    private void ApplyRecentBoard(string boardText) {
+    private void ApplyRecentBoard(GameBoardData newBoard) {
         
     }
+
+    private string GameBoardToJson(GameBoardData gbd) { 
+        return JsonConvert.SerializeObject(gbd);
+    }
+    private GameBoardData JsonToGameBoard(string json) {
+        return JsonConvert.DeserializeObject<GameBoardData>(json);
+    }
 }
+
 public class GameBoardModel : MonoBehaviour {
 
 }
@@ -71,10 +81,34 @@ struct GameBoardData {
     List<int> monsterCardList;
     List<int> monsterDeck;
 
+    string chatText;
+
     int turnPlayerNum;
+    List<PlayerDate> playerList;
+}
+
+struct PlayerDate {
     List<string> playerIDList;
     int leaderCardID;
     List<int> playerHandList;
     List<int> playerHeroCardList;
 }
+ 
+public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour {
+    private static T instance;
 
+    public static T Instance {
+        get {
+            if (instance == null) {
+                instance = (T)FindObjectOfType(typeof(T));
+
+                if (instance == null) {
+                    Debug.LogError(typeof(T) + "Ç™ÉVÅ[ÉìÇ…ë∂ç›ÇµÇ‹ÇπÇÒÅB");
+                }
+            }
+
+            return instance;
+        }
+    }
+
+}
