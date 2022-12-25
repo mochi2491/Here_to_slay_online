@@ -30,6 +30,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     //GUI
     public GameObject[] tabs;
     private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
+    
+    public GameBoardView gameBoardView = new GameBoardView();
 
     void Start()
     {
