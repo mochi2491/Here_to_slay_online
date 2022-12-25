@@ -123,50 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &17680890
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 17680891}
-  - component: {fileID: 17680892}
-  m_Layer: 0
-  m_Name: sample
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &17680891
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17680890}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &17680892
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17680890}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d520a2f1829b9d448a51aadae7f7aa9d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &38933302
 GameObject:
   m_ObjectHideFlags: 0
@@ -708,7 +664,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 125552150}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &125552150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1977,7 +1945,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 371644113}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &371644113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3865,7 +3845,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 624252379}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 4
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &624252379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3987,7 +3979,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 633908585}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &633908585
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7194,7 +7198,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 969259162}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &969259162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7799,7 +7815,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1056158950}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 5
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1056158950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12844,7 +12872,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1707112927}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 6
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1707112927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15563,7 +15603,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2029987157}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2130668452}
+        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
+        m_MethodName: SetVisibleTabNum
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 7
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2029987157
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16082,6 +16134,7 @@ GameObject:
   - component: {fileID: 2130668450}
   - component: {fileID: 2130668449}
   - component: {fileID: 2130668448}
+  - component: {fileID: 2130668452}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -16165,13 +16218,34 @@ RectTransform:
   - {fileID: 675803680}
   - {fileID: 402210447}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &2130668452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130668447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 118063a07b1ce74408dc7766f809f056, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tabs:
+  - {fileID: 501847670}
+  - {fileID: 970248337}
+  - {fileID: 1490157299}
+  - {fileID: 884710520}
+  - {fileID: 142083191}
+  - {fileID: 1208568559}
+  - {fileID: 812491234}
+  - {fileID: 991598050}
 --- !u!1 &2132963320
 GameObject:
   m_ObjectHideFlags: 0

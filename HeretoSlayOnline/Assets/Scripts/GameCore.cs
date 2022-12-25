@@ -13,13 +13,25 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public ServerConnector connector = new ServerConnector();
     GameBoardData currentGameBoard=new GameBoardData();
     GameBoard gb;
+
+    //GUI
+    public GameObject[] tabs;
+    private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     void Start()
     {
+        visibleTabNum.Subscribe(
+            x => {
+                ApplyVisibleTab(x);
+            }
+        );
         connector._receivedMessage.Subscribe(
             x => {
                 GetMessage(x);
             }
         );
+        
+
+        
     }
 
     // Update is called once per frame
@@ -27,7 +39,15 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     {
         
     }
-
+    private void ApplyVisibleTab(int num) {
+        for(int i = 0; i < 8; i++) {
+            if (i == num) tabs[i].SetActive(true);
+            else tabs[i].SetActive(false);
+        }
+    }
+    public void SetVisibleTabNum(int num) {
+        visibleTabNum.Value = num;
+    }
     private void ApplyRecentBoard(GameBoardData newBoard) {
         gb.ApplyNewBoard(newBoard);
     }
@@ -45,6 +65,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         else if (message[0] == "2") { //2:::json
             //受け取ったjsonをクラスに変換しGameBoardに適用
             gb.ApplyNewBoard(JsonToGameBoard(message[1])); 
+        }
+        else {
+            Debug.Log("received wrong message;");
         }
     }
     private string GameBoardToJson(GameBoardData gbd) { 
@@ -354,9 +377,9 @@ public class LargeCard {
         set { cardID = value; }
     }
 }
-public class ServerConnector : MonoBehaviour {
+public class ServerConnector {
     private WebSocket ws;
-    private ReactiveProperty<string> receivedMessage;
+    private ReactiveProperty<string> receivedMessage=new ReactiveProperty<string>("safas");
     public IReactiveProperty<string> _receivedMessage => receivedMessage;
     void Start() {
         ws = new WebSocket("wss://htsserver.5m8d.net/");
