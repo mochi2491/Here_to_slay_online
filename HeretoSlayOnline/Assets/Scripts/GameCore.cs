@@ -1,21 +1,37 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using UniRx;
 using Newtonsoft.Json;
+using UnityEngine.UI;
+using System.Linq;
 
 public class GameCore : SingletonMonoBehaviour<GameCore>
 {
-    public ServerConnector connector;
-    GameBoardData currentGameBoard;
+    public ServerConnector connector = new ServerConnector();
+    GameBoardData currentGameBoard=new GameBoardData();
+    GameBoard gb;
+
+    //GUI
+    public GameObject[] tabs;
+    private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     void Start()
     {
-        connector._receivedMessage.Subscribe(
+        visibleTabNum.Subscribe(
             x => {
-                ApplyRecentBoard(JsonToGameBoard(x));
+                ApplyVisibleTab(x);
             }
         );
+        connector._receivedMessage.Subscribe(
+            x => {
+                GetMessage(x);
+            }
+        );
+        
+
+        
     }
 
     // Update is called once per frame
@@ -23,11 +39,37 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     {
         
     }
-
-    private void ApplyRecentBoard(GameBoardData newBoard) {
-        
+    private void ApplyVisibleTab(int num) {
+        for(int i = 0; i < 8; i++) {
+            if (i == num) tabs[i].SetActive(true);
+            else tabs[i].SetActive(false);
+        }
     }
-
+    public void SetVisibleTabNum(int num) {
+        visibleTabNum.Value = num;
+    }
+    private void ApplyRecentBoard(GameBoardData newBoard) {
+        gb.ApplyNewBoard(newBoard);
+    }
+    private void GetMessage(string msg) {
+        string[] message = msg.Split(":::");
+        if (message[0] == "0") {//0:::playerNum:::userName
+            gb.PlayerID = int.Parse(message[1]); //playerのIDを設定
+        }
+        else if (message[0] == "1") { //1:::playerCount 
+            gb.PlayerCount = int.Parse(message[1]);
+            if (gb.PlayerID == 1) {
+                gb.InitializeGameBoard();
+            }
+        }
+        else if (message[0] == "2") { //2:::json
+            //受け取ったjsonをクラスに変換しGameBoardに適用
+            gb.ApplyNewBoard(JsonToGameBoard(message[1])); 
+        }
+        else {
+            Debug.Log("received wrong message;");
+        }
+    }
     private string GameBoardToJson(GameBoardData gbd) { 
         return JsonConvert.SerializeObject(gbd);
     }
@@ -36,13 +78,308 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
 }
 
-public class GameBoardModel : MonoBehaviour {
+public class GameBoard : MonoBehaviour {
+    private Sprite[] smallCardImageList = new Sprite[73];
+    private Sprite[] largeCardImageList = new Sprite[20];
+    
+    private int turnPlayerNum = 0;
+    private int playerCount = 0;
+    private int playerID = 0;
+    private DeckArea deckArea = new DeckArea();
+    private MonsterArea monsterArea = new MonsterArea();
+    private ChatArea chatArea = new ChatArea();
+    private List<PlayerArea> playerAreaList = new List<PlayerArea>();
 
+    //setter and getter
+    public int PlayerID {
+        set {
+            playerID = value;
+        }
+        get {
+            return playerID;
+        }
+    }
+    public int PlayerCount {
+        set {
+            this.playerCount = value;
+        }
+        get {
+            return this.playerCount;
+        }
+    }
+    private void Start() {
+        //スプライトの読込
+        smallCardImageList = Resources.LoadAll("deck_cards") as Sprite[];
+        largeCardImageList = Resources.LoadAll("monster_and_leader_cards") as Sprite[];
+        InitializeGameBoard();
+    }
+    public GameBoard InitializeGameBoard() {
+        deckArea.Init();
+        monsterArea.Init();
+        chatArea.Init();
+        foreach (PlayerArea pa in playerAreaList) {
+            pa.Init(0);
+        }
+        return this;
+    } //初期化
+    public void ApplyNewBoard(GameBoardData gbd) {
+        deckArea.DataToDeck(gbd.mainDeck);
+        deckArea.DataToPile(gbd.discardPile);
+        monsterArea.DataToDeck(gbd.monsterDeck);
+        monsterArea.DataToList(gbd.monsterCardList);
+        DataToPlayerList(gbd.playerList);
+    } //GameBoardを更新する
+    public GameBoardData GameBoardToData(GameBoard gb) {
+        GameBoardData gbd = new GameBoardData();
+        gbd.turnPlayerNum = 1;
+        gbd.playerCount = gb.playerCount;
+        gbd.mainDeck = gb.deckArea.DeckToData();
+        gbd.discardPile = gb.deckArea.PileToData();
+        gbd.monsterCardList = gb.monsterArea.ListToData();
+        gbd.monsterDeck = gb.monsterArea.DeckToData();
+        gbd.playerList = gb.PlayerListToData();
+        gbd.chatLog = gb.chatArea.ChatLog;
+        return gbd;
+    }//GameBoardのモデルをデータに変換する
+    public List<PlayerData> PlayerListToData() {
+        List<PlayerData> data = new List<PlayerData>();
+        foreach(PlayerArea a in playerAreaList) {
+            data.Add(a.PlayerAreaToData());
+        }
+        return data;
+    } //playerAreaListをdataに
+    public void DataToPlayerList(List<PlayerData> playerList) {
+        playerAreaList.Clear();
+        foreach(PlayerData pd in playerList) {
+            playerAreaList.Add(new PlayerArea(pd));
+        }
+    } //dataをplayerAreaListに
 }
-
-public class ServerConnector : MonoBehaviour {
+public class DeckArea : MonoBehaviour {
+    private List<SmallCard> mainDeck = new List<SmallCard>();
+    private List<SmallCard> discardPile = new List<SmallCard>();
+    public void Init() {
+        //mainDeck init
+        for(int i = 0; i <= 73; i++) {
+            if (i < 60) {
+                if (i == 52 || i == 54 || i == 57) {
+                    mainDeck.Add(new SmallCard(i, ""));
+                    mainDeck.Add(new SmallCard(i, ""));
+                }
+                else mainDeck.Add(new SmallCard(i, ""));
+            }
+            else if (i>=60 && i < 65) {
+                if (i == 61) {
+                    for (int j = 0; j < 9; j++) mainDeck.Add(new SmallCard(i, ""));
+                }
+                else {
+                    for (int k = 0; k < 4; k++) mainDeck.Add(new SmallCard(i, ""));
+                }
+            }
+            else if (i >= 65 && i < 73) {
+                if (i == 66 && i == 67 && i == 68 && i == 69 && i == 72) {
+                    mainDeck.Add(new SmallCard(i, ""));
+                    mainDeck.Add(new SmallCard(i, ""));
+                }
+                else mainDeck.Add(new SmallCard(i, ""));
+            }
+            else if (i == 73) {
+                for(int l = 0; l < 14; l++) {
+                    mainDeck.Add(new SmallCard(i, ""));
+                }
+            }
+        }
+        mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
+        //discardPile init
+        discardPile.Clear();
+    }
+    public void ApplyChanges(List<int>deckData,List<int>pileData) {
+        mainDeck.Clear();
+        foreach (int id in deckData) {
+            mainDeck.Add(new SmallCard(id, ""));
+        }
+    }
+    public List<int> DeckToData() { 
+        List<int> data = new List<int>();
+        foreach(SmallCard card in mainDeck) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //MainDeckをdataに
+    public void DataToDeck(List<int> data) {
+        mainDeck.Clear();
+        foreach (int id in data) {
+            mainDeck.Add(new SmallCard(id, ""));
+        }
+    } //dataをMainDeckに
+    public List<int> PileToData() {
+        List<int> data = new List<int>();
+        foreach(SmallCard card in discardPile) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //DiscardPileをdataに
+    public void DataToPile(List<int> data) {
+        discardPile.Clear();
+        foreach(int id in data) {
+            mainDeck.Add(new SmallCard(id, ""));
+        }
+    } //dataをDiscardPileに
+}
+public class MonsterArea : MonoBehaviour {
+    private List<LargeCard> monsterCardList = new List<LargeCard>();
+    private List<LargeCard> monsterDeck = new List<LargeCard>();
+    public void Init() {
+        //monsterDeck init
+        for (int i = 0; i <= 20; i++)monsterDeck.Add(new LargeCard(i,""));
+        monsterDeck = monsterDeck.OrderBy(a => Guid.NewGuid()).ToList();
+        //monsterCardList init
+        monsterCardList.Clear();
+    }
+    public List<int> ListToData() {
+        List<int> data = new List<int>();
+        foreach(LargeCard card in monsterCardList) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //現在出現しているモンスターのリストをdataに
+    public void DataToList(List<int> data) {
+        monsterCardList.Clear();
+        foreach(int id in data) {
+            monsterCardList.Add(new LargeCard(id, ""));
+        }
+    }
+    public List<int> DeckToData() {
+        List<int> data = new List<int>();
+        foreach(LargeCard card in monsterDeck) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //MonsterDeckをdataに
+    public void DataToDeck(List<int> data) {
+        monsterDeck.Clear();
+        foreach(int id in data) {
+            monsterDeck.Add(new LargeCard(id, ""));
+        }
+    }
+}
+public class ChatArea : MonoBehaviour {
+    private string chatText = "";
+    private string chatLog = "";
+    public void Init() {
+        chatText = "";
+        chatLog = "";
+    }
+    public string ChatLog {
+        set { chatLog = value; }
+        get { return chatLog; }
+    }
+}
+public class PlayerArea : MonoBehaviour {
+    //instance
+    private string playerID = "";
+    private int leaderCard = 0;
+    private List<SmallCard> playerHandList = new List<SmallCard>();
+    private List<SmallCard> playerHeroCardList = new List<SmallCard>();
+    private List<LargeCard> slayedMonsterList = new List<LargeCard>();
+    
+    //method
+    public void Init(int num) {
+        leaderCard = num;
+        playerHandList.Clear();
+        playerHeroCardList.Clear();
+    } //初期化
+    public PlayerArea(PlayerData playerData) {
+        this.playerID = playerData.playerID;
+        this.leaderCard = playerData.leaderCardID;
+        DataToHand(playerData.playerHandList);
+        DataToHeroList(playerData.playerHeroCardList);
+        DataToSlayedList(playerData.slayedMonsterList);
+    } //コンストラクタ
+    public PlayerData PlayerAreaToData() {
+        PlayerData playerData = new PlayerData();
+        playerData.playerID = "";
+        playerData.leaderCardID = leaderCard;
+        playerData.playerHandList = HandToData();
+        playerData.playerHeroCardList = HeroListToData();
+        playerData.slayedMonsterList = SlayedListToData();
+        return playerData;
+    } //プレイヤーの情報をdataに
+    public void DataToPlayerArea(PlayerData playerData) {
+        this.playerID = playerData.playerID;
+        this.leaderCard = playerData.leaderCardID;
+        DataToHand(playerData.playerHandList);
+        DataToHeroList(playerData.playerHeroCardList);
+        DataToSlayedList(playerData.slayedMonsterList);
+    }
+    public List<int> HandToData() {
+        List<int> data = new List<int>();
+        foreach(SmallCard card in playerHandList) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //手札をdataに
+    public void DataToHand(List<int> data) {
+        playerHandList.Clear();
+        foreach(int id in data) {
+            playerHandList.Add(new SmallCard(id, ""));
+        }
+    } //dataを手札に
+    public List<int> HeroListToData() {
+        List<int> data = new List<int>();
+        foreach(SmallCard card in playerHeroCardList) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //ヒーローリストをdataに
+    public void DataToHeroList(List<int> data) {
+        playerHeroCardList.Clear();
+        foreach(int id in data) {
+            playerHeroCardList.Add(new SmallCard(id, ""));
+        }
+    } //dataをヒーローリストに
+    public List<int> SlayedListToData() {
+        List<int> data = new List<int>();
+        foreach(LargeCard card in slayedMonsterList) {
+            data.Add(card.ID);
+        }
+        return data;
+    } //倒したモンスターをdataに
+    public void DataToSlayedList(List<int> data) {
+        slayedMonsterList.Clear();
+        foreach(int id in data) {
+            slayedMonsterList.Add(new LargeCard(id, ""));
+        }
+    } //dataを倒したモンスターに
+}
+public class SmallCard {
+    private int cardID = 0;
+    private string cardEffect = "";
+    public SmallCard(int cardID, string cardEffect) {
+        this.cardID = cardID;
+        this.cardEffect = cardEffect;
+    }
+    //setter and getter
+    public int ID {
+        get { return cardID; }
+        set { cardID = value; }
+    }
+}
+public class LargeCard {
+    private int cardID = 0;
+    private string cardEffect = "";
+    public LargeCard(int cardID, string cardEffect) {
+        this.cardID = cardID;
+        this.cardEffect = cardEffect;
+    }
+    public int ID {
+        get { return cardID; }
+        set { cardID = value; }
+    }
+}
+public class ServerConnector {
     private WebSocket ws;
-    private ReactiveProperty<string> receivedMessage;
+    private ReactiveProperty<string> receivedMessage=new ReactiveProperty<string>("safas");
     public IReactiveProperty<string> _receivedMessage => receivedMessage;
     void Start() {
         ws = new WebSocket("wss://htsserver.5m8d.net/");
@@ -73,27 +410,27 @@ public class ServerConnector : MonoBehaviour {
         ws = null;
     }
 }
+public struct GameBoardData {
+    public List<int> discardPile;
+    public List<int> mainDeck;
 
-struct GameBoardData {
-    List<int> discardPile;
-    List<int> mainDeck;
+    public List<int> monsterCardList;
+    public List<int> monsterDeck;
 
-    List<int> monsterCardList;
-    List<int> monsterDeck;
+    public string chatLog;
 
-    string chatText;
-
-    int turnPlayerNum;
-    List<PlayerDate> playerList;
+    public int turnPlayerNum;
+    public int playerCount;
+    public List<PlayerData> playerList;
 }
+public struct PlayerData {
+    public string playerID;
+    public int leaderCardID;
+    public List<int> playerHandList;
+    public List<int> playerHeroCardList;
+    public List<int> slayedMonsterList;
 
-struct PlayerDate {
-    List<string> playerIDList;
-    int leaderCardID;
-    List<int> playerHandList;
-    List<int> playerHeroCardList;
 }
- 
 public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour {
     private static T instance;
 
