@@ -8,10 +8,10 @@ public class CardView : MonoBehaviour
     private int? cardID = null;
     private Sprite cardSprite = null;
     private Image image = null;
-
-    public CardView(int cardID,Sprite cardSprite) {
-        this.cardID = cardID;
-        this.cardSprite = cardSprite;
+    
+    public void ApplyData(int id, Sprite sprite){
+        this.cardID = id;
+        this.cardSprite = sprite;
         this.image = this.gameObject.GetComponent<Image>();
         image.sprite = cardSprite;
     }
