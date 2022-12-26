@@ -117,11 +117,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         return JsonConvert.DeserializeObject<GameBoardData>(json);
     }
 }
-
 public enum GameState {
     entrance,wait,ingame
 }
-
 public class GameBoard : MonoBehaviour {
     private Sprite[] smallCardImageList = new Sprite[73];
     private Sprite[] largeCardImageList = new Sprite[20];
@@ -186,7 +184,6 @@ public class GameBoard : MonoBehaviour {
         gbv.ApplyMonster(gbd.monsterCardList, largeCardImageList);
         
     } //更新したGameBoardを画面に適用する
-
     public GameBoardData GameBoardToData(GameBoard gb) {
         GameBoardData gbd = new GameBoardData();
         gbd.turnPlayerNum = 1;
@@ -212,6 +209,90 @@ public class GameBoard : MonoBehaviour {
             playerAreaList.Add(new PlayerArea(pd));
         }
     } //dataをplayerAreaListに
+    public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
+        bool isLarge = false;
+        if((From.area == Area.monsterList) && (From.area == Area.discardPile) && (From.area == Area.slayedMonster)) {
+            isLarge = true;
+        }
+        //カードをいどうさせる
+        if (isLarge) {
+            LargeCard moveCard;
+            switch (From.area) {
+                case Area.monsterList:
+                    moveCard = monsterArea.PopList(From.order);
+                    break;
+                case Area.monsterDeck:
+                    moveCard = monsterArea.PopDeck();
+                    break;
+                case Area.slayedMonster:
+                    moveCard = playerAreaList[From.playerID].PickSlayedMonster(From.order);
+                    break;
+                default:
+                    moveCard = null;
+                    break;
+            }
+            switch (To.area) {
+                case Area.monsterList:
+                    monsterArea.PushList(moveCard);
+                    break;
+                case Area.monsterDeck:
+                    monsterArea.PushDeck(moveCard);
+                    break;
+                case Area.slayedMonster:
+                    playerAreaList[To.playerID].PushSlayedMonster(moveCard);
+                    break;
+            }
+        }
+        else {
+            SmallCard moveCard;
+            switch (From.area) {
+                case Area.discardPile:
+                    moveCard = deckArea.PickDiscard(From.order);
+                    break;
+                case Area.deck:
+                    moveCard = deckArea.PopDeck();
+                    break;
+                case Area.playerHand:
+                    moveCard = playerAreaList[From.playerID].PickHand(From.order);
+                    break;
+                case Area.playerHeroItem:
+                    moveCard = playerAreaList[From.playerID].PickArmedCard(From.order);
+                    break;
+                case Area.playerHero:
+                    moveCard = playerAreaList[From.playerID].PickHeroCard(From.order);
+                    break;
+                default:
+                    moveCard = null;
+                    break;
+            }
+            switch (To.area) {
+                case Area.discardPile:
+                    deckArea.PushDiscard(moveCard);
+                    break;
+                case Area.deck:
+                    deckArea.PushDeck(moveCard);
+                    break;
+                case Area.playerHand:
+                    playerAreaList[To.playerID].PushHand(moveCard);
+                    break;
+                case Area.playerHeroItem:
+                    playerAreaList[To.playerID].AttachArmedCard(moveCard,To.order);
+                    break;
+                case Area.playerHero:
+                    playerAreaList[To.playerID].PushHeroCard(moveCard);
+                    break;
+            }
+        }
+        return this;
+    } //カードを移動させる(バカすぎる実装なのでいずれ直す)
+}
+public struct GameBoardAddress {
+    public Area area;
+    public int playerID;
+    public int order;
+}
+public enum Area {
+    discardPile,deck,monsterList,monsterDeck,playerHand,playerHero,playerHeroItem,slayedMonster
 }
 public class DeckArea : MonoBehaviour {
     private List<SmallCard> mainDeck = new List<SmallCard>();
@@ -283,6 +364,22 @@ public class DeckArea : MonoBehaviour {
             mainDeck.Add(new SmallCard(id, ""));
         }
     } //dataをDiscardPileに
+    public SmallCard PopDeck() {
+        SmallCard tmp = mainDeck[0];
+        mainDeck.RemoveAt(0);
+        return tmp;
+    } //deckの頭を取り出す
+    public void PushDeck(SmallCard tmp) {
+        mainDeck.Insert(0, tmp);
+    } //deckの頭にカードを追加
+    public SmallCard PickDiscard(int order) {
+        SmallCard tmp = discardPile[order];
+        mainDeck.RemoveAt(order);
+        return tmp;
+    } //discardPileの指定のカードを取り出す
+    public void PushDiscard(SmallCard tmp) {
+        discardPile.Add(tmp);
+    } //discardPileの最後にカードを追加
 }
 public class MonsterArea : MonoBehaviour {
     private List<LargeCard> monsterCardList = new List<LargeCard>();
@@ -320,6 +417,24 @@ public class MonsterArea : MonoBehaviour {
             monsterDeck.Add(new LargeCard(id, ""));
         }
     } //dataをMonsterDeckに
+    public LargeCard PopDeck() {
+        LargeCard tmp = monsterDeck[0];
+        monsterDeck.RemoveAt(0);
+        return tmp;
+    } //monsterDeckの先頭を取り出す
+    public void PushDeck(LargeCard tmp) {
+        monsterDeck.Insert(0, tmp);
+    } //monsterDeckの頭にカードを追加
+    public LargeCard PopList(int order) {
+        LargeCard tmp = monsterCardList[order];
+        monsterDeck.RemoveAt(order);
+        PushList(PopDeck());
+        return tmp;
+    } //monsterListからカードを取り出す,またデッキから一枚リストに追加する
+    public void PushList(LargeCard tmp) {
+        if(monsterCardList.Count < 3) monsterCardList.Add(tmp);
+    } //monsterListが3枚未満ならカードを追加する
+
 }
 public class ChatArea : MonoBehaviour {
     private string chatText = "";
@@ -380,7 +495,7 @@ public class PlayerArea : MonoBehaviour {
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
-    }
+    } //dataをプレイヤーの情報に
     public List<int> HandToData() {
         List<int> data = new List<int>();
         foreach(SmallCard card in playerHandList) {
@@ -392,6 +507,7 @@ public class PlayerArea : MonoBehaviour {
         playerHandList.Clear();
         foreach(int id in data) {
             playerHandList.Add(new SmallCard(id, ""));
+
         }
     } //dataを手札に
     public List<HeroCard> HeroListToData() {
@@ -423,11 +539,46 @@ public class PlayerArea : MonoBehaviour {
             slayedMonsterList.Add(new LargeCard(id, ""));
         }
     } //dataを倒したモンスターに
+    public SmallCard PickHand(int order) {
+        SmallCard tmp = playerHandList[order];
+        playerHandList.RemoveAt(order);
+        return tmp;
+    } //手札から一枚カードを取り出す
+    public void PushHand(SmallCard tmp) {
+        playerHandList.Add(tmp);
+    }//カードを手札に追加する
+    public SmallCard PickHeroCard(int order) {
+        SmallCard tmp = playerHeroCardList[order];
+        playerHeroCardList.RemoveAt(order);
+        return tmp;
+    }//ヒーローリストの中からカードを一枚取り出す
+    public void PushHeroCard(SmallCard tmp) {
+        playerHeroCardList.Add(tmp);
+    }//ヒーローリストにカードを追加する
+    public SmallCard PickArmedCard(int order) {
+        SmallCard tmp = playerHeroCardList[order].ArmedItem;
+        playerHeroCardList[order].ArmedItem = null;
+        return tmp;
+    } //ヒーローが装備しているアイテムを取り出す
+    public void AttachArmedCard(SmallCard tmp,int order) {
+        if (order < playerHeroCardList.Count || playerHeroCardList.Count < order) throw new Exception("存在しないヒーローを指定しています");
+        playerHeroCardList[order].ArmedItem = tmp;
+    } //ヒーローにアイテムを装備させる
+    public LargeCard PickSlayedMonster(int order) {
+        LargeCard tmp = slayedMonsterList[order];
+        slayedMonsterList.RemoveAt(order);
+        return tmp;
+    } //討伐したモンスターリストからカードを一枚取り出す
+    public void PushSlayedMonster(LargeCard tmp) {
+        slayedMonsterList.Add(tmp);
+    } //討伐したモンスターリストにカードを追加する
+
+
 }
 public class SmallCard {
     private int cardID = 0;
     private string cardEffect = "";
-    private SmallCard armedItem;
+    private SmallCard armedItem = null;
     public SmallCard(int cardID, string cardEffect) {
         this.cardID = cardID;
         this.cardEffect = cardEffect;
