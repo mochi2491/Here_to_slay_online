@@ -6,39 +6,51 @@ public class GameBoardView : MonoBehaviour
 {
     //手札表示
     public GameObject handObject;
-
-    public void ApplyHand(List<int> data, Sprite sprite){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card,handObject.transform);
-        }
-    }
     //各プレイヤーのヒーロー
-    [SerializeField]public List<GameObject> heroObject = new List<GameObject>();
-    public void ApplyHero(List<int> data, Sprite sprite){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card,heroObject.transform);
-        }
-    }
-
+    public List<GameObject> heroObject = new List<GameObject>();
     //倒したモンスター
-    public GameObject slayedmonsterObject;
-    public void ApplySlayedMonster(List<int> data, Sprite sprite){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card,slayedmonsterObject.transform);
-        }
-    }
-
+    public List<GameObject> slayedmonsterObject = new List<GameObject>();
     //捨て札
     public GameObject discardpileObject;
+    //モンスター
+    public GameObject monsterObject;
+
+    //private methods
+    private void Reset(GameObject content) { 
+        foreach(CardView a in content.GetComponentsInChildren<CardView>()) {
+            a.DestroySelf();
+        }
+    }
+    private void Apply(List<int> data, Sprite[] sprites) {
+        foreach (int id in data) {
+            GameObject card = (GameObject)Resources.Load("Card");
+            CardView view = card.AddComponent<CardView>();
+            view.ApplyData(id, sprites[id]);
+            Instantiate(card, handObject.transform);
+        }
+    }
+
+    //public methods
+    public void ApplyHand(List<int> data, Sprite[] sprites){
+        //handを初期化
+        Reset(handObject);
+        Apply(data, sprites);
+    }
+    public void ApplyHero(List<int> data, Sprite[] sprites,int playerNum){
+        Reset(heroObject[playerNum]);
+        Apply(data, sprites);
+    }
+
+    public void ApplySlayedMonster(List<int> data, Sprite sprite,int playerNum){
+        foreach(int id in data){
+            GameObject card = (GameObject)Resources.Load("Card");
+            CardView  view = card.AddComponent<CardView>();
+            view.ApplyData(id,sprite);
+            Instantiate(card, slayedmonsterObject[0].transform);
+        }
+    }
+
+    
     public void ApplyDiscardPile(List<int> data, Sprite sprite){
         foreach(int id in data){
             GameObject card = (GameObject)Resources.Load("Card");
@@ -48,8 +60,7 @@ public class GameBoardView : MonoBehaviour
         }
     }
 
-    //モンスター
-    public GameObject monsterObject;
+   
     public void ApplyMonster(List<int> data, Sprite sprite){
         foreach(int id in data){
             GameObject card = (GameObject)Resources.Load("Card");
@@ -59,4 +70,7 @@ public class GameBoardView : MonoBehaviour
         }
     }
 
+    private void Start() {
+        
+    }
 }

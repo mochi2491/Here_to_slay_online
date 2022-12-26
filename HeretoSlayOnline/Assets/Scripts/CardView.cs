@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,13 +5,26 @@ public class CardView : MonoBehaviour
 {
     private int? cardID = null;
     private Sprite cardSprite = null;
+    private int? itemID = null;
     private Image image = null;
+    private Image itemImage = null;
     
     public void ApplyData(int id, Sprite sprite){
         this.cardID = id;
         this.cardSprite = sprite;
-        this.image = this.gameObject.GetComponent<Image>();
+        this.image = this.transform.Find("Card").GetComponent<Image>();
         image.sprite = cardSprite;
+    }
+    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite) {
+        this.cardID = id;
+        this.cardSprite = sprite;
+        this.image = this.transform.Find("Card").GetComponent<Image>();
+        this.itemImage = this.transform.Find("Item").GetComponent<Image>();
+        image.sprite = cardSprite;
+        itemImage.sprite = itemSprite;
+    }
+    public void DestroySelf() {
+        Destroy(this.gameObject);
     }
 }
 
