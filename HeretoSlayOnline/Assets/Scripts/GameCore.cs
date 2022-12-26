@@ -15,10 +15,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 {
     //サーバとの通信を行う
     public ServerConnector connector;
-    
+
     //GameBoardの実体
     GameBoard gameBoard = new GameBoard();
-    
+    public GameBoardView gameBoardView = new GameBoardView();
+    public GameObject gameBoardObject;
+
     //Gameのステート
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
 
@@ -31,11 +33,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameObject[] tabs;
     private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     
-    public GameBoardView gameBoardView = new GameBoardView();
-
+    
     void Start()
     {
         connector = this.gameObject.AddComponent<ServerConnector>();
+        gameBoardView = this.gameObject.GetComponent<GameBoardView>();
+
         visibleTabNum.Subscribe(
             x => {
                 ApplyVisibleTab(x);
@@ -68,7 +71,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         userName = text;
     }
     public void SendUserName() {
-        connector.SendText("0:::"+userName);
+        if (state.Value == GameState.entrance) {
+            connector.SendText("0:::" + userName);
+            state.Value = GameState.wait;
+        }
     }
     public void ApplyIsReady(bool a) {
         isReady = a;
@@ -88,6 +94,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             if (gameBoard.PlayerID == 1) {
                 gameBoard.InitializeGameBoard();
             }
+            entrance.SetActive(false);
+            gameBoardObject.SetActive(true);
             state.Value = GameState.ingame;
         }
         else if (message[0] == "2") { //2:::json
@@ -169,11 +177,16 @@ public class GameBoard : MonoBehaviour {
         ApplyView(gbd,gbv);
     } //GameBoardを更新する
     public void ApplyView(GameBoardData gbd,GameBoardView gbv) {
-        gbv.ApplyHand(gbd.playerList[playerID].playerHandList,smallCardImageList);
+        gbv.ApplyHand(gbd.playerList[playerID].playerHandList,smallCardImageList); //手札にデータを適用
         for(int i = 0; i < playerCount; i++) {
-            
-        }
+            gbv.ApplyHero(gbd.playerList[i].playerHeroCardList,smallCardImageList,i);
+            gbv.ApplySlayedMonster(gbd.playerList[i].slayedMonsterList,largeCardImageList,i);
+        } //ヒーローリストにデータを適用
+        gbv.ApplyDiscardPile(gbd.discardPile, smallCardImageList);
+        gbv.ApplyMonster(gbd.monsterCardList, largeCardImageList);
+        
     } //更新したGameBoardを画面に適用する
+
     public GameBoardData GameBoardToData(GameBoard gb) {
         GameBoardData gbd = new GameBoardData();
         gbd.turnPlayerNum = 1;
