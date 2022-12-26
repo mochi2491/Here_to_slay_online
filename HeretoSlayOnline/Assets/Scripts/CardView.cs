@@ -26,6 +26,13 @@ public class CardView : MonoBehaviour
     public void DestroySelf() {
         Destroy(this.gameObject);
     }
+    public int? DisarmItem() {
+        int? itemTmp = itemID;
+        itemImage.sprite = null;
+        itemID = null;
+        return itemTmp;
+
+    }
 }
 
 public class SmallCardView : MonoBehaviour {
