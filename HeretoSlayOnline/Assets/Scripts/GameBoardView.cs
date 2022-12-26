@@ -21,12 +21,20 @@ public class GameBoardView : MonoBehaviour
             a.DestroySelf();
         }
     }
-    private void Apply(List<int> data, Sprite[] sprites) {
+    private void Apply(List<int> data, Sprite[] sprites,GameObject parent) {
         foreach (int id in data) {
             GameObject card = (GameObject)Resources.Load("Card");
             CardView view = card.AddComponent<CardView>();
             view.ApplyData(id, sprites[id]);
-            Instantiate(card, handObject.transform);
+            Instantiate(card, parent.transform);
+        }
+    }
+    private void ApplyHero(List<HeroCard> data , Sprite[] sprites,GameObject parent) {
+        foreach (HeroCard hero in data) {
+            GameObject card = (GameObject)Resources.Load("Card");
+            CardView view = card.AddComponent<CardView>();
+            view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, sprites[hero.armedCardID]);
+            Instantiate(card, parent.transform);
         }
     }
 
@@ -34,40 +42,23 @@ public class GameBoardView : MonoBehaviour
     public void ApplyHand(List<int> data, Sprite[] sprites){
         //handを初期化
         Reset(handObject);
-        Apply(data, sprites);
-    }
-    public void ApplyHero(List<int> data, Sprite[] sprites,int playerNum){
+        Apply(data, sprites,handObject);
+    } //手札にデータを適用
+    public void ApplyHero(List<HeroCard> data, Sprite[] sprites,int playerNum){
         Reset(heroObject[playerNum]);
-        Apply(data, sprites);
+        ApplyHero(data, sprites, heroObject[playerNum]);
+    } //ヒーローリストにデータを適用
+    public void ApplySlayedMonster(List<int> data, Sprite[] sprite,int playerNum){
+        Reset(slayedmonsterObject[playerNum]);
+        Apply(data, sprite, slayedmonsterObject[playerNum]);
+    } //倒したモンスターリストにデータを適用
+    public void ApplyDiscardPile(List<int> data, Sprite[] sprite){
+        Reset(discardpileObject);
+        Apply(data, sprite,discardpileObject);
     }
-
-    public void ApplySlayedMonster(List<int> data, Sprite sprite,int playerNum){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card, slayedmonsterObject[0].transform);
-        }
-    }
-
-    
-    public void ApplyDiscardPile(List<int> data, Sprite sprite){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card,discardpileObject.transform);
-        }
-    }
-
-   
-    public void ApplyMonster(List<int> data, Sprite sprite){
-        foreach(int id in data){
-            GameObject card = (GameObject)Resources.Load("Card");
-            CardView  view = card.AddComponent<CardView>();
-            view.ApplyData(id,sprite);
-            Instantiate(card,monsterObject.transform);
-        }
+    public void ApplyMonster(List<int> data, Sprite[] sprite){
+        Reset(monsterObject);
+        Apply(data, sprite, monsterObject);
     }
 
     private void Start() {
