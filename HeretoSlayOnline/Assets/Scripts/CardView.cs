@@ -8,20 +8,27 @@ public class CardView : MonoBehaviour
     private int? itemID = null;
     private Image image = null;
     private Image itemImage = null;
+    private int orderNum=0;@//—Ìˆæ‚Ì’†‚Å‰½ŒÂ–Ú‚É•\¦‚³‚ê‚Ä‚¢‚é‚©
     
-    public void ApplyData(int id, Sprite sprite){
+    public int OrderNum {
+        get { return orderNum; }
+    }
+
+    public void ApplyData(int id, Sprite sprite,int orderNum){
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
         image.sprite = cardSprite;
+        this.orderNum = orderNum;
     }
-    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite) {
+    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite,int orderNum) {
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
         this.itemImage = this.transform.Find("Item").GetComponent<Image>();
         image.sprite = cardSprite;
         itemImage.sprite = itemSprite;
+        this.orderNum=orderNum;
     }
     public void DestroySelf() {
         Destroy(this.gameObject);

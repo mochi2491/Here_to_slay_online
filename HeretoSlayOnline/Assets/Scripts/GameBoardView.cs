@@ -22,19 +22,23 @@ public class GameBoardView : MonoBehaviour
         }
     }
     private void Apply(List<int> data, Sprite[] sprites,GameObject parent) {
+        int i = 0;
         foreach (int id in data) {
             GameObject card = (GameObject)Resources.Load("Card");
             CardView view = card.AddComponent<CardView>();
-            view.ApplyData(id, sprites[id]);
+            view.ApplyData(id, sprites[id],i);
             Instantiate(card, parent.transform);
+            i++;
         }
     }
     private void ApplyHero(List<HeroCard> data , Sprite[] sprites,GameObject parent) {
+        int i = 0;
         foreach (HeroCard hero in data) {
             GameObject card = (GameObject)Resources.Load("Card");
             CardView view = card.AddComponent<CardView>();
-            view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, sprites[hero.armedCardID]);
+            view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, sprites[hero.armedCardID],i);
             Instantiate(card, parent.transform);
+            i++;
         }
     }
 
