@@ -9,19 +9,21 @@ public class CardView : MonoBehaviour
     private Image image = null;
     private Image itemImage = null;
     private int orderNum=0;@//—Ìˆæ‚Ì’†‚Å‰½ŒÂ–Ú‚É•\¦‚³‚ê‚Ä‚¢‚é‚©
-    
+    private Area area = Area.deck;
+
     public int OrderNum {
         get { return orderNum; }
     }
 
-    public void ApplyData(int id, Sprite sprite,int orderNum){
+    public void ApplyData(int id, Sprite sprite,int orderNum,Area are){
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
         image.sprite = cardSprite;
         this.orderNum = orderNum;
+        this.area = are;
     }
-    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite,int orderNum) {
+    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite,int orderNum ,Area area) {
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
@@ -29,6 +31,7 @@ public class CardView : MonoBehaviour
         image.sprite = cardSprite;
         itemImage.sprite = itemSprite;
         this.orderNum=orderNum;
+        this.area = area;
     }
     public void DestroySelf() {
         Destroy(this.gameObject);
