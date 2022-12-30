@@ -1,5 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 
 public class CardView : MonoBehaviour
 {
@@ -8,22 +12,61 @@ public class CardView : MonoBehaviour
     private int? itemID = null;
     private Image image = null;
     private Image itemImage = null;
-    private int orderNum=0;　//領域の中で何個目に表示されているか
-    private Area area = Area.deck;
+    private int holderNum = 0;
+    private int orderNum = 0;　//領域の中で何個目に表示されているか
+    private Area area;
+    private EventTrigger trigger;
+    public GameCore gameCore;
+    public bool isLarge = false;
 
+    private void Start() {
+        trigger = this.transform.Find("Card").gameObject.AddComponent<EventTrigger>();
+        trigger.triggers = new List<EventTrigger.Entry>();
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerClick;
+        entry.callback.AddListener((eventData) => { OnClick(eventData); });
+        trigger.triggers.Add(entry);
+
+        EventTrigger.Entry entry2 = new EventTrigger.Entry();
+        entry2.eventID = EventTriggerType.Cancel;
+        entry2.callback.AddListener(_ => { Cancel(); });
+        trigger.triggers.Add(entry2);
+    }
     public int OrderNum {
         get { return orderNum; }
     }
-
-    public void ApplyData(int id, Sprite sprite,int orderNum,Area are){
+    public void OnClick(BaseEventData ped) {
+        PointerEventData pointerEventData = (PointerEventData)ped;
+        GameBoardAddress gba = new GameBoardAddress();
+        gba.area = this.area;
+        gba.order = this.orderNum;
+        gba.playerID = holderNum;
+        gameCore.SetFromAddress(gba);
+        Debug.Log(this.area);
+        if(pointerEventData.pointerId == -2) {
+            gameCore.OpenCommandPanel(isLarge, Input.mousePosition);
+        }
+    }
+    
+    public void Cancel() {
+        gameCore.CloseCommandPanel();
+        Debug.Log("aaa");
+    }
+    public void Update() {
+        Debug.Log(area);
+    }
+    public void ApplyData(int id, Sprite sprite,int orderNum,Area area,GameCore gameCore,int holderNum,bool isLarge){
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
         image.sprite = cardSprite;
         this.orderNum = orderNum;
-        this.area = are;
+        this.area = area;
+        this.gameCore = gameCore;
+        this.holderNum = holderNum;
+        this.isLarge = isLarge;
     }
-    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite,int orderNum ,Area area) {
+    public void ApplyHeroData(int id, Sprite sprite, int itemID,Sprite itemSprite,int orderNum ,Area area,GameCore gameCore,int holderNum,bool isLarge) {
         this.cardID = id;
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
@@ -32,6 +75,9 @@ public class CardView : MonoBehaviour
         itemImage.sprite = itemSprite;
         this.orderNum=orderNum;
         this.area = area;
+        this.gameCore = gameCore;
+        this.holderNum = holderNum;
+        this.isLarge=isLarge;
     }
     public void DestroySelf() {
         Destroy(this.gameObject);
@@ -41,7 +87,6 @@ public class CardView : MonoBehaviour
         itemImage.sprite = null;
         itemID = null;
         return itemTmp;
-
     }
 }
 

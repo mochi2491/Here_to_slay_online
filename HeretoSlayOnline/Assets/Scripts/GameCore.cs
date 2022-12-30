@@ -28,17 +28,25 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameObject entrance;
     private string userName="";
     private bool isReady = false;
+    public int playerID = 0;
 
     //GUI
     public GameObject[] tabs;
     private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
-    
-    
+    public GameObject smallCommandPanel;
+    public List<GameObject> smallPanels;
+    public GameObject largeCommandPanel;
+    public List<GameObject> largePanels;
+
+    public bool isHeroItem = false;
+    public TMP_Dropdown heroNum;
+    public GameBoardAddress FromAddress = new GameBoardAddress();
+    public GameBoardAddress ToAddress = new GameBoardAddress();
+   
     void Start()
     {
+        heroNum = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
-        gameBoardView = this.gameObject.GetComponent<GameBoardView>();
-
         visibleTabNum.Subscribe(
             x => {
                 ApplyVisibleTab(x);
@@ -85,13 +93,13 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private void GetMessage(string msg) {
         string[] message = msg.Split(":::");
         if (message[0] == "0") {//0:::playerNum:::userName
-            if (state.Value != GameState.entrance) return;
             gameBoard.PlayerID = int.Parse(message[1]); //playerのIDを設定
+            this.playerID = gameBoard.PlayerID;
         }
         else if (message[0] == "1") { //1:::playerCount 
             if (state.Value != GameState.wait) return;
             gameBoard.PlayerCount = int.Parse(message[1]);
-            if (gameBoard.PlayerID == 1) {
+            if (gameBoard.PlayerID == 0){
                 gameBoard.InitializeGameBoard();
             }
             entrance.SetActive(false);
@@ -110,11 +118,132 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             Debug.Log("received wrong message;");
         }
     }
+    
+    public void ControlBoard(GameBoardAddress From) {
+        Debug.Log(From.area + "," + ToAddress.area);
+        GameBoardData board = new GameBoardData();
+        board = gameBoard.GameBoardToData(gameBoard.ControlBoard(From, ToAddress));
+        connector.SendText("2:::"+GameBoardToJson(board));
+    }
+    public void SetFromAddress(GameBoardAddress gba) {
+        FromAddress = gba;
+    }
+
     private string GameBoardToJson(GameBoardData gbd) { 
         return JsonConvert.SerializeObject(gbd);
     }
     private GameBoardData JsonToGameBoard(string json) {
         return JsonConvert.DeserializeObject<GameBoardData>(json);
+    }
+
+    //command button method
+    public void OpenCommandPanel(bool isLarge,Vector2 pos) {
+        CloseCommandPanel();
+        if (isLarge) {
+            largeCommandPanel.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 10.0f));
+            largeCommandPanel.SetActive(true);
+        }
+        else {
+            smallCommandPanel.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(pos.x , pos.y, 10.0f));
+            smallCommandPanel.SetActive(true);
+        }
+    }
+    public void CloseCommandPanel() {
+        largeCommandPanel.SetActive(false);
+        largeCommandPanel.SetActive(false);
+    }
+    public void SetToPlayerNum(int num) {
+        ToAddress.playerID = num;
+        if (isHeroItem) {
+            var heroCount = gameBoard.playerAreaList[ToAddress.playerID].PlayerHeroCardList;
+            smallPanels[2].gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
+            List<string> optionList = new List<string>();
+            int i = 0;
+            foreach(SmallCard sc in heroCount) {
+                optionList.Add(i.ToString());
+                i++;
+            }
+            smallPanels[2].gameObject.GetComponent<TMP_Dropdown>().AddOptions(optionList);
+            
+            smallPanels[2].SetActive(true);
+        }
+        else {
+            smallCommandPanel.SetActive(false);
+            ControlBoard(FromAddress);
+        }
+    }
+
+    public void SetToSmallArea(int num) {
+        switch (num) {
+            case 0:
+                ToAddress.area = Area.playerHand;
+                smallPanels[0].SetActive(false);
+                smallPanels[1].SetActive(true);
+                isHeroItem = false;
+                break;
+            case 1:
+                ToAddress.area = Area.playerHero;
+                smallPanels[0].SetActive(false);
+                smallPanels[1].SetActive(true);
+                isHeroItem = false;
+                break;
+            case 2:
+                ToAddress.area = Area.discardPile;
+                smallCommandPanel.SetActive(false);
+                ControlBoard(FromAddress);
+                break;
+            case 3:
+                ToAddress.area = Area.playerHeroItem;
+                smallPanels[0].SetActive(false);
+                smallPanels[1].SetActive(true);
+                isHeroItem = true; 
+                break;
+            case 4:
+                ToAddress.area = Area.deck;
+                smallCommandPanel.SetActive(false);
+                ControlBoard(FromAddress);
+                break;
+        }
+    }
+    public void SetToLargeArea(int num) {
+        switch (num) {
+            case 0:
+                ToAddress.area = Area.slayedMonster;
+                largePanels[0].SetActive(false);
+                largePanels[1].SetActive(true); //next player
+                break;
+            case 1:
+                ToAddress.area = Area.monsterDeck;
+                largeCommandPanel.SetActive(false);
+                break;
+            case 2:
+                ToAddress.area = Area.monsterList;
+                largePanels[0].SetActive(false);
+                largePanels[2].SetActive(true); //next order
+                break;
+        }
+    }
+    public void SetToOrder(int num) {
+        ToAddress.order = num;
+        largeCommandPanel.SetActive(false);
+        ControlBoard(FromAddress);
+    }
+    public void SetToHeroNum() {
+        ToAddress.order = heroNum.value;
+        smallPanels[2].SetActive(false);
+        ControlBoard(FromAddress);
+    }
+    public void DrawCard() {
+        ToAddress.playerID = this.playerID;
+        ToAddress.area = Area.playerHand;
+        GameBoardAddress from = new GameBoardAddress();
+        from.area = Area.deck;
+        ControlBoard(from);
+    } 
+    public void DeckShuffle() {
+        GameBoardData board = new GameBoardData();
+        board = gameBoard.GameBoardToData(gameBoard.DeckShuffle());
+        connector.SendMessage("2:::" + GameBoardToJson(board));
     }
 }
 public enum GameState {
@@ -124,15 +253,14 @@ public class GameBoard : MonoBehaviour {
     private Sprite[] smallCardImageList = new Sprite[73];
     private Sprite[] largeCardImageList = new Sprite[20];
     private Sprite cardBack;
-
+    
     private int turnPlayerNum = 0;
     private int playerCount = 0;
     private int playerID = 0;
     private DeckArea deckArea = new DeckArea();
     private MonsterArea monsterArea = new MonsterArea();
     private ChatArea chatArea = new ChatArea();
-    private List<PlayerArea> playerAreaList = new List<PlayerArea>();
-
+    public List<PlayerArea> playerAreaList = new List<PlayerArea>();
     //setter and getter
     public int PlayerID {
         set {
@@ -150,20 +278,19 @@ public class GameBoard : MonoBehaviour {
             return this.playerCount;
         }
     }
-    private void Start() {
-        //スプライトの読込
-        smallCardImageList = Resources.LoadAll("deck_cards") as Sprite[];
-        largeCardImageList = Resources.LoadAll("monster_and_leader_cards") as Sprite[];
-        cardBack = Resources.Load("back") as Sprite;
-        InitializeGameBoard();
-    }
+    
     public GameBoard InitializeGameBoard() {
+        smallCardImageList = Resources.LoadAll("deck_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
+        largeCardImageList = Resources.LoadAll("monster_and_leader_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
+        cardBack = Resources.Load("back") as Sprite;
         deckArea.Init();
         monsterArea.Init();
         chatArea.Init();
+        for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         foreach (PlayerArea pa in playerAreaList) {
             pa.Init(0);
         }
+        Debug.Log(playerAreaList.Count);
         return this;
     } //初期化
     public void ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
@@ -209,6 +336,10 @@ public class GameBoard : MonoBehaviour {
             playerAreaList.Add(new PlayerArea(pd));
         }
     } //dataをplayerAreaListに
+    public GameBoard DeckShuffle() {
+        deckArea.Shuffle();
+        return this;
+    }
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
         bool isLarge = false;
         if((From.area == Area.monsterList) && (From.area == Area.discardPile) && (From.area == Area.slayedMonster)) {
@@ -233,7 +364,7 @@ public class GameBoard : MonoBehaviour {
             }
             switch (To.area) {
                 case Area.monsterList:
-                    monsterArea.PushList(moveCard);
+                    monsterArea.PushList(moveCard,To.order);
                     break;
                 case Area.monsterDeck:
                     monsterArea.PushDeck(moveCard);
@@ -292,7 +423,7 @@ public struct GameBoardAddress {
     public int order;
 }
 public enum Area {
-    discardPile,deck,monsterList,monsterDeck,playerHand,playerHero,playerHeroItem,slayedMonster
+    deck,discardPile, monsterList,monsterDeck,playerHand,playerHero,playerHeroItem,slayedMonster
 }
 public class DeckArea : MonoBehaviour {
     private List<SmallCard> mainDeck = new List<SmallCard>();
@@ -300,37 +431,31 @@ public class DeckArea : MonoBehaviour {
     public void Init() {
         //mainDeck init
         for(int i = 0; i <= 73; i++) {
-            if (i < 60) {
-                if (i == 52 || i == 54 || i == 57) {
-                    mainDeck.Add(new SmallCard(i, ""));
-                    mainDeck.Add(new SmallCard(i, ""));
-                }
-                else mainDeck.Add(new SmallCard(i, ""));
+            if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2枚
+                mainDeck.Add(new SmallCard(i, ""));
+                mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i>=60 && i < 65) {
-                if (i == 61) {
-                    for (int j = 0; j < 9; j++) mainDeck.Add(new SmallCard(i, ""));
-                }
-                else {
-                    for (int k = 0; k < 4; k++) mainDeck.Add(new SmallCard(i, ""));
-                }
+            else if (i == 60 || (i >= 62 && i <= 64)) { //4枚
+                for (int j = 0; j < 4; j++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i >= 65 && i < 73) {
-                if (i == 66 && i == 67 && i == 68 && i == 69 && i == 72) {
-                    mainDeck.Add(new SmallCard(i, ""));
-                    mainDeck.Add(new SmallCard(i, ""));
-                }
-                else mainDeck.Add(new SmallCard(i, ""));
+            else if (i == 61) { //9枚
+                for (int k = 0; k < 9; k++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 73) {
-                for(int l = 0; l < 14; l++) {
-                    mainDeck.Add(new SmallCard(i, ""));
-                }
+            else if (i == 73) { //14枚
+                for (int l = 0; l < 14; l++) mainDeck.Add(new SmallCard(i, ""));
             }
+            else mainDeck.Add(new SmallCard(i, "")); //1枚
+
         }
         mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
         //discardPile init
         discardPile.Clear();
+    }
+    public int deckCount() {
+        return mainDeck.Count;
+    }
+    public void Shuffle() {
+        mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
     }
     public void ApplyChanges(List<int>deckData,List<int>pileData) {
         mainDeck.Clear();
@@ -428,12 +553,17 @@ public class MonsterArea : MonoBehaviour {
     public LargeCard PopList(int order) {
         LargeCard tmp = monsterCardList[order];
         monsterDeck.RemoveAt(order);
-        PushList(PopDeck());
+        PushList(PopDeck(),2);
         return tmp;
     } //monsterListからカードを取り出す,またデッキから一枚リストに追加する
-    public void PushList(LargeCard tmp) {
-        if(monsterCardList.Count < 3) monsterCardList.Add(tmp);
-    } //monsterListが3枚未満ならカードを追加する
+    public void PushList(LargeCard tmp,int order) {
+        if (monsterCardList.Count < 3) monsterCardList.Add(tmp);
+        else {
+            PushDeck(monsterCardList[order]);
+            monsterCardList.RemoveAt(order);
+            monsterCardList.Add(tmp); 
+        }
+    } //monsterListが3枚未満ならカードを追加する,3枚以上なら一枚戻してから追加する
 
 }
 public class ChatArea : MonoBehaviour {
@@ -466,13 +596,9 @@ public class PlayerArea : MonoBehaviour {
     public List<LargeCard> SlayedMonsterList {
         get { return slayedMonsterList; }
     }
+    public PlayerArea() {
 
-    //method
-    public void Init(int num) {
-        leaderCard = num;
-        playerHandList.Clear();
-        playerHeroCardList.Clear();
-    } //初期化
+    }
     public PlayerArea(PlayerData playerData) {
         this.playerID = playerData.playerID;
         this.leaderCard = playerData.leaderCardID;
@@ -480,6 +606,13 @@ public class PlayerArea : MonoBehaviour {
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
     } //コンストラクタ
+    //method
+    public void Init(int num) {
+        leaderCard = num;
+        playerHandList.Clear();
+        playerHeroCardList.Clear();
+    } //初期化
+    
     public PlayerData PlayerAreaToData() {
         PlayerData playerData = new PlayerData();
         playerData.playerID = "";
@@ -507,7 +640,6 @@ public class PlayerArea : MonoBehaviour {
         playerHandList.Clear();
         foreach(int id in data) {
             playerHandList.Add(new SmallCard(id, ""));
-
         }
     } //dataを手札に
     public List<HeroCard> HeroListToData() {
@@ -579,10 +711,14 @@ public class SmallCard {
     private int cardID = 0;
     private string cardEffect = "";
     private SmallCard armedItem = null;
-    public SmallCard(int cardID, string cardEffect) {
+    public SmallCard(int cardID, string cardEffect,bool aaa) {
         this.cardID = cardID;
         this.cardEffect = cardEffect;
         armedItem = new SmallCard(-1,"");
+    }
+    public SmallCard(int cardID,string cardEffect) {
+        this.cardID = cardID;
+        this.cardEffect = cardEffect;
     }
     //setter and getter
     public int ID {
