@@ -1,20 +1,22 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using WebSocketSharp;
-using WebSocketSharp.Server;
-using UniRx;
-using Newtonsoft.Json;
-using UnityEngine.UI;
-using TMPro;
 using System.Linq;
 using System.Threading;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.Events;
+using UniRx;
+using WebSocketSharp;
+using WebSocketSharp.Server;
+using Newtonsoft.Json;
+using TMPro;
 
 public class GameCore : SingletonMonoBehaviour<GameCore>
 {
     //サーバとの通信を行う
     public ServerConnector connector;
+    [HideInInspector]public SendTextEvent sendTextEvent;
 
     //GameBoardの実体
     GameBoard gameBoard = new GameBoard();
@@ -23,12 +25,15 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 
     //Gameのステート
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
+    public IReadOnlyReactiveProperty<GameState> _state => state;
+    [HideInInspector]public ChangeStateEvent changeStateEvent;
 
     //Entrance
-    public GameObject entrance;
-    private string userName="";
-    private bool isReady = false;
+    public IEntrance _entrance;
+    public Entrance entrance;
+    public GameObject entranceObject;
     public int playerID = 0;
+    
 
     //GUI
     public GameObject[] tabs;
@@ -43,7 +48,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardAddress FromAddress = new GameBoardAddress();
     public GameBoardAddress ToAddress = new GameBoardAddress();
    
-    void Start()
+    void Awake()
     {
         heroNum = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
@@ -57,12 +62,17 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
                 GetMessage(x);
             }
         );
-    }
-    void Update()
-    {
-        
-    }
 
+        //sendTextメソッドをsendTextEventに登録
+        sendTextEvent.AddListener(connector.SendText);
+        //changeStateメソッドをchangeStateEventに登録
+        changeStateEvent.AddListener(ChangeState);
+        //インスタンス生成
+        entrance = this.gameObject.AddComponent<Entrance>();
+        _entrance = entrance; //interfaceの受け渡し
+        _entrance.Init(sendTextEvent,changeStateEvent); //初期化
+        _state.Subscribe(state => { _entrance.SetState(state); }); 
+    }
     //tab切り替え
     private void ApplyVisibleTab(int num) {
         for(int i = 0; i < 8; i++) {
@@ -73,23 +83,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public void SetVisibleTabNum(int num) {
         visibleTabNum.Value = num;
     }
-    
-    //entrance
-    public void ApplyUserName(string text) {
-        userName = text;
+    public void ChangeState(GameState state) {
+        this.state.Value = state;
     }
-    public void SendUserName() {
-        if (state.Value == GameState.entrance) {
-            connector.SendText("0:::" + userName);
-            state.Value = GameState.wait;
-        }
-    }
-    public void ApplyIsReady(bool a) {
-        isReady = a;
-        if (isReady) connector.SendText("1:::1");
-        else connector.SendText("1:::0");
-    }
-
     private void GetMessage(string msg) {
         string[] message = msg.Split(":::");
         if (message[0] == "0") {//0:::playerNum:::userName
@@ -102,7 +98,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             if (gameBoard.PlayerID == 0){
                 gameBoard.InitializeGameBoard();
             }
-            entrance.SetActive(false);
+            entranceObject.SetActive(false);
             gameBoardObject.SetActive(true);
             state.Value = GameState.ingame;
         }
@@ -118,7 +114,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             Debug.Log("received wrong message;");
         }
     }
-    
     public void ControlBoard(GameBoardAddress From) {
         GameBoardData board = new GameBoardData();
         Debug.Log(From.area+","+ToAddress.area);
@@ -274,8 +269,60 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         connector.SendMessage("2:::" + GameBoardToJson(board));
     }
 }
+[System.Serializable]public class SendTextEvent : UnityEvent<string> {
+
+} //SendTextを子クラスに渡すためのクラス
+[System.Serializable]public class ChangeStateEvent : UnityEvent<GameState> {
+
+} //ChangeStateを子クラスに渡すためのクラス
 public enum GameState {
     entrance,wait,ingame
+}
+public interface IEntrance { 
+    public void Init(SendTextEvent sendText,ChangeStateEvent changeState);
+    public void SetState(GameState state);
+    public void SetUserName(string name);
+    public void SendUserName();
+    public void ApplyIsReady(bool isReady);
+
+} 
+public class Entrance : MonoBehaviour,IEntrance{
+    SendTextEvent sendText; //textを送信するEvent
+    ChangeStateEvent changeState; //GameCoreのstateを変更するEvent
+    GameState state; //現在のGameCoreのState
+    private string userName = ""; //ユーザーネーム
+    private bool isReady = false; //Playerの準備状況
+    
+    //setter and getter
+    public string UserName {
+        get { return userName; }
+    }
+
+    //初期化
+    public void Init(SendTextEvent sendTextEvent,ChangeStateEvent changeStateEvent) {
+        this.sendText = sendTextEvent;
+        this.changeState = changeStateEvent;
+    }
+
+    //public method
+    public void SetState(GameState state) {
+        this.state = state;
+    }
+    public void SetUserName(string name) {
+        this.userName = name;
+    }
+    public void SendUserName() {
+        if (state == GameState.entrance) {
+            sendText.Invoke("0:::" + userName);
+            changeState.Invoke(GameState.wait);
+        }
+    }
+    public void ApplyIsReady(bool isReady) {
+        if (state != GameState.wait) return;
+        this.isReady = isReady;
+        if (this.isReady) sendText.Invoke("1:::1");
+        else sendText.Invoke("1:::0");
+    }
 }
 public class GameBoard : MonoBehaviour {
     private Sprite[] smallCardImageList = new Sprite[73];

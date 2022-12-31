@@ -3128,19 +3128,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 657107500}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2130668452}
-        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
-        m_MethodName: SendUserName
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &657107500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3563,6 +3551,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 675803680}
+  - component: {fileID: 675803681}
   m_Layer: 5
   m_Name: Entrance
   m_TagString: Untagged
@@ -3593,6 +3582,21 @@ RectTransform:
   m_AnchoredPosition: {x: -94, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &675803681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675803679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4831e1cb46306a41bb649f4ca7ae526, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  userNameText: {fileID: 661888413}
+  isReadyToggle: {fileID: 891185423}
+  sendButton: {fileID: 657107499}
 --- !u!1 &676891997
 GameObject:
   m_ObjectHideFlags: 0
@@ -12583,6 +12587,7 @@ GameObject:
   - component: {fileID: 2130668449}
   - component: {fileID: 2130668448}
   - component: {fileID: 2130668452}
+  - component: {fileID: 2130668453}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -12687,9 +12692,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connector: {fileID: 0}
+  sendTextEvent:
+    m_PersistentCalls:
+      m_Calls: []
   gameBoardView: {fileID: 402210448}
   gameBoardObject: {fileID: 402210446}
+  changeStateEvent:
+    m_PersistentCalls:
+      m_Calls: []
   entrance: {fileID: 675803679}
+  entranceObject: {fileID: 675803679}
   playerID: 0
   tabs:
   - {fileID: 501847670}
@@ -12712,6 +12724,20 @@ MonoBehaviour:
   - {fileID: 4799904988012101686}
   isHeroItem: 0
   heroNum: {fileID: 0}
+--- !u!114 &2130668453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2130668447}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35841502b58d8ee4ca2336ac4a59280b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameCore: {fileID: 2130668452}
+  entranceView: {fileID: 675803681}
 --- !u!1 &2132963320
 GameObject:
   m_ObjectHideFlags: 0
