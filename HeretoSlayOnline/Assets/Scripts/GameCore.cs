@@ -120,15 +120,14 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
     
     public void ControlBoard(GameBoardAddress From) {
-        Debug.Log(From.area + "," + ToAddress.area);
         GameBoardData board = new GameBoardData();
+        Debug.Log(From.area+","+ToAddress.area);
         board = gameBoard.GameBoardToData(gameBoard.ControlBoard(From, ToAddress));
         connector.SendText("2:::"+GameBoardToJson(board));
     }
     public void SetFromAddress(GameBoardAddress gba) {
         FromAddress = gba;
     }
-
     private string GameBoardToJson(GameBoardData gbd) { 
         return JsonConvert.SerializeObject(gbd);
     }
@@ -150,29 +149,47 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
     public void CloseCommandPanel() {
         largeCommandPanel.SetActive(false);
-        largeCommandPanel.SetActive(false);
+        largePanels[0].SetActive(true);
+        largePanels[1].SetActive(false);
+        largePanels[2].SetActive(false);
+        smallCommandPanel.SetActive(false);
+        smallPanels[0].SetActive(true);
+        smallPanels[1].SetActive(false);
+        smallPanels[2].SetActive(false);
     }
     public void SetToPlayerNum(int num) {
         ToAddress.playerID = num;
         if (isHeroItem) {
             var heroCount = gameBoard.playerAreaList[ToAddress.playerID].PlayerHeroCardList;
-            smallPanels[2].gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
+            smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
             List<string> optionList = new List<string>();
             int i = 0;
-            foreach(SmallCard sc in heroCount) {
+            foreach(HeroCard sc in heroCount) {
                 optionList.Add(i.ToString());
                 i++;
             }
-            smallPanels[2].gameObject.GetComponent<TMP_Dropdown>().AddOptions(optionList);
-            
+            smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().AddOptions(optionList);
+
+            smallPanels[1].SetActive(false);
             smallPanels[2].SetActive(true);
+
         }
         else {
             smallCommandPanel.SetActive(false);
             ControlBoard(FromAddress);
         }
     }
-
+    public void SetToPlayerNumLarge(int num) {
+        ToAddress.playerID = num;
+        smallCommandPanel.SetActive(false);
+        ControlBoard(FromAddress);
+    }
+    public void DefineToOrderNum() {
+        ToAddress.order = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().value;
+        smallPanels[2].SetActive(false);
+        smallCommandPanel.SetActive(false);
+        ControlBoard(FromAddress);
+    }
     public void SetToSmallArea(int num) {
         switch (num) {
             case 0:
@@ -215,6 +232,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             case 1:
                 ToAddress.area = Area.monsterDeck;
                 largeCommandPanel.SetActive(false);
+                ControlBoard(FromAddress);
                 break;
             case 2:
                 ToAddress.area = Area.monsterList;
@@ -231,6 +249,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public void SetToHeroNum() {
         ToAddress.order = heroNum.value;
         smallPanels[2].SetActive(false);
+        smallCommandPanel.SetActive(false);
         ControlBoard(FromAddress);
     }
     public void DrawCard() {
@@ -239,7 +258,16 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         GameBoardAddress from = new GameBoardAddress();
         from.area = Area.deck;
         ControlBoard(from);
-    } 
+    }
+    public void DrawMonster() {
+        if (gameBoard.monsterArea.monsterCardList.Count < 3) { 
+            ToAddress.order = gameBoard.monsterArea.monsterCardList.Count;
+            ToAddress.area = Area.monsterList;
+            GameBoardAddress from = new GameBoardAddress();
+            from.area = Area.monsterDeck;
+            ControlBoard(from);
+        }
+    }
     public void DeckShuffle() {
         GameBoardData board = new GameBoardData();
         board = gameBoard.GameBoardToData(gameBoard.DeckShuffle());
@@ -258,7 +286,7 @@ public class GameBoard : MonoBehaviour {
     private int playerCount = 0;
     private int playerID = 0;
     private DeckArea deckArea = new DeckArea();
-    private MonsterArea monsterArea = new MonsterArea();
+    public MonsterArea monsterArea = new MonsterArea();
     private ChatArea chatArea = new ChatArea();
     public List<PlayerArea> playerAreaList = new List<PlayerArea>();
     //setter and getter
@@ -290,7 +318,6 @@ public class GameBoard : MonoBehaviour {
         foreach (PlayerArea pa in playerAreaList) {
             pa.Init(0);
         }
-        Debug.Log(playerAreaList.Count);
         return this;
     } //初期化
     public void ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
@@ -303,7 +330,7 @@ public class GameBoard : MonoBehaviour {
     } //GameBoardを更新する
     public void ApplyView(GameBoardData gbd,GameBoardView gbv) {
         gbv.ApplyHand(gbd.playerList[playerID].playerHandList,smallCardImageList); //手札にデータを適用
-        for(int i = 0; i < playerCount; i++) {
+        for(int i = 0; i < 6; i++) {
             gbv.ApplyHero(gbd.playerList[i].playerHeroCardList,smallCardImageList,i);
             gbv.ApplySlayedMonster(gbd.playerList[i].slayedMonsterList,largeCardImageList,i);
         } //ヒーローリストにデータを適用
@@ -342,7 +369,7 @@ public class GameBoard : MonoBehaviour {
     }
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
         bool isLarge = false;
-        if((From.area == Area.monsterList) && (From.area == Area.discardPile) && (From.area == Area.slayedMonster)) {
+        if((From.area == Area.monsterList) || (From.area == Area.monsterDeck) || (From.area == Area.slayedMonster)) {
             isLarge = true;
         }
         //カードをいどうさせる
@@ -390,7 +417,9 @@ public class GameBoard : MonoBehaviour {
                     moveCard = playerAreaList[From.playerID].PickArmedCard(From.order);
                     break;
                 case Area.playerHero:
-                    moveCard = playerAreaList[From.playerID].PickHeroCard(From.order);
+                    HeroCard a = playerAreaList[From.playerID].PickHeroCard(From.order);
+                    moveCard = a.hero;
+                    if(a.equip.ID != -1) playerAreaList[playerID].PushHand(a.equip);
                     break;
                 default:
                     moveCard = null;
@@ -410,12 +439,15 @@ public class GameBoard : MonoBehaviour {
                     playerAreaList[To.playerID].AttachArmedCard(moveCard,To.order);
                     break;
                 case Area.playerHero:
-                    playerAreaList[To.playerID].PushHeroCard(moveCard);
+                    HeroCard a = new HeroCard(moveCard, null);
+                    playerAreaList[To.playerID].PushHeroCard(a);
                     break;
             }
         }
         return this;
     } //カードを移動させる(バカすぎる実装なのでいずれ直す)
+
+    
 }
 public struct GameBoardAddress {
     public Area area;
@@ -486,7 +518,7 @@ public class DeckArea : MonoBehaviour {
     public void DataToPile(List<int> data) {
         discardPile.Clear();
         foreach(int id in data) {
-            mainDeck.Add(new SmallCard(id, ""));
+            discardPile.Add(new SmallCard(id, ""));
         }
     } //dataをDiscardPileに
     public SmallCard PopDeck() {
@@ -499,7 +531,7 @@ public class DeckArea : MonoBehaviour {
     } //deckの頭にカードを追加
     public SmallCard PickDiscard(int order) {
         SmallCard tmp = discardPile[order];
-        mainDeck.RemoveAt(order);
+        discardPile.RemoveAt(order);
         return tmp;
     } //discardPileの指定のカードを取り出す
     public void PushDiscard(SmallCard tmp) {
@@ -507,11 +539,11 @@ public class DeckArea : MonoBehaviour {
     } //discardPileの最後にカードを追加
 }
 public class MonsterArea : MonoBehaviour {
-    private List<LargeCard> monsterCardList = new List<LargeCard>();
+    public List<LargeCard> monsterCardList = new List<LargeCard>();
     private List<LargeCard> monsterDeck = new List<LargeCard>();
     public void Init() {
         //monsterDeck init
-        for (int i = 0; i <= 20; i++)monsterDeck.Add(new LargeCard(i,""));
+        for (int i = 0; i <= 14; i++)monsterDeck.Add(new LargeCard(i+6,""));
         monsterDeck = monsterDeck.OrderBy(a => Guid.NewGuid()).ToList();
         //monsterCardList init
         monsterCardList.Clear();
@@ -552,10 +584,9 @@ public class MonsterArea : MonoBehaviour {
     } //monsterDeckの頭にカードを追加
     public LargeCard PopList(int order) {
         LargeCard tmp = monsterCardList[order];
-        monsterDeck.RemoveAt(order);
-        PushList(PopDeck(),2);
+        monsterCardList.RemoveAt(order);
         return tmp;
-    } //monsterListからカードを取り出す,またデッキから一枚リストに追加する
+    } //monsterListからカードを取り出す
     public void PushList(LargeCard tmp,int order) {
         if (monsterCardList.Count < 3) monsterCardList.Add(tmp);
         else {
@@ -583,14 +614,14 @@ public class PlayerArea : MonoBehaviour {
     private string playerID = "";
     private int leaderCard = 0;
     private List<SmallCard> playerHandList = new List<SmallCard>();
-    private List<SmallCard> playerHeroCardList = new List<SmallCard>();
+    private List<HeroCard> playerHeroCardList = new List<HeroCard>();
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
     
     //getter and setter
     public List<SmallCard> PlayerHandList {
         get { return playerHandList; }
     }
-    public List<SmallCard> PlayerHeroCardList {
+    public List<HeroCard> PlayerHeroCardList {
         get { return playerHeroCardList; }
     }
     public List<LargeCard> SlayedMonsterList {
@@ -642,20 +673,31 @@ public class PlayerArea : MonoBehaviour {
             playerHandList.Add(new SmallCard(id, ""));
         }
     } //dataを手札に
-    public List<HeroCard> HeroListToData() {
-        List<HeroCard> data = new List<HeroCard>();
-        foreach(SmallCard card in playerHeroCardList) {
-            HeroCard cardData = new HeroCard();
-            cardData.cardID = card.ID;
-            cardData.armedCardID = card.ArmedItem.ID;
+    public List<HeroCardData> HeroListToData() {
+        List<HeroCardData> data = new List<HeroCardData>();
+        foreach(HeroCard card in playerHeroCardList) {
+            
+            HeroCardData cardData = new HeroCardData();
+            cardData.cardID = card.hero.ID;
+            if (card.equip != null) {
+                cardData.armedCardID = card.equip.ID;
+            }
+            else cardData.armedCardID = -1;
+            
             data.Add(cardData);
         }
         return data;
     } //ヒーローリストをdataに
-    public void DataToHeroList(List<HeroCard> data) {
+    public void DataToHeroList(List<HeroCardData> data) {
         playerHeroCardList.Clear();
-        foreach(HeroCard hero in data) {
-            playerHeroCardList.Add(new SmallCard(hero.cardID, "").ArmedItem= new SmallCard(hero.armedCardID,""));
+        foreach(HeroCardData hero in data) {
+            if(hero.armedCardID != -1) {
+                playerHeroCardList.Add(new HeroCard(new SmallCard(hero.cardID, ""), new SmallCard(hero.armedCardID, "")));
+            }
+            else {
+                playerHeroCardList.Add(new HeroCard(new SmallCard(hero.cardID, ""), new SmallCard(-1, "")));
+            }
+            
         }
     } //dataをヒーローリストに
     public List<int> SlayedListToData() {
@@ -679,22 +721,24 @@ public class PlayerArea : MonoBehaviour {
     public void PushHand(SmallCard tmp) {
         playerHandList.Add(tmp);
     }//カードを手札に追加する
-    public SmallCard PickHeroCard(int order) {
-        SmallCard tmp = playerHeroCardList[order];
+    public HeroCard PickHeroCard(int order) {
+        Debug.Log(playerHeroCardList.Count);
+        HeroCard tmp = playerHeroCardList[order];
         playerHeroCardList.RemoveAt(order);
         return tmp;
     }//ヒーローリストの中からカードを一枚取り出す
-    public void PushHeroCard(SmallCard tmp) {
+    public void PushHeroCard(HeroCard tmp) {
         playerHeroCardList.Add(tmp);
     }//ヒーローリストにカードを追加する
     public SmallCard PickArmedCard(int order) {
-        SmallCard tmp = playerHeroCardList[order].ArmedItem;
-        playerHeroCardList[order].ArmedItem = null;
+        SmallCard tmp = playerHeroCardList[order].equip;
+        playerHeroCardList[order].equip = null;
         return tmp;
     } //ヒーローが装備しているアイテムを取り出す
     public void AttachArmedCard(SmallCard tmp,int order) {
-        if (order < playerHeroCardList.Count || playerHeroCardList.Count < order) throw new Exception("存在しないヒーローを指定しています");
-        playerHeroCardList[order].ArmedItem = tmp;
+        Debug.Log(playerHeroCardList.Count+","+ order);
+        if (order >= playerHeroCardList.Count) throw new Exception("存在しないヒーローを指定しています");
+        playerHeroCardList[order].equip = tmp;
     } //ヒーローにアイテムを装備させる
     public LargeCard PickSlayedMonster(int order) {
         LargeCard tmp = slayedMonsterList[order];
@@ -707,15 +751,17 @@ public class PlayerArea : MonoBehaviour {
 
 
 }
+public class HeroCard {
+    public SmallCard hero=null;
+    public SmallCard equip=null;
+    public HeroCard(SmallCard hero,SmallCard equip) {
+        this.hero = hero;
+        this.equip = equip;
+    }
+}
 public class SmallCard {
     private int cardID = 0;
     private string cardEffect = "";
-    private SmallCard armedItem = null;
-    public SmallCard(int cardID, string cardEffect,bool aaa) {
-        this.cardID = cardID;
-        this.cardEffect = cardEffect;
-        armedItem = new SmallCard(-1,"");
-    }
     public SmallCard(int cardID,string cardEffect) {
         this.cardID = cardID;
         this.cardEffect = cardEffect;
@@ -724,10 +770,6 @@ public class SmallCard {
     public int ID {
         get { return cardID; }
         set { cardID = value; }
-    }
-    public SmallCard ArmedItem {
-        set { armedItem = value; }
-        get { return armedItem; }
     }
 }
 public class LargeCard {
@@ -795,11 +837,11 @@ public struct PlayerData {
     public string playerID;
     public int leaderCardID;
     public List<int> playerHandList;
-    public List<HeroCard> playerHeroCardList;
+    public List<HeroCardData> playerHeroCardList;
     public List<int> slayedMonsterList;
 
 }
-public struct HeroCard {
+public struct HeroCardData {
     public int cardID;
     public int armedCardID;
 }

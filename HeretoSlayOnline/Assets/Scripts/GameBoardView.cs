@@ -27,19 +27,21 @@ public class GameBoardView : MonoBehaviour
         int i = 0;
         foreach (int id in data) {
             GameObject card = (GameObject)Resources.Load("Card");
-            CardView view = card.AddComponent<CardView>();
-            view.ApplyData(id, sprites[id],i,area,gameCore,holderNum,isLarge);
-            Instantiate(card, parent.transform);
+            GameObject a = Instantiate(card, parent.transform);
+            CardView view = a.AddComponent<CardView>();
+            if(id != -1) view.ApplyData(id, sprites[id], i, area, gameCore, holderNum, isLarge);
+            else view.ApplyData(id, null, i, area, gameCore, holderNum, isLarge);
             i++;
         }
     }
-    private void ApplyHero(List<HeroCard> data , Sprite[] sprites,GameObject parent,Area area,int holderNum,bool isLarge) {
+    private void ApplyHero(List<HeroCardData> data , Sprite[] sprites,GameObject parent,Area area,int holderNum,bool isLarge) {
         int i = 0;
-        foreach (HeroCard hero in data) {
+        foreach (HeroCardData hero in data) {
             GameObject card = (GameObject)Resources.Load("Card");
-            CardView view = card.AddComponent<CardView>();
-            view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, sprites[hero.armedCardID],i,area,gameCore,holderNum,isLarge);
-            Instantiate(card, parent.transform);
+            GameObject a = Instantiate(card, parent.transform);
+            CardView view = a.AddComponent<CardView>();
+            if(hero.armedCardID != -1) view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, sprites[hero.armedCardID],i,area,gameCore,holderNum,isLarge);
+            else view.ApplyHeroData(hero.cardID, sprites[hero.cardID], hero.armedCardID, null, i, area, gameCore, holderNum, isLarge);
             i++;
         }
     }
@@ -51,7 +53,7 @@ public class GameBoardView : MonoBehaviour
         Apply(data, sprites,handObject,Area.playerHand,gameCore.playerID,false);
 
     } //手札にデータを適用
-    public void ApplyHero(List<HeroCard> data, Sprite[] sprites,int playerNum){
+    public void ApplyHero(List<HeroCardData> data, Sprite[] sprites,int playerNum){
         Reset(heroObject[playerNum]);
         ApplyHero(data, sprites, heroObject[playerNum],Area.playerHero,playerNum,false);
     } //ヒーローリストにデータを適用

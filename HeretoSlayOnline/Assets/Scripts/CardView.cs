@@ -42,7 +42,6 @@ public class CardView : MonoBehaviour
         gba.order = this.orderNum;
         gba.playerID = holderNum;
         gameCore.SetFromAddress(gba);
-        Debug.Log(this.area);
         if(pointerEventData.pointerId == -2) {
             gameCore.OpenCommandPanel(isLarge, Input.mousePosition);
         }
@@ -53,7 +52,6 @@ public class CardView : MonoBehaviour
         Debug.Log("aaa");
     }
     public void Update() {
-        Debug.Log(area);
     }
     public void ApplyData(int id, Sprite sprite,int orderNum,Area area,GameCore gameCore,int holderNum,bool isLarge){
         this.cardID = id;
@@ -71,10 +69,12 @@ public class CardView : MonoBehaviour
         this.cardSprite = sprite;
         this.image = this.transform.Find("Card").GetComponent<Image>();
         this.itemImage = this.transform.Find("Item").GetComponent<Image>();
+        if (itemSprite != null) this.itemImage.enabled = true;
+        else this.itemImage.enabled = false;
         image.sprite = cardSprite;
         itemImage.sprite = itemSprite;
-        this.orderNum=orderNum;
         this.area = area;
+        this.orderNum=orderNum;
         this.gameCore = gameCore;
         this.holderNum = holderNum;
         this.isLarge=isLarge;
