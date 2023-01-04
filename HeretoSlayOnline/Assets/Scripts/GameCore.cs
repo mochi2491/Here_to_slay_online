@@ -19,7 +19,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     [HideInInspector]public SendTextEvent sendTextEvent;
 
     //GameBoardの実体
-    GameBoard gameBoard = new GameBoard();
+    public GameBoard gameBoard;
+    public IGameBoard _gameBoard;
+
     public GameBoardView gameBoardView = new GameBoardView();
     public GameObject gameBoardObject;
 
@@ -29,15 +31,20 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     [HideInInspector]public ChangeStateEvent changeStateEvent;
 
     //Entrance
-    public IEntrance _entrance;
     public Entrance entrance;
+    public IEntrance _entrance;
     public GameObject entranceObject;
+
+    //FieldTabs
+    public FieldTabsModel fieldTabs;
+    public IFieldTabs _fieldTabs;
+
     public int playerID = 0;
     
 
     //GUI
     public GameObject[] tabs;
-    private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
+    //private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     public GameObject smallCommandPanel;
     public List<GameObject> smallPanels;
     public GameObject largeCommandPanel;
@@ -52,36 +59,37 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     {
         heroNum = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
-        visibleTabNum.Subscribe(
-            x => {
-                ApplyVisibleTab(x);
-            }
-        );
+        
         connector._receivedMessage.Subscribe(
             x => {
                 GetMessage(x);
             }
         );
 
+
         //sendTextメソッドをsendTextEventに登録
         sendTextEvent.AddListener(connector.SendText);
         //changeStateメソッドをchangeStateEventに登録
         changeStateEvent.AddListener(ChangeState);
         //インスタンス生成
+
+        //gameboard
+        gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
+        _gameBoard = gameBoard; //interfaceの定義
+
+        //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
         _entrance = entrance; //interfaceの受け渡し
         _entrance.Init(sendTextEvent,changeStateEvent); //初期化
-        _state.Subscribe(state => { _entrance.SetState(state); }); 
-    }
-    //tab切り替え
-    private void ApplyVisibleTab(int num) {
-        for(int i = 0; i < 8; i++) {
-            if (i == num) tabs[i].SetActive(true);
-            else tabs[i].SetActive(false);
-        }
-    }
-    public void SetVisibleTabNum(int num) {
-        visibleTabNum.Value = num;
+        _state.Subscribe(state => { _entrance.SetState(state); }); //GameCoreのstateを渡す
+        entrance._userName.Subscribe(name => { gameBoard.chatArea.SetUserName(name); });
+
+        //fieldTabs
+        fieldTabs = this.gameObject.AddComponent<FieldTabsModel>();
+        _fieldTabs = fieldTabs; //interfaceの受け渡し
+
+        
+        
     }
     public void ChangeState(GameState state) {
         this.state.Value = state;
@@ -116,9 +124,13 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
     public void ControlBoard(GameBoardAddress From) {
         GameBoardData board = new GameBoardData();
-        Debug.Log(From.area+","+ToAddress.area);
         board = gameBoard.GameBoardToData(gameBoard.ControlBoard(From, ToAddress));
         connector.SendText("2:::"+GameBoardToJson(board));
+    }
+    public void ControlLog(string text) {
+        GameBoardData board = new GameBoardData();
+        board = gameBoard.GameBoardToData(gameBoard.AddLog(text));
+        connector.SendText("2:::" + GameBoardToJson(board));
     }
     public void SetFromAddress(GameBoardAddress gba) {
         FromAddress = gba;
@@ -266,7 +278,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public void DeckShuffle() {
         GameBoardData board = new GameBoardData();
         board = gameBoard.GameBoardToData(gameBoard.DeckShuffle());
-        connector.SendMessage("2:::" + GameBoardToJson(board));
+        connector.SendText("2:::" + GameBoardToJson(board));
     }
 }
 [System.Serializable]public class SendTextEvent : UnityEvent<string> {
@@ -290,12 +302,13 @@ public class Entrance : MonoBehaviour,IEntrance{
     SendTextEvent sendText; //textを送信するEvent
     ChangeStateEvent changeState; //GameCoreのstateを変更するEvent
     GameState state; //現在のGameCoreのState
-    private string userName = ""; //ユーザーネーム
+    private ReactiveProperty<string> userName = new ReactiveProperty<string>(""); //ユーザーネーム
+    public IReactiveProperty<string> _userName => userName;
     private bool isReady = false; //Playerの準備状況
     
     //setter and getter
     public string UserName {
-        get { return userName; }
+        get { return userName.Value; }
     }
 
     //初期化
@@ -309,7 +322,7 @@ public class Entrance : MonoBehaviour,IEntrance{
         this.state = state;
     }
     public void SetUserName(string name) {
-        this.userName = name;
+        this.userName.Value = name;
     }
     public void SendUserName() {
         if (state == GameState.entrance) {
@@ -324,7 +337,20 @@ public class Entrance : MonoBehaviour,IEntrance{
         else sendText.Invoke("1:::0");
     }
 }
-public class GameBoard : MonoBehaviour {
+public interface IFieldTabs {
+    public void SetVisibleTabNum(int num);
+}
+public class FieldTabsModel : MonoBehaviour,IFieldTabs {
+    private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
+    public IReadOnlyReactiveProperty<int> _visibleTabNum => visibleTabNum;
+    public void SetVisibleTabNum(int num) {
+        visibleTabNum.Value = num;
+    }//tabの切り替え
+}
+public interface IGameBoard {
+
+}
+public class GameBoard : MonoBehaviour,IGameBoard {
     private Sprite[] smallCardImageList = new Sprite[73];
     private Sprite[] largeCardImageList = new Sprite[20];
     private Sprite cardBack;
@@ -334,7 +360,7 @@ public class GameBoard : MonoBehaviour {
     private int playerID = 0;
     private DeckArea deckArea = new DeckArea();
     public MonsterArea monsterArea = new MonsterArea();
-    private ChatArea chatArea = new ChatArea();
+    public ChatArea chatArea = new ChatArea();
     public List<PlayerArea> playerAreaList = new List<PlayerArea>();
     //setter and getter
     public int PlayerID {
@@ -394,7 +420,7 @@ public class GameBoard : MonoBehaviour {
         gbd.monsterCardList = gb.monsterArea.ListToData();
         gbd.monsterDeck = gb.monsterArea.DeckToData();
         gbd.playerList = gb.PlayerListToData();
-        gbd.chatLog = gb.chatArea.ChatLog;
+        gbd.chatLog = gb.chatArea._chatLog.Value;
         return gbd;
     }//GameBoardのモデルをデータに変換する
     public List<PlayerData> PlayerListToData() {
@@ -412,6 +438,10 @@ public class GameBoard : MonoBehaviour {
     } //dataをplayerAreaListに
     public GameBoard DeckShuffle() {
         deckArea.Shuffle();
+        return this;
+    }
+    public GameBoard AddLog(string text) {
+        chatArea.AddLog(text);
         return this;
     }
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
@@ -644,16 +674,32 @@ public class MonsterArea : MonoBehaviour {
     } //monsterListが3枚未満ならカードを追加する,3枚以上なら一枚戻してから追加する
 
 }
-public class ChatArea : MonoBehaviour {
+public interface IChatArea {
+    public void Init();
+    public void AddLog(string text);
+}
+public class ChatArea {
+    private DateTime dt;
+    private string userName = "";
     private string chatText = "";
-    private string chatLog = "";
+    private ReactiveProperty<string> chatLog = new ReactiveProperty<string>("");
+    public IReactiveProperty<string> _chatLog => chatLog;
+    public ChatArea() {
+        userName = "";
+        chatText = "";
+        chatLog.Value = "";
+    }
     public void Init() {
         chatText = "";
-        chatLog = "";
+        chatLog.Value = "";
     }
-    public string ChatLog {
-        set { chatLog = value; }
-        get { return chatLog; }
+    public void SetUserName(string name) {
+        userName = name;
+    }
+    public void AddLog(string text) {
+        //chatLogにtextを追加する
+        dt = DateTime.Now;
+        chatLog.Value = chatLog.Value + "\n" + userName + ":" + dt.ToString("HH:mm:ss") + "\n" + text;
     }
 }
 public class PlayerArea : MonoBehaviour {

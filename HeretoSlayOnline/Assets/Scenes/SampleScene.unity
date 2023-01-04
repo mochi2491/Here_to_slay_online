@@ -1174,19 +1174,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 371644113}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2130668452}
-        m_TargetAssemblyTypeName: GameCore, Assembly-CSharp
-        m_MethodName: SetVisibleTabNum
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &371644113
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1873,7 +1861,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1820595799}
   m_HandleRect: {fileID: 1820595798}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -3643,6 +3631,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 702350925}
+  - component: {fileID: 702350926}
   m_Layer: 5
   m_Name: FieldTabs
   m_TagString: Untagged
@@ -3678,6 +3667,37 @@ RectTransform:
   m_AnchoredPosition: {x: -80, y: 49}
   m_SizeDelta: {x: 630, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &702350926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702350924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5219331a236325640853c2d71f525054, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visibleTabNum: 0
+  fieldTabs:
+  - {fileID: 501847670}
+  - {fileID: 970248337}
+  - {fileID: 1490157299}
+  - {fileID: 884710520}
+  - {fileID: 142083191}
+  - {fileID: 1208568559}
+  - {fileID: 812491234}
+  - {fileID: 991598050}
+  fieldButtons:
+  - {fileID: 371644112}
+  - {fileID: 969259161}
+  - {fileID: 633908584}
+  - {fileID: 125552149}
+  - {fileID: 624252378}
+  - {fileID: 1056158949}
+  - {fileID: 1707112926}
+  - {fileID: 2029987156}
 --- !u!1 &719107696
 GameObject:
   m_ObjectHideFlags: 0
@@ -9348,6 +9368,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1581178633}
+  - component: {fileID: 1581178634}
   m_Layer: 5
   m_Name: chat
   m_TagString: Untagged
@@ -9378,6 +9399,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1581178634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1581178632}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d012b7929b71974cb13b28a496dd2b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: {fileID: 1536060509}
+  chatLog: {fileID: 1872256895}
+  diceButton: {fileID: 1817215568}
+  sendButton: {fileID: 779889193}
 --- !u!1 &1616355792
 GameObject:
   m_ObjectHideFlags: 0
@@ -12695,6 +12732,7 @@ MonoBehaviour:
   sendTextEvent:
     m_PersistentCalls:
       m_Calls: []
+  gameBoard: {fileID: 0}
   gameBoardView: {fileID: 402210448}
   gameBoardObject: {fileID: 402210446}
   changeStateEvent:
@@ -12702,6 +12740,7 @@ MonoBehaviour:
       m_Calls: []
   entrance: {fileID: 675803679}
   entranceObject: {fileID: 675803679}
+  fieldTabs: {fileID: 0}
   playerID: 0
   tabs:
   - {fileID: 501847670}
@@ -12738,6 +12777,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameCore: {fileID: 2130668452}
   entranceView: {fileID: 675803681}
+  fieldTabsView: {fileID: 702350926}
+  chatView: {fileID: 1581178634}
 --- !u!1 &2132963320
 GameObject:
   m_ObjectHideFlags: 0
