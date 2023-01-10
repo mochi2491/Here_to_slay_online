@@ -21,9 +21,11 @@ namespace CardData {
 
         //public method
         public string GetLargeScript(int id) {
+            if (largeCardData.Count==0) return "";
             return largeCardData[id].GetDescription();
         }
         public string GetSmallScript(int id) {
+            if (smallCardData.Count==0) return "";
             return smallCardData[id].GetDescription();
         }
         /// <summary>
@@ -87,7 +89,7 @@ namespace CardData {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
             foreach (string[] data in dataList) {
                 MagicCardScript a = new MagicCardScript(data[0], data[1]);
-                largeCardData.Add(a);
+                smallCardData.Add(a);
             }
             return cdm;
         }
@@ -113,6 +115,7 @@ namespace CardData {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
             ChallengeCardScript a = new ChallengeCardScript("challenge", "ƒ`ƒƒƒŒƒ“ƒW1”N¶");
             smallCardData.Add(a);
+            Debug.Log(largeCardData.Count+","+smallCardData.Count);
             return cdm;
         }
     }

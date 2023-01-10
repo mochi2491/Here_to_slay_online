@@ -26,17 +26,6 @@ public class CardView : MonoBehaviour
         entry.eventID = EventTriggerType.PointerClick;
         entry.callback.AddListener((eventData) => { OnClick(eventData); });
         trigger.triggers.Add(entry);
-
-        EventTrigger.Entry entry2 = new EventTrigger.Entry();
-        entry2.eventID = EventTriggerType.Cancel;
-        entry2.callback.AddListener(_ => { Cancel(); });
-        trigger.triggers.Add(entry2);
-
-        EventTrigger.Entry entry3 = new EventTrigger.Entry();
-        entry3.eventID = EventTriggerType.PointerClick;
-        entry3.callback.AddListener(_ => { OnLeftClick(); });
-        trigger.triggers.Add(entry3);
-
     }
     public int OrderNum {
         get { return orderNum; }
@@ -48,20 +37,15 @@ public class CardView : MonoBehaviour
         gba.order = this.orderNum;
         gba.playerID = holderNum;
         gameCore.SetFromAddress(gba);
+        
         if(pointerEventData.pointerId == -2) {
             gameCore.OpenCommandPanel(isLarge, Input.mousePosition);
         }
-    }
-    public void OnLeftClick() {
-        gameCore.leftClickIsLarge = isLarge;
-        gameCore.leftClickedID.Value = (int)cardID;
-    }
-    
-    public void Cancel() {
-        gameCore.CloseCommandPanel();
-        Debug.Log("aaa");
-    }
-    public void Update() {
+        else if(pointerEventData.pointerId == -1) {
+            Debug.Log(cardID);
+            gameCore.leftClickIsLarge = isLarge;
+            gameCore.SetClickedID((int)cardID);
+        }
     }
     public void ApplyData(int id, Sprite sprite,int orderNum,Area area,GameCore gameCore,int holderNum,bool isLarge){
         this.cardID = id;

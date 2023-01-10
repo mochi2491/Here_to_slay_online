@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UniRx;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -50,8 +51,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public CardDataManager cardDataManager = new CardDataManager();
 
     //GUI
+    public EventTrigger trigger ;
     public bool leftClickIsLarge = false;
-    public IntReactiveProperty leftClickedID = new IntReactiveProperty(0);
+    private ReactiveProperty<int> leftClickedID = new ReactiveProperty<int>(0);
     public IReadOnlyReactiveProperty<int> _leftClickedID => leftClickedID;
 
     public GameObject[] tabs;
@@ -103,7 +105,19 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         DataReader = this.gameObject.AddComponent<CardSheetReader>();
         DataReader.callBack.AddListener(SetCardData);
         DataReader.Load();
-        
+
+    }
+    private void Update() {
+        if (Input.GetButtonDown("Cancel")) {
+            Cancel();
+        }
+    }
+    public void Cancel() {
+        CloseCommandPanel();
+        Debug.Log("aaa");
+    }
+    public void SetClickedID(int id) {
+        leftClickedID.Value = id;
     }
     public void SetCardData() {
         cardDataManager = DataReader.cdm;

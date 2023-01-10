@@ -232,7 +232,7 @@ public class GamePresenter : MonoBehaviour
         );
 
         //description area
-        gameCore.leftClickedID.Subscribe(
+        gameCore._leftClickedID.Subscribe(
             x => {
                 if (gameCore.leftClickIsLarge) {
                     descriptionView.text.text = gameCore.cardDataManager.GetLargeScript(x);

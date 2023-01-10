@@ -2135,7 +2135,7 @@ RectTransform:
   - {fileID: 416365790690350964}
   - {fileID: 1411134605}
   m_Father: {fileID: 2130668451}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -5641,7 +5641,7 @@ RectTransform:
   - {fileID: 657107498}
   - {fileID: 891185422}
   m_Father: {fileID: 2130668451}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -8106,7 +8106,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2130668451}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &949699239
 GameObject:
@@ -21567,9 +21567,9 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 902574763}
   - {fileID: 402210447}
   - {fileID: 675803680}
+  - {fileID: 902574763}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -21604,6 +21604,7 @@ MonoBehaviour:
   entranceObject: {fileID: 675803679}
   fieldTabs: {fileID: 0}
   playerID: 0
+  trigger: {fileID: 0}
   leftClickIsLarge: 0
   leftClickedID:
     value: 0
