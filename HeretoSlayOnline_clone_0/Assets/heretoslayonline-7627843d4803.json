@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "heretoslayonline",
+  "private_key_id": "7627843d48030b4dab2baf2a5fcbe792ad67d014",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCwvjsV2EEc33VA\nfjvksUHwfQ9YsNRxeN2S5jHoFe3rB2S34C6ZMv1zHh5Mm2b1Pvo7l22TGahKwDt7\n6XJY0WVqINvt1O/jIh6gTHGI6mfReAeVCnBKu7R70eJU6MrKo2lbExiINz6fVNGI\nkwW5yr6JNfjLS3lMpHz9PDe5MwZjLIpwQNuVjupvm1J2uOklYg/sL7Z1Wpq5DAy0\ncp/nTNtlQLbG2+J9f5GPyqU+8whSWCpqW+fZAT9Gfa1JUPqL3TkYSAdS9CeaMmc3\npIxxmAFA6kPxsMibQwpSlMRPRf7wc+NJhfOfQAyHq/9eyKVqNDQQOU2yJS+NbLlJ\nDtLS9uVBAgMBAAECggEAFUgdWTixmRvBxJhD90+YvwUar0qWP2uW/TSWrHl818tg\nx1Cei807U3yRmBaGQ+A8xVGAh4aUCxwxOBnDWQqDCaUXQQCzj0fxJCAlnko2DLTv\n73RS/SII+M0sUZ5jp27HJYjxGpsnATciBoNIMeJF0G5ynMK5F7oetWdmK6NckN2o\nHqMPzu1k8jCEQp1cog9MQfF6R1rvwrO/b027wx7ZjZmWt8lP6x/HoiYg13/7X624\n8fjG3IKc8yiD4UPS6DCjcF4DBHohPJuv+Bnc62QTaw3Pyb38InSmBAPNa3hMHPdp\nDdOUMunx3weGZ+Nljgnbvc+8kjTZF7TatHOJ26q0WQKBgQDjZs9ZnNR5zz3Jh4Dy\n97A/kYXCExXNzklomuFBv6+gXqmmXHG3X/KZViLvPoGmNTdz2+x0+MZQsQZprDDP\nRhCKihv1RY/bcfalDu+GHi6IGsVDhtYONwxt+xsQeVjg39/pDguuF6tjRwynOP3w\n41cCp24ppX4hXr0wrYfwr10AgwKBgQDG+HiWQhd2U+5V25fsgiEIIikt/jnBjYq1\neb+5LVjd+Ksfrt0PqA928NKhVpmlbac2pFpFOPu2OyWWj5M4OhId7IcCxIk+8NEC\njLzoOTX/AXfkguO1FBpOorjUJgVETcFDkq3ff6OO8aNiollEeTb5Z+bw3CPjXUWt\nX98XG6VP6wKBgQCt0TIA/11x1jUWTBsGnMj9bhBdrhTmgR2fdXNkvE5UOMdYQCUz\n04UuK6b8VDzpfJfsWVg+eMGtgAK010dfx+Bw5OxF6GvzgwLSW74+N+e9ZSkPWotX\nxkAb+OpRB1AmYzlVfMT0x2bbtb04PNnuPPePMceE0di9TRszkBDuqjxeXQKBgQDG\n0mMtQr3PL+9pPBWD8ESxq/EaVH/COX3x+cbrc7TpmiLldgbQLk/Fur+/GJpQBFKi\n93h804QzhMb6vF2QQfb4j/IZgerjSiCRO7FJHGIof38eiOyhdYUULuYimBuLNWd5\n7ohwXUtC+5MYbMJm+flFH95VsKTr/bgylyqGHMoEIQKBgC2fUfa5H4l2bpms8/K7\nHJPpYt+fgeYMLZ+IUzLxzhUX3bFOqnQaij7nkpvB+03eGbxvE/f9Bx+z3VRWMuto\ny2Cei31Xqg+E4D9/eYBD6kYcb0+rjjn+Z4U0Ub3mtZw8G+fOjESEHThj0xiQv2o0\ngqZYbLCvZC4NxQOi5hE4zCAY\n-----END PRIVATE KEY-----\n",
+  "client_email": "here-to-slay-online@heretoslayonline.iam.gserviceaccount.com",
+  "client_id": "114424949538709333130",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/here-to-slay-online%40heretoslayonline.iam.gserviceaccount.com"
+}
