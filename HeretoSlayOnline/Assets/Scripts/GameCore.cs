@@ -384,8 +384,10 @@ public interface IGameBoard {
 
 }
 public class GameBoard : MonoBehaviour,IGameBoard {
-    private Sprite[] smallCardImageList = new Sprite[73];
-    private Sprite[] largeCardImageList = new Sprite[20];
+    public static readonly int SMALLCARD_COUNT = 73;
+    public static readonly int LARGECARD_COUNT = 20;
+    private Sprite[] smallCardImageList = new Sprite[SMALLCARD_COUNT];
+    private Sprite[] largeCardImageList = new Sprite[LARGECARD_COUNT];
     private Sprite cardBack;
     
     private int turnPlayerNum = 0;
@@ -486,6 +488,7 @@ public class GameBoard : MonoBehaviour,IGameBoard {
         board.playerAreaList[playerNum].SetLeaderID(num);
         return this;
     }
+
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
         bool isLarge = false;
         string logText = "";
@@ -570,8 +573,9 @@ public class GameBoard : MonoBehaviour,IGameBoard {
         
         return this;
     } //カードを移動させる(バカすぎる実装なのでいずれ直す)
+}
+public interface CardMover {
 
-    
 }
 public struct GameBoardAddress {
     public Area area;
@@ -586,7 +590,7 @@ public class DeckArea : MonoBehaviour {
     private List<SmallCard> discardPile = new List<SmallCard>();
     public void Init() {
         //mainDeck init
-        for(int i = 0; i <= 73; i++) {
+        for(int i = 0; i <= GameBoard.SMALLCARD_COUNT; i++) {
             if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2枚
                 mainDeck.Add(new SmallCard(i, ""));
                 mainDeck.Add(new SmallCard(i, ""));
@@ -610,8 +614,9 @@ public class DeckArea : MonoBehaviour {
     public int deckCount() {
         return mainDeck.Count;
     }
-    public void Shuffle() {
+    public DeckArea Shuffle() {
         mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
+        return this;
     }
     public void ApplyChanges(List<int>deckData,List<int>pileData) {
         mainDeck.Clear();
