@@ -13,6 +13,7 @@ using WebSocketSharp.Server;
 using Newtonsoft.Json;
 using TMPro;
 using CardData;
+using Zenject.SpaceFighter;
 
 public class GameCore : SingletonMonoBehaviour<GameCore>
 {
@@ -55,14 +56,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public bool leftClickIsLarge = false;
     private ReactiveProperty<int> leftClickedID = new ReactiveProperty<int>(0);
     public IReadOnlyReactiveProperty<int> _leftClickedID => leftClickedID;
-
+    public CommandPanelView commandPanelView;
+    [HideInInspector]public ReactiveProperty<CommandPanelModel> commandPanelModel = new ReactiveProperty<CommandPanelModel>(new CommandPanelModel());
+    public IReadOnlyReactiveProperty<CommandPanelModel> _commandPanelModel=> commandPanelModel;
     public GameObject[] tabs;
     //private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
-    public GameObject smallCommandPanel;
-    public List<GameObject> smallPanels;
-    public GameObject largeCommandPanel;
-    public List<GameObject> largePanels;
-
+    
     public bool isHeroItem = false;
     public TMP_Dropdown heroNum;
     public GameBoardAddress FromAddress = new GameBoardAddress();
@@ -70,7 +69,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
    
     void Awake()
     {
-        heroNum = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
+        heroNum = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
         
         connector._receivedMessage.Subscribe(
@@ -108,14 +107,11 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 
     }
     private void Update() {
-        if (Input.GetButtonDown("Cancel")) {
-            Cancel();
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         }
     }
-    public void Cancel() {
-        CloseCommandPanel();
-        Debug.Log("aaa");
-    }
+
     public void SetClickedID(int id) {
         leftClickedID.Value = id;
     }
@@ -180,89 +176,61 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         return JsonConvert.DeserializeObject<GameBoardData>(json);
     }
 
-    //command button method
-    public void OpenCommandPanel(bool isLarge,Vector2 pos) {
-        CloseCommandPanel();
-        if (isLarge) {
-            largeCommandPanel.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 10.0f));
-            largeCommandPanel.SetActive(true);
-        }
-        else {
-            smallCommandPanel.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(pos.x , pos.y, 10.0f));
-            smallCommandPanel.SetActive(true);
-        }
-    }
-    public void CloseCommandPanel() {
-        largeCommandPanel.SetActive(false);
-        largePanels[0].SetActive(true);
-        largePanels[1].SetActive(false);
-        largePanels[2].SetActive(false);
-        smallCommandPanel.SetActive(false);
-        smallPanels[0].SetActive(true);
-        smallPanels[1].SetActive(false);
-        smallPanels[2].SetActive(false);
-    }
     public void SetToPlayerNum(int num) {
         ToAddress.playerID = num;
         if (isHeroItem) {
             var heroCount = gameBoard.playerAreaList[ToAddress.playerID].PlayerHeroCardList;
-            smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
+            commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
             List<string> optionList = new List<string>();
             int i = 0;
             foreach(HeroCard sc in heroCount) {
                 optionList.Add(i.ToString());
                 i++;
             }
-            smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().AddOptions(optionList);
-
-            smallPanels[1].SetActive(false);
-            smallPanels[2].SetActive(true);
+            commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().AddOptions(optionList);
+            commandPanelModel.Value = commandPanelModel.Value.TransitionSmallPanel(CommandPanelView.PanelName.order);
 
         }
         else {
-            smallCommandPanel.SetActive(false);
+            commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
             ControlBoard(FromAddress);
         }
     }
     public void SetToPlayerNumLarge(int num) {
         ToAddress.playerID = num;
-        smallCommandPanel.SetActive(false);
+        commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         ControlBoard(FromAddress);
     }
     public void DefineToOrderNum() {
-        ToAddress.order = smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().value;
-        smallPanels[2].SetActive(false);
-        smallCommandPanel.SetActive(false);
+        ToAddress.order = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().value;
+        commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         ControlBoard(FromAddress);
     }
     public void SetToSmallArea(int num) {
         switch (num) {
             case 0:
                 ToAddress.area = Area.playerHand;
-                smallPanels[0].SetActive(false);
-                smallPanels[1].SetActive(true);
+                commandPanelModel.Value = commandPanelModel.Value.TransitionSmallPanel(CommandPanelView.PanelName.player);
                 isHeroItem = false;
                 break;
             case 1:
                 ToAddress.area = Area.playerHero;
-                smallPanels[0].SetActive(false);
-                smallPanels[1].SetActive(true);
+                commandPanelModel.Value = commandPanelModel.Value.TransitionSmallPanel(CommandPanelView.PanelName.player);
                 isHeroItem = false;
                 break;
             case 2:
                 ToAddress.area = Area.discardPile;
-                smallCommandPanel.SetActive(false);
+                commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
                 ControlBoard(FromAddress);
                 break;
             case 3:
                 ToAddress.area = Area.playerHeroItem;
-                smallPanels[0].SetActive(false);
-                smallPanels[1].SetActive(true);
+                commandPanelModel.Value = commandPanelModel.Value.TransitionSmallPanel(CommandPanelView.PanelName.player);
                 isHeroItem = true; 
                 break;
             case 4:
                 ToAddress.area = Area.deck;
-                smallCommandPanel.SetActive(false);
+                commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
                 ControlBoard(FromAddress);
                 break;
         }
@@ -271,30 +239,27 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         switch (num) {
             case 0:
                 ToAddress.area = Area.slayedMonster;
-                largePanels[0].SetActive(false);
-                largePanels[1].SetActive(true); //next player
+                commandPanelModel.Value = commandPanelModel.Value.TransitionLargePanel(CommandPanelView.PanelName.player);
                 break;
             case 1:
                 ToAddress.area = Area.monsterDeck;
-                largeCommandPanel.SetActive(false);
+                commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
                 ControlBoard(FromAddress);
                 break;
             case 2:
                 ToAddress.area = Area.monsterList;
-                largePanels[0].SetActive(false);
-                largePanels[2].SetActive(true); //next order
+                commandPanelModel.Value = commandPanelModel.Value.TransitionLargePanel(CommandPanelView.PanelName.order);
                 break;
         }
     }
     public void SetToOrder(int num) {
         ToAddress.order = num;
-        largeCommandPanel.SetActive(false);
+        commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         ControlBoard(FromAddress);
     }
     public void SetToHeroNum() {
         ToAddress.order = heroNum.value;
-        smallPanels[2].SetActive(false);
-        smallCommandPanel.SetActive(false);
+        commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         ControlBoard(FromAddress);
     }
     public void DrawCard() {
@@ -319,6 +284,116 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         connector.SendText("2:::" + GameBoardToJson(board));
     }
 }
+public class CommandPanelModel{
+    private List<bool> isActive = new List<bool>();
+    private Vector3 mousePos = Vector3.zero;
+    public List<bool> IsActive { get { return isActive; } }
+    public Vector3 MousePos { get { return mousePos; } }
+
+    private ReactiveProperty<int> heroNum = new ReactiveProperty<int>(0); 
+    public CommandPanelModel() {
+        int i = 0;
+        for (i = 0; i < 6; i++) {
+            isActive.Add(false);
+        }
+    }
+    private CommandPanelModel(List<bool> list, Vector3 mousePos) {
+        isActive = list;
+        this.mousePos = mousePos;
+    }
+
+    //全てのコマンドパネルを閉じるメソッド
+    public CommandPanelModel CloseAllPanel() {
+        int i = 0;
+        List<bool> list = new List<bool>();
+        for(i=0;i<6;i++) {
+            list.Add(false);
+        }
+        return new CommandPanelModel(list,this.mousePos);
+    }
+    //最初にコマンドパネルを開くメソッド
+    public CommandPanelModel OpenSmallCommandPanel(CommandPanelView.PanelName panel,Vector3 mousePos) {
+        int i = 0;
+        List<bool> list = new List<bool>();
+        for (i = 0; i < 6; i++) {
+            list.Add(false);
+        }
+        switch (panel) {
+            case CommandPanelView.PanelName.main:
+                list[0] = true;
+                break;
+            case CommandPanelView.PanelName.player:
+                list[1] = true;
+                break;
+            case CommandPanelView.PanelName.order:
+                list[2] = true;
+                break;
+        }
+        return new CommandPanelModel(list,mousePos);
+    }
+    public CommandPanelModel OpenLargeCommandPanel(CommandPanelView.PanelName panel,Vector3 mousePos) {
+        int i = 0;
+        List<bool> list = new List<bool>();
+        for (i = 0; i < 6; i++) {
+            list.Add(false);
+        }
+        switch (panel) {
+            case CommandPanelView.PanelName.main:
+                list[3] = true;
+                break;
+            case CommandPanelView.PanelName.player:
+                list[4] = true;
+                break;
+            case CommandPanelView.PanelName.order:
+                list[5] = true;
+                break;
+        }
+        return new CommandPanelModel(list,mousePos);
+    }
+
+    //開いたコマンドパネルを遷移させるメソッド
+    public CommandPanelModel TransitionSmallPanel(CommandPanelView.PanelName panel) {
+        int i = 0;
+        List<bool> list = new List<bool>();
+        for (i = 0; i < 6; i++) {
+            list.Add(false);
+        }
+        switch (panel) {
+            case CommandPanelView.PanelName.main:
+                list[0] = true;
+                break;
+            case CommandPanelView.PanelName.player:
+                list[1] = true;
+                break;
+            case CommandPanelView.PanelName.order:
+                list[2] = true;
+                break;
+        }
+        return new CommandPanelModel(list,this.mousePos);
+    }
+    public CommandPanelModel TransitionLargePanel(CommandPanelView.PanelName panel) {
+        int i = 0;
+        List<bool> list = new List<bool>();
+        for (i = 0; i < 6; i++) {
+            list.Add(false);
+        }
+        switch (panel) {
+            case CommandPanelView.PanelName.main:
+                list[3] = true;
+                break;
+            case CommandPanelView.PanelName.player:
+                list[4] = true;
+                break;
+            case CommandPanelView.PanelName.order:
+                list[5] = true;
+                break;
+        }
+        return new CommandPanelModel(list, this.mousePos);
+    }
+
+    //commandPanelのボタンを押したときのロジックが詰まってる
+
+}
 [System.Serializable]public class SendTextEvent : UnityEvent<string> {
 
 } //SendTextを子クラスに渡すためのクラス
@@ -335,7 +410,7 @@ public interface IEntrance {
     public void SendUserName();
     public void ApplyIsReady(bool isReady);
 
-} 
+}
 public class Entrance : MonoBehaviour,IEntrance{
     SendTextEvent sendText; //textを送信するEvent
     ChangeStateEvent changeState; //GameCoreのstateを変更するEvent

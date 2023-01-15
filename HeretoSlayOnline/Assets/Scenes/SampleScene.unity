@@ -1606,6 +1606,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 270874702}
   m_CullTransparentMesh: 1
+--- !u!1 &292464084
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 292464085}
+  m_Layer: 5
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &292464085
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 292464084}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 675803680}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 361, y: -93}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &314627038
 GameObject:
   m_ObjectHideFlags: 0
@@ -2337,6 +2373,7 @@ GameObject:
   m_Component:
   - component: {fileID: 402210447}
   - component: {fileID: 402210448}
+  - component: {fileID: 402210449}
   m_Layer: 5
   m_Name: GameBoard
   m_TagString: Untagged
@@ -2402,6 +2439,29 @@ MonoBehaviour:
   - {fileID: 415972329}
   discardpileObject: {fileID: 1471868151}
   monsterObject: {fileID: 496370195}
+--- !u!114 &402210449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402210446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35b40b58da0c07146864741033bb0b10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  smallCommandPanel: {fileID: 1411134606}
+  smallPanels:
+  - {fileID: 1411134611}
+  - {fileID: 1411134610}
+  - {fileID: 1411134609}
+  orderList: {fileID: 0}
+  largeCommandPanel: {fileID: 416365790690350967}
+  largePanels:
+  - {fileID: 4799904987859869976}
+  - {fileID: 3067858905122896882}
+  - {fileID: 4799904988012101686}
 --- !u!1 &415972329
 GameObject:
   m_ObjectHideFlags: 0
@@ -5883,6 +5943,7 @@ RectTransform:
   - {fileID: 661888412}
   - {fileID: 657107498}
   - {fileID: 891185422}
+  - {fileID: 292464085}
   m_Father: {fileID: 2130668451}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -18924,7 +18985,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -21924,6 +21985,7 @@ MonoBehaviour:
   playerID: 0
   trigger: {fileID: 0}
   leftClickIsLarge: 0
+  commandPanelView: {fileID: 402210449}
   tabs:
   - {fileID: 501847670}
   - {fileID: 970248337}
@@ -21933,16 +21995,6 @@ MonoBehaviour:
   - {fileID: 1208568559}
   - {fileID: 812491234}
   - {fileID: 991598050}
-  smallCommandPanel: {fileID: 1411134606}
-  smallPanels:
-  - {fileID: 1411134611}
-  - {fileID: 1411134610}
-  - {fileID: 1411134609}
-  largeCommandPanel: {fileID: 416365790690350967}
-  largePanels:
-  - {fileID: 4799904987859869976}
-  - {fileID: 3067858905122896882}
-  - {fileID: 4799904988012101686}
   isHeroItem: 0
   heroNum: {fileID: 0}
 --- !u!114 &2130668453
@@ -21962,6 +22014,7 @@ MonoBehaviour:
   fieldTabsView: {fileID: 702350926}
   chatView: {fileID: 1581178634}
   descriptionView: {fileID: 2132963322}
+  commandPanelView: {fileID: 402210449}
 --- !u!1 &2132963320
 GameObject:
   m_ObjectHideFlags: 0
@@ -22285,6 +22338,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CommandPanelLarge
       objectReference: {fileID: 0}
+    - target: {fileID: 2563101289114117939, guid: 8b27bb795828ab943b4fdfa72385a7cb, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2762621309595157847, guid: 8b27bb795828ab943b4fdfa72385a7cb, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -22530,6 +22587,10 @@ PrefabInstance:
     - target: {fileID: 9109434724932963026, guid: 0cf7064e1101c004d812431b4f71d8f8, type: 3}
       propertyPath: m_Name
       value: CommandPanelSmall
+      objectReference: {fileID: 0}
+    - target: {fileID: 9109434724932963026, guid: 0cf7064e1101c004d812431b4f71d8f8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9109434724934078444, guid: 0cf7064e1101c004d812431b4f71d8f8, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

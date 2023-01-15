@@ -39,10 +39,11 @@ public class CardView : MonoBehaviour
         gameCore.SetFromAddress(gba);
         
         if(pointerEventData.pointerId == -2) {
-            gameCore.OpenCommandPanel(isLarge, Input.mousePosition);
+            //gameCore.commandPanelView.OpenCommandPanel(isLarge, Input.mousePosition);
+            if (isLarge) gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.OpenLargeCommandPanel(CommandPanelView.PanelName.main,Input.mousePosition);
+            else gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.OpenSmallCommandPanel(CommandPanelView.PanelName.main, Input.mousePosition);
         }
         else if(pointerEventData.pointerId == -1) {
-            Debug.Log(cardID);
             gameCore.leftClickIsLarge = isLarge;
             gameCore.SetClickedID((int)cardID);
         }

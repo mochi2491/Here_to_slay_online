@@ -15,8 +15,8 @@ public class GamePresenter : MonoBehaviour
     [SerializeField] private FieldTabsView fieldTabsView;
     [SerializeField] private ChatView chatView;
     [SerializeField] private DescriptionView descriptionView;
-    void Start()
-    {
+    [SerializeField] private CommandPanelView commandPanelView;
+    void Start() {
         int i = 0;
         //view -> model イベント発火
         //entrance
@@ -25,7 +25,7 @@ public class GamePresenter : MonoBehaviour
         entranceView.userNameText.onValueChanged.AsObservable().Subscribe(
             x => {
                 _entrance.SetUserName(x);
-            }    
+            }
         ).AddTo(this);
 
         //sendUserName Buttonが押されたらUserNameを送信
@@ -50,56 +50,56 @@ public class GamePresenter : MonoBehaviour
             _ => {
                 _fieldTabs.SetVisibleTabNum(0);
             }
-        );
+        ).AddTo(this);
         fieldTabsView.fieldButtons[1].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(1);
             }
-        );
+        ).AddTo(this);
         fieldTabsView.fieldButtons[2].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(2);
             }
-        );
+        ).AddTo(this);
         fieldTabsView.fieldButtons[3].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(3);
             }
-        );
+        ).AddTo(this);
         fieldTabsView.fieldButtons[4].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(4);
             }
-        ); 
+        ).AddTo(this);
         fieldTabsView.fieldButtons[5].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(5);
             }
-        ); 
+        ).AddTo(this);
         fieldTabsView.fieldButtons[6].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(6);
             }
-        ); 
+        ).AddTo(this);
         fieldTabsView.fieldButtons[7].onClick.AsObservable().Subscribe(
             _ => {
                 _fieldTabs.SetVisibleTabNum(7);
             }
-        );
+        ).AddTo(this);
         #endregion
 
         //leaderの切り替え
         fieldTabsView.leaderSelector[gameCore.playerID].onValueChanged.AsObservable().Subscribe(
             value => {
                 gameCore.ControlLeaderNum(value);
-            }    
-        );
+            }
+        ).AddTo(this);
         //leaderSkillButton
         #region
         fieldTabsView.LeaderSkillButton[0].onClick.AsObservable().Subscribe(
             _ => {
                 gameCore.gameBoard.AddLog("player1 use leader skill.");
-            }    
+            }
         );
         fieldTabsView.LeaderSkillButton[1].onClick.AsObservable().Subscribe(
             _ => {
@@ -135,7 +135,7 @@ public class GamePresenter : MonoBehaviour
                 gameCore.leftClickIsLarge = true;
                 gameCore.SetClickedID(gameCore.gameBoard.playerAreaList[0]._leaderCardID.Value);
             }
-        );
+        ).AddTo(this);
 
         #endregion
         //chat area
@@ -145,14 +145,14 @@ public class GamePresenter : MonoBehaviour
                 gameCore.ControlLog(chatView.input.text);
                 chatView.input.text = ""; //inputを消去する
             }
-            
-        );
+
+        ).AddTo(this);
         //dice roll
         chatView.diceButton.onClick.AsObservable().Subscribe(
             _ => {
                 gameCore.ControlLog("rolled" + Random.Range(1, 6) + "," + Random.Range(1, 6));
             }
-        );
+        ).AddTo(this);
 
 
         //model -> view リアクティブ
@@ -162,10 +162,10 @@ public class GamePresenter : MonoBehaviour
         //isReadyToggleの操作の能否の管理
         gameCore._state.Subscribe(
             state => {
-                if(state == GameState.wait) entranceView.isReadyToggle.interactable = true;
+                if (state == GameState.wait) entranceView.isReadyToggle.interactable = true;
                 else entranceView.isReadyToggle.interactable = false;
             }
-        );
+        ).AddTo(this);
 
 
         //fieldTabs
@@ -173,30 +173,30 @@ public class GamePresenter : MonoBehaviour
         gameCore.fieldTabs._visibleTabNum.Subscribe(
             num => {
                 i = 0;
-                foreach(GameObject tab in fieldTabsView.fieldTabs) {
+                foreach (GameObject tab in fieldTabsView.fieldTabs) {
                     if (i == num) tab.SetActive(true);
                     else tab.SetActive(false);
                     i++;
                 }
             }
-        );
+        ).AddTo(this);
 
         //leaderSelectorの制御
         gameCore.gameBoard._playerID.Subscribe(
             playerID => {
                 i = 0;
-                foreach(TMP_Dropdown selector in fieldTabsView.leaderSelector) {
+                foreach (TMP_Dropdown selector in fieldTabsView.leaderSelector) {
                     if (i == playerID) selector.interactable = true;
                     else selector.interactable = false;
                     i++;
                 }
             }
-        );
+        ).AddTo(this);
         //leaderSkillButtonの制御
         gameCore.gameBoard._playerID.Subscribe(
             playerID => {
                 i = 0;
-                foreach(Button button in fieldTabsView.LeaderSkillButton) {
+                foreach (Button button in fieldTabsView.LeaderSkillButton) {
                     if (i == playerID) button.interactable = true;
                     else button.interactable = false;
                     i++;
@@ -204,13 +204,13 @@ public class GamePresenter : MonoBehaviour
 
                 fieldTabsView.playerID.text = "ID" + playerID;
             }
-        );
+        ).AddTo(this);
         //leaderCardの見た目
         #region
 
         gameCore.gameBoard.playerAreaList[0]._leaderCardID.Subscribe(
             num => {
-                
+
                 fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[num];
             }
         );
@@ -218,22 +218,22 @@ public class GamePresenter : MonoBehaviour
             num => {
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[num];
             }
-        ); 
+        );
         gameCore.gameBoard.playerAreaList[2]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[num];
             }
-        ); 
+        );
         gameCore.gameBoard.playerAreaList[3]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[num];
             }
-        ); 
+        );
         gameCore.gameBoard.playerAreaList[4]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[4].sprite = fieldTabsView.leaderSprite[num];
             }
-        ); 
+        );
         gameCore.gameBoard.playerAreaList[5]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[num];
@@ -250,7 +250,7 @@ public class GamePresenter : MonoBehaviour
                 chatView.chatLog.text = log;
                 chatView.scrollRect.verticalNormalizedPosition = 0f;
             }
-        );
+        ).AddTo(this);
 
         //description area
         gameCore._leftClickedID.Subscribe(
@@ -262,8 +262,42 @@ public class GamePresenter : MonoBehaviour
                     descriptionView.text.text = gameCore.cardDataManager.GetSmallScript(x);
                 }
             }
+            ).AddTo(this);
+        //commandPanel
+        /*
+        gameCore.commandPanelModel._isActive[0].Subscribe(
+            x => {
+                commandPanelView.smallPanels[0].SetActive(x);
+                }
+            ).AddTo(this);
+        gameCore.commandPanelModel._isActive[1].Subscribe(
+            x => commandPanelView.smallPanels[1].SetActive(x)
+            ).AddTo(this);
+        gameCore.commandPanelModel._isActive[2].Subscribe(
+            x => commandPanelView.smallPanels[2].SetActive(x)
+            ).AddTo(this);
+        gameCore.commandPanelModel._isActive[3].Subscribe(
+            x => commandPanelView.largePanels[0].SetActive(x)
+            ).AddTo(this);
+        gameCore.commandPanelModel._isActive[4].Subscribe(
+            x => commandPanelView.largePanels[1].SetActive(x)
+            ).AddTo(this);
+        gameCore.commandPanelModel._isActive[5].Subscribe(
+            x => commandPanelView.largePanels[2].SetActive(x)
+            ).AddTo(this);
+        gameCore.commandPanelModel._mousePos
+            .Subscribe(
+            x => {
+                Debug.Log(x);
+                commandPanelView.SetPosition(x);
+            }
+            ).AddTo(this);*/
+        gameCore._commandPanelModel.Subscribe(
+            x => {
+                Debug.Log(x.IsActive[0]);
+                commandPanelView.ApplyModel(x);
+            }
             );
-        
     }
     void Update()
     {
