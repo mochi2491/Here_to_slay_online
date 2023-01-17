@@ -98,32 +98,32 @@ public class GamePresenter : MonoBehaviour
         #region
         fieldTabsView.LeaderSkillButton[0].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player1 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player1 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[1].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player2 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player2 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[2].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player3 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player3 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[3].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player4 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player4 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[4].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player5 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player5 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[5].onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.gameBoard.AddLog("player6 use leader skill.");
+                gameCore.gameBoard.Value.AddLog("player6 use leader skill.");
             }
         );
         #endregion
@@ -133,7 +133,7 @@ public class GamePresenter : MonoBehaviour
             .Subscribe(
             _ => {
                 gameCore.leftClickIsLarge = true;
-                gameCore.SetClickedID(gameCore.gameBoard.playerAreaList[0]._leaderCardID.Value);
+                gameCore.SetClickedID(gameCore.gameBoard.Value.playerAreaList[0]._leaderCardID.Value);
             }
         ).AddTo(this);
 
@@ -182,7 +182,7 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //leaderSelector‚Ì§Œä
-        gameCore.gameBoard._playerID.Subscribe(
+        gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
                 i = 0;
                 foreach (TMP_Dropdown selector in fieldTabsView.leaderSelector) {
@@ -193,7 +193,7 @@ public class GamePresenter : MonoBehaviour
             }
         ).AddTo(this);
         //leaderSkillButton‚Ì§Œä
-        gameCore.gameBoard._playerID.Subscribe(
+        gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
                 i = 0;
                 foreach (Button button in fieldTabsView.LeaderSkillButton) {
@@ -207,45 +207,55 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
         //leaderCard‚ÌŒ©‚½–Ú
         #region
-
-        gameCore.gameBoard.playerAreaList[0]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Subscribe(
+            board => {
+                fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
+                fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[board.playerAreaList[1]._leaderCardID.Value];
+                fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[board.playerAreaList[2]._leaderCardID.Value];
+                fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[board.playerAreaList[3]._leaderCardID.Value];
+                fieldTabsView.leaderImage[4].sprite = fieldTabsView.leaderSprite[board.playerAreaList[4]._leaderCardID.Value];
+                fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[board.playerAreaList[5]._leaderCardID.Value];
+            }
+            ).AddTo(this);
+/*
+        gameCore.gameBoard.Value.playerAreaList[0]._leaderCardID.Subscribe(
             num => {
 
                 fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-        gameCore.gameBoard.playerAreaList[1]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Value.playerAreaList[1]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-        gameCore.gameBoard.playerAreaList[2]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Value.playerAreaList[2]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-        gameCore.gameBoard.playerAreaList[3]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Value.playerAreaList[3]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-        gameCore.gameBoard.playerAreaList[4]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Value.playerAreaList[4]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[4].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-        gameCore.gameBoard.playerAreaList[5]._leaderCardID.Subscribe(
+        gameCore.gameBoard.Value.playerAreaList[5]._leaderCardID.Subscribe(
             num => {
                 fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[num];
             }
         );
-
+*/
         #endregion
 
 
         //chat area
         //chat‚ÌXV
-        gameCore.gameBoard.chatArea._chatLog.Subscribe(
+        gameCore.gameBoard.Value.chatArea._chatLog.Subscribe(
             log => {
                 chatView.chatLog.text = log;
                 chatView.scrollRect.verticalNormalizedPosition = 0f;
@@ -264,37 +274,9 @@ public class GamePresenter : MonoBehaviour
             }
             ).AddTo(this);
         //commandPanel
-        /*
-        gameCore.commandPanelModel._isActive[0].Subscribe(
-            x => {
-                commandPanelView.smallPanels[0].SetActive(x);
-                }
-            ).AddTo(this);
-        gameCore.commandPanelModel._isActive[1].Subscribe(
-            x => commandPanelView.smallPanels[1].SetActive(x)
-            ).AddTo(this);
-        gameCore.commandPanelModel._isActive[2].Subscribe(
-            x => commandPanelView.smallPanels[2].SetActive(x)
-            ).AddTo(this);
-        gameCore.commandPanelModel._isActive[3].Subscribe(
-            x => commandPanelView.largePanels[0].SetActive(x)
-            ).AddTo(this);
-        gameCore.commandPanelModel._isActive[4].Subscribe(
-            x => commandPanelView.largePanels[1].SetActive(x)
-            ).AddTo(this);
-        gameCore.commandPanelModel._isActive[5].Subscribe(
-            x => commandPanelView.largePanels[2].SetActive(x)
-            ).AddTo(this);
-        gameCore.commandPanelModel._mousePos
-            .Subscribe(
-            x => {
-                Debug.Log(x);
-                commandPanelView.SetPosition(x);
-            }
-            ).AddTo(this);*/
+        
         gameCore._commandPanelModel.Subscribe(
             x => {
-                Debug.Log(x.IsActive[0]);
                 commandPanelView.ApplyModel(x);
             }
             );

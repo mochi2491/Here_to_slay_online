@@ -26,8 +26,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private CardDataManager CardDataManager = new CardDataManager();
 
     //GameBoardの実体
-    public GameBoard gameBoard;
-    public IGameBoard _gameBoard;
+    public ReactiveProperty<GameBoard> gameBoard;
+    public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
+    public IGameBoard IgameBoard;
 
     public GameBoardView gameBoardView = new GameBoardView();
     public GameObject gameBoardObject;
@@ -66,7 +67,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public TMP_Dropdown heroNum;
     public GameBoardAddress FromAddress = new GameBoardAddress();
     public GameBoardAddress ToAddress = new GameBoardAddress();
-   
+
+
     void Awake()
     {
         heroNum = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
@@ -86,17 +88,17 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         //インスタンス生成
 
         //gameboard
-        gameBoard = new GameBoard();
+        gameBoard.Value = new GameBoard();
         //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
-        _gameBoard = gameBoard; //interfaceの定義
-        gameBoard.InitializeGameBoard();
+        IgameBoard = gameBoard.Value; //interfaceの定義
+        gameBoard.Value.InitializeGameBoard();
 
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
         _entrance = entrance; //interfaceの受け渡し
         _entrance.Init(sendTextEvent,changeStateEvent); //初期化
         _state.Subscribe(state => { _entrance.SetState(state); }); //GameCoreのstateを渡す
-        entrance._userName.Subscribe(name => { gameBoard.chatArea.SetUserName(name); });
+        entrance._userName.Subscribe(name => { gameBoard.Value.chatArea.SetUserName(name); });
 
         //fieldTabs
         fieldTabs = this.gameObject.AddComponent<FieldTabsModel>();
@@ -126,12 +128,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private void GetMessage(string msg) {
         string[] message = msg.Split(":::");
         if (message[0] == "0") {//0:::playerNum:::userName
-            gameBoard.PlayerID = int.Parse(message[1]); //playerのIDを設定
-            this.playerID = gameBoard.PlayerID;
+            gameBoard.Value.PlayerID = int.Parse(message[1]); //playerのIDを設定
+            this.playerID = gameBoard.Value.PlayerID;
         }
         else if (message[0] == "1") { //1:::playerCount 
             if (state.Value != GameState.wait) return;
-            gameBoard.PlayerCount = int.Parse(message[1]);
+            gameBoard.Value.PlayerCount = int.Parse(message[1]);
             //gameBoard.InitializeGameBoard();
             entranceObject.SetActive(false);
             gameBoardObject.SetActive(true);
@@ -140,7 +142,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
             //受け取ったjsonをクラスに変換しGameBoardに適用
-            gameBoard.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
+            gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
+
         }
         else if (message[0] == "first") {
         }
@@ -150,22 +153,22 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
     public void ControlBoard(GameBoardAddress From) {
         GameBoardData board = new GameBoardData();
-        board = gameBoard.GameBoardToData(gameBoard.ControlBoard(From, ToAddress));
+        board = gameBoard.Value.GameBoardToData(gameBoard.Value.ControlBoard(From, ToAddress));
         connector.SendText("2:::"+GameBoardToJson(board));
     }
     public void ControlLog(string text) {
         GameBoardData board = new GameBoardData();
-        board = gameBoard.GameBoardToData(gameBoard.AddLog(text));
+        board = gameBoard.Value.GameBoardToData(gameBoard.Value.AddLog(text));
         connector.SendText("2:::" + GameBoardToJson(board));
     }
     public void RenewBoard() {
         GameBoardData board = new GameBoardData();
-        board = gameBoard.GameBoardToData(gameBoard);
+        board = gameBoard.Value.GameBoardToData(gameBoard.Value);
         connector.SendText("2:::"+GameBoardToJson(board));
     }
     public void ControlLeaderNum(int num) {
         GameBoardData board = new GameBoardData();
-        board = gameBoard.GameBoardToData(gameBoard.SetLeaderNum(playerID, num));
+        board = gameBoard.Value.GameBoardToData(gameBoard.Value.SetLeaderNum(playerID, num));
         connector.SendText("2:::" + GameBoardToJson(board));
     }
     public void SetFromAddress(GameBoardAddress gba) {
@@ -181,7 +184,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public void SetToPlayerNum(int num) {
         ToAddress.playerID = num;
         if (isHeroItem) {
-            var heroCount = gameBoard.playerAreaList[ToAddress.playerID].PlayerHeroCardList;
+            var heroCount = gameBoard.Value.playerAreaList[ToAddress.playerID].PlayerHeroCardList;
             commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().ClearOptions();
             List<string> optionList = new List<string>();
             int i = 0;
@@ -272,8 +275,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         ControlBoard(from);
     }
     public void DrawMonster() {
-        if (gameBoard.monsterArea.monsterCardList.Count < 3) { 
-            ToAddress.order = gameBoard.monsterArea.monsterCardList.Count;
+        if (gameBoard.Value.monsterArea.monsterCardList.Count < 3) { 
+            ToAddress.order = gameBoard.Value.monsterArea.monsterCardList.Count;
             ToAddress.area = Area.monsterList;
             GameBoardAddress from = new GameBoardAddress();
             from.area = Area.monsterDeck;
@@ -282,7 +285,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
     public void DeckShuffle() {
         GameBoardData board = new GameBoardData();
-        board = gameBoard.GameBoardToData(gameBoard.DeckShuffle());
+        board = gameBoard.Value.GameBoardToData(gameBoard.Value.DeckShuffle());
         connector.SendText("2:::" + GameBoardToJson(board));
     }
 }
@@ -513,7 +516,7 @@ public class GameBoard : IGameBoard {
         }
         return this;
     } //初期化
-    public void ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
+    public GameBoard ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
         deckArea.DataToDeck(gbd.mainDeck);
         deckArea.DataToPile(gbd.discardPile);
         monsterArea.DataToDeck(gbd.monsterDeck);
@@ -521,6 +524,7 @@ public class GameBoard : IGameBoard {
         chatArea.ApplyLog(gbd.chatLog);
         DataToPlayerList(gbd.playerList);
         ApplyView(gbd,gbv);
+        return this;
     } //GameBoardを更新する
     public void ApplyView(GameBoardData gbd,GameBoardView gbv) {
         gbv.ApplyHand(gbd.playerList[playerID.Value].playerHandList,smallCardImageList); //手札にデータを適用
