@@ -86,8 +86,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         //インスタンス生成
 
         //gameboard
-        gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
+        gameBoard = new GameBoard();
+        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
         _gameBoard = gameBoard; //interfaceの定義
+        gameBoard.InitializeGameBoard();
 
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
@@ -130,7 +132,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         else if (message[0] == "1") { //1:::playerCount 
             if (state.Value != GameState.wait) return;
             gameBoard.PlayerCount = int.Parse(message[1]);
-            gameBoard.InitializeGameBoard();
+            //gameBoard.InitializeGameBoard();
             entranceObject.SetActive(false);
             gameBoardObject.SetActive(true);
             state.Value = GameState.ingame;
@@ -463,7 +465,7 @@ public class FieldTabsModel : MonoBehaviour,IFieldTabs {
 public interface IGameBoard {
 
 }
-public class GameBoard : MonoBehaviour,IGameBoard {
+public class GameBoard : IGameBoard {
     public static readonly int SMALLCARD_COUNT = 73;
     public static readonly int LARGECARD_COUNT = 20;
     private Sprite[] smallCardImageList = new Sprite[SMALLCARD_COUNT];
@@ -496,10 +498,10 @@ public class GameBoard : MonoBehaviour,IGameBoard {
         }
     }
     private void Start() {
-        for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         
     }
     public GameBoard InitializeGameBoard() {
+        for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         smallCardImageList = Resources.LoadAll("deck_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
         largeCardImageList = Resources.LoadAll("monster_and_leader_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
         cardBack = Resources.Load("back") as Sprite;
