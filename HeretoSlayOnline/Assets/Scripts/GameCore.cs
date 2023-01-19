@@ -91,8 +91,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         gameBoard.Value = new GameBoard();
         //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
         IgameBoard = gameBoard.Value; //interfaceの定義
-        gameBoard.Value.InitializeGameBoard();
 
+
+
+        gameBoard.Value.InitializeGameBoard();
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
         _entrance = entrance; //interfaceの受け渡し
@@ -109,6 +111,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         DataReader.callBack.AddListener(SetCardData);
         DataReader.Load();
 
+        
     }
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Escape)) {
@@ -142,7 +145,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
             //受け取ったjsonをクラスに変換しGameBoardに適用
+            Debug.Log("aadfas");
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
+            gameBoard.Value = gameBoard.Value.Sample();
 
         }
         else if (message[0] == "first") {
@@ -500,9 +505,6 @@ public class GameBoard : IGameBoard {
             return this.playerCount;
         }
     }
-    private void Start() {
-        
-    }
     public GameBoard InitializeGameBoard() {
         for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         smallCardImageList = Resources.LoadAll("deck_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
@@ -575,10 +577,10 @@ public class GameBoard : IGameBoard {
         board.playerAreaList[playerNum].SetLeaderID(num);
         return this;
     }
-
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
         bool isLarge = false;
         string logText = "";
+        GameBoard copy = this;
         if ((From.area == Area.monsterList) || (From.area == Area.monsterDeck) || (From.area == Area.slayedMonster)) {
             isLarge = true;
         }
@@ -587,13 +589,13 @@ public class GameBoard : IGameBoard {
             LargeCard moveCard;
             switch (From.area) {
                 case Area.monsterList:
-                    moveCard = monsterArea.PopList(From.order);
+                    moveCard = copy.monsterArea.PopList(From.order);
                     break;
                 case Area.monsterDeck:
-                    moveCard = monsterArea.PopDeck();
+                    moveCard = copy.monsterArea.PopDeck();
                     break;
                 case Area.slayedMonster:
-                    moveCard = playerAreaList[From.playerID].PickSlayedMonster(From.order);
+                    moveCard = copy.playerAreaList[From.playerID].PickSlayedMonster(From.order);
                     break;
                 default:
                     moveCard = null;
@@ -601,13 +603,13 @@ public class GameBoard : IGameBoard {
             }
             switch (To.area) {
                 case Area.monsterList:
-                    monsterArea.PushList(moveCard,To.order);
+                    copy.monsterArea.PushList(moveCard,To.order);
                     break;
                 case Area.monsterDeck:
-                    monsterArea.PushDeck(moveCard);
+                    copy.monsterArea.PushDeck(moveCard);
                     break;
                 case Area.slayedMonster:
-                    playerAreaList[To.playerID].PushSlayedMonster(moveCard);
+                    copy.playerAreaList[To.playerID].PushSlayedMonster(moveCard);
                     break;
             }
             logText = "id:" + moveCard.ID + " " + "From:" + From.area + ",player:" + From.playerID + "To:" + To.area + ",player" + To.playerID;
@@ -616,21 +618,21 @@ public class GameBoard : IGameBoard {
             SmallCard moveCard;
             switch (From.area) {
                 case Area.discardPile:
-                    moveCard = deckArea.PickDiscard(From.order);
+                    moveCard = copy.deckArea.PickDiscard(From.order);
                     break;
                 case Area.deck:
-                    moveCard = deckArea.PopDeck();
+                    moveCard = copy.deckArea.PopDeck();
                     break;
                 case Area.playerHand:
-                    moveCard = playerAreaList[From.playerID].PickHand(From.order);
+                    moveCard = copy.playerAreaList[From.playerID].PickHand(From.order);
                     break;
                 case Area.playerHeroItem:
-                    moveCard = playerAreaList[From.playerID].PickArmedCard(From.order);
+                    moveCard = copy.playerAreaList[From.playerID].PickArmedCard(From.order);
                     break;
                 case Area.playerHero:
-                    HeroCard a = playerAreaList[From.playerID].PickHeroCard(From.order);
+                    HeroCard a = copy.playerAreaList[From.playerID].PickHeroCard(From.order);
                     moveCard = a.hero;
-                    if(a.equip.ID != -1) playerAreaList[playerID.Value].PushHand(a.equip);
+                    if(a.equip.ID != -1) copy.playerAreaList[playerID.Value].PushHand(a.equip);
                     break;
                 default:
                     moveCard = null;
@@ -638,28 +640,33 @@ public class GameBoard : IGameBoard {
             }
             switch (To.area) {
                 case Area.discardPile:
-                    deckArea.PushDiscard(moveCard);
+                    copy.deckArea.PushDiscard(moveCard);
                     break;
                 case Area.deck:
-                    deckArea.PushDeck(moveCard);
+                    copy.deckArea.PushDeck(moveCard);
                     break;
                 case Area.playerHand:
-                    playerAreaList[To.playerID].PushHand(moveCard);
+                    copy.playerAreaList[To.playerID].PushHand(moveCard);
                     break;
                 case Area.playerHeroItem:
-                    playerAreaList[To.playerID].AttachArmedCard(moveCard,To.order);
+                    copy.playerAreaList[To.playerID].AttachArmedCard(moveCard,To.order);
                     break;
                 case Area.playerHero:
                     HeroCard a = new HeroCard(moveCard, null);
-                    playerAreaList[To.playerID].PushHeroCard(a);
+                    copy.playerAreaList[To.playerID].PushHeroCard(a);
                     break;
             }
             logText = "id:" + moveCard.ID + " " + "From:" + From.area + ",player:" + From.playerID + "To:" + To.area + ",player" + To.playerID;
         }
         chatArea.AddLog(logText);
         
-        return this;
+        return copy;
     } //カードを移動させる(バカすぎる実装なのでいずれ直す)
+    public GameBoard Sample() { 
+        GameBoard board= new GameBoard();
+        board.playerCount = 100;
+        return board;
+    }
 }
 public interface CardMover {
 

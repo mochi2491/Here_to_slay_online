@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UniRx;
+using System;
 
 public class GamePresenter : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class GamePresenter : MonoBehaviour
     [SerializeField] private ChatView chatView;
     [SerializeField] private DescriptionView descriptionView;
     [SerializeField] private CommandPanelView commandPanelView;
+
+    IDisposable aaa;
     void Start() {
         int i = 0;
         //view -> model ƒCƒxƒ“ƒg”­‰Î
@@ -150,7 +153,7 @@ public class GamePresenter : MonoBehaviour
         //dice roll
         chatView.diceButton.onClick.AsObservable().Subscribe(
             _ => {
-                gameCore.ControlLog("rolled" + Random.Range(1, 6) + "," + Random.Range(1, 6));
+                gameCore.ControlLog("rolled" + UnityEngine.Random.Range(1, 6) + "," + UnityEngine.Random.Range(1, 6));
             }
         ).AddTo(this);
 
@@ -207,8 +210,13 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
         //leaderCard‚ÌŒ©‚½–Ú
         #region
-        gameCore.gameBoard.Subscribe(
+        aaa = gameCore._gameBoard
+            .Finally(() => {
+                Debug.Log("daa");
+            })
+            .Subscribe(
             board => {
+                Debug.Log("adf");
                 fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[board.playerAreaList[1]._leaderCardID.Value];
                 fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[board.playerAreaList[2]._leaderCardID.Value];
@@ -217,39 +225,7 @@ public class GamePresenter : MonoBehaviour
                 fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[board.playerAreaList[5]._leaderCardID.Value];
             }
             ).AddTo(this);
-/*
-        gameCore.gameBoard.Value.playerAreaList[0]._leaderCardID.Subscribe(
-            num => {
-
-                fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-        gameCore.gameBoard.Value.playerAreaList[1]._leaderCardID.Subscribe(
-            num => {
-                fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-        gameCore.gameBoard.Value.playerAreaList[2]._leaderCardID.Subscribe(
-            num => {
-                fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-        gameCore.gameBoard.Value.playerAreaList[3]._leaderCardID.Subscribe(
-            num => {
-                fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-        gameCore.gameBoard.Value.playerAreaList[4]._leaderCardID.Subscribe(
-            num => {
-                fieldTabsView.leaderImage[4].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-        gameCore.gameBoard.Value.playerAreaList[5]._leaderCardID.Subscribe(
-            num => {
-                fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[num];
-            }
-        );
-*/
+        
         #endregion
 
 
@@ -282,7 +258,6 @@ public class GamePresenter : MonoBehaviour
             );
     }
     void Update()
-    {
-        
+    { 
     }
 }
