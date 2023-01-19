@@ -216,9 +216,8 @@ public class GamePresenter : MonoBehaviour
             })
             .Subscribe(
             board => {
-                Debug.Log("ooo");
-                fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
                 Debug.Log("adf");
+                fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[board.playerAreaList[1]._leaderCardID.Value];
                 fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[board.playerAreaList[2]._leaderCardID.Value];
                 fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[board.playerAreaList[3]._leaderCardID.Value];

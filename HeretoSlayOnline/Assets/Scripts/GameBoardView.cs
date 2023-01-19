@@ -9,9 +9,9 @@ public class GameBoardView : MonoBehaviour
     //手札表示
     public GameObject handObject;
     //各プレイヤーのヒーロー
-    public List<GameObject> heroObject = new List<GameObject>();
+    public List<GameObject> heroObject;
     //倒したモンスター
-    public List<GameObject> slayedmonsterObject = new List<GameObject>();
+    public List<GameObject> slayedmonsterObject;
     //捨て札
     public GameObject discardpileObject;
     //モンスター

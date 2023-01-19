@@ -30,7 +30,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
     public IGameBoard IgameBoard;
 
-    public GameBoardView gameBoardView = new GameBoardView();
+    public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
     //Gameのステート
@@ -91,10 +91,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         gameBoard.Value = new GameBoard();
         //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
         IgameBoard = gameBoard.Value; //interfaceの定義
-
-
-
         gameBoard.Value.InitializeGameBoard();
+
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
         _entrance = entrance; //interfaceの受け渡し
@@ -146,8 +144,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             if (state.Value != GameState.ingame) return;
             //受け取ったjsonをクラスに変換しGameBoardに適用
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
-            gameBoard.Value = gameBoard.Value.Sample();
-
         }
         else if (message[0] == "first") {
         }
@@ -518,14 +514,15 @@ public class GameBoard : IGameBoard {
         return this;
     } //初期化
     public GameBoard ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
-        deckArea.DataToDeck(gbd.mainDeck);
-        deckArea.DataToPile(gbd.discardPile);
-        monsterArea.DataToDeck(gbd.monsterDeck);
-        monsterArea.DataToList(gbd.monsterCardList);
-        chatArea.ApplyLog(gbd.chatLog);
-        DataToPlayerList(gbd.playerList);
-        ApplyView(gbd,gbv);
-        return this;
+        GameBoard board = (GameBoard)MemberwiseClone();
+        board.deckArea.DataToDeck(gbd.mainDeck);
+        board.deckArea.DataToPile(gbd.discardPile);
+        board.monsterArea.DataToDeck(gbd.monsterDeck);
+        board.monsterArea.DataToList(gbd.monsterCardList);
+        board.chatArea.ApplyLog(gbd.chatLog);
+        board.DataToPlayerList(gbd.playerList);
+        board.ApplyView(gbd,gbv);
+        return board;
     } //GameBoardを更新する
     public void ApplyView(GameBoardData gbd,GameBoardView gbv) {
         gbv.ApplyHand(gbd.playerList[playerID.Value].playerHandList,smallCardImageList); //手札にデータを適用
@@ -563,23 +560,24 @@ public class GameBoard : IGameBoard {
         }
     } //dataをplayerAreaListに
     public GameBoard DeckShuffle() {
-        deckArea.Shuffle();
+        GameBoard board = (GameBoard)MemberwiseClone();
+        board.deckArea.Shuffle();
         return this;
     }
     public GameBoard AddLog(string text) {
-        chatArea.AddLog(text);
-        return this;
+        GameBoard board = (GameBoard) MemberwiseClone();
+        board.chatArea.AddLog(text);
+        return board;
     }
     public GameBoard SetLeaderNum(int playerNum,int num) {
-        GameBoard board = new GameBoard();
-        board = this;
+        GameBoard board = (GameBoard)MemberwiseClone();
         board.playerAreaList[playerNum].SetLeaderID(num);
-        return this;
+        return board;
     }
     public GameBoard ControlBoard(GameBoardAddress From,GameBoardAddress To) {
         bool isLarge = false;
         string logText = "";
-        GameBoard copy = this;
+        GameBoard copy = (GameBoard)MemberwiseClone();
         if ((From.area == Area.monsterList) || (From.area == Area.monsterDeck) || (From.area == Area.slayedMonster)) {
             isLarge = true;
         }
@@ -661,9 +659,9 @@ public class GameBoard : IGameBoard {
         
         return copy;
     } //カードを移動させる(バカすぎる実装なのでいずれ直す)
-    public GameBoard Sample() { 
-        GameBoard board= this;
-        board.turnPlayerNum++;
+    public GameBoard Sample() {
+        GameBoard board = (GameBoard)MemberwiseClone();
+        board.turnPlayerNum = 20;
         return board;
     }
 }
@@ -678,7 +676,7 @@ public struct GameBoardAddress {
 public enum Area {
     deck,discardPile, monsterList,monsterDeck,playerHand,playerHero,playerHeroItem,slayedMonster
 }
-public class DeckArea : MonoBehaviour {
+public class DeckArea {
     private List<SmallCard> mainDeck = new List<SmallCard>();
     private List<SmallCard> discardPile = new List<SmallCard>();
     public void Init() {
@@ -760,7 +758,7 @@ public class DeckArea : MonoBehaviour {
         discardPile.Add(tmp);
     } //discardPileの最後にカードを追加
 }
-public class MonsterArea : MonoBehaviour {
+public class MonsterArea {
     public List<LargeCard> monsterCardList = new List<LargeCard>();
     private List<LargeCard> monsterDeck = new List<LargeCard>();
     public void Init() {
@@ -850,7 +848,7 @@ public class ChatArea {
         chatLog.Value = text;
     }
 }
-public class PlayerArea : MonoBehaviour {
+public class PlayerArea {
     //instance
     private string playerID = "";
     public ReactiveProperty<int> leaderCardID = new ReactiveProperty<int>(0);
