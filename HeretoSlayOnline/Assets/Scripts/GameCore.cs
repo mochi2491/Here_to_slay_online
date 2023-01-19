@@ -145,7 +145,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
             //受け取ったjsonをクラスに変換しGameBoardに適用
-            Debug.Log("aadfas");
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
             gameBoard.Value = gameBoard.Value.Sample();
 
@@ -663,8 +662,8 @@ public class GameBoard : IGameBoard {
         return copy;
     } //カードを移動させる(バカすぎる実装なのでいずれ直す)
     public GameBoard Sample() { 
-        GameBoard board= new GameBoard();
-        board.playerCount = 100;
+        GameBoard board= this;
+        board.turnPlayerNum++;
         return board;
     }
 }
