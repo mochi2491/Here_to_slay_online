@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 public class CardPresenter : MonoBehaviour
 {
+    //model
+    public GameCore gameCore;
+
+    //view
     //手札表示
     public GameObject handObject;
     //各プレイヤーのヒーロー
@@ -20,4 +25,13 @@ public class CardPresenter : MonoBehaviour
     public List<List<CardView>> Hero;
     public List<CardView> monsterList;
     public List<CardView> slayerMonser;
+
+    private void Start() {
+        gameCore._gameBoard.Subscribe(
+            board => {
+
+
+            }
+            );
+    }
 }
