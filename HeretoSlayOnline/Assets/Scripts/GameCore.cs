@@ -17,15 +17,15 @@ using Zenject.SpaceFighter;
 
 public class GameCore : SingletonMonoBehaviour<GameCore>
 {
-    //ƒT[ƒo‚Æ‚Ì’ÊM‚ğs‚¤
+    //ï¿½Tï¿½[ï¿½oï¿½Æ‚Ì’ÊMï¿½ï¿½ï¿½sï¿½ï¿½
     public ServerConnector connector;
     [HideInInspector]public SendTextEvent sendTextEvent;
 
-    //GoogleSpreadSheet‚©‚çƒf[ƒ^‚ğ“Ç‚İ‚Ş
+    //GoogleSpreadSheetï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½ï¿½Ç‚İï¿½ï¿½ï¿½
     private CardSheetReader DataReader;
     private CardDataManager CardDataManager = new CardDataManager();
 
-    //GameBoard‚ÌÀ‘Ì
+    //GameBoardï¿½Ìï¿½ï¿½ï¿½
     public ReactiveProperty<GameBoard> gameBoard;
     public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
     public IGameBoard IgameBoard;
@@ -33,7 +33,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
-    //Game‚ÌƒXƒe[ƒg
+    //Gameï¿½ÌƒXï¿½eï¿½[ï¿½g
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
     public IReadOnlyReactiveProperty<GameState> _state => state;
     [HideInInspector]public ChangeStateEvent changeStateEvent;
@@ -81,28 +81,28 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         );
 
 
-        //sendTextƒƒ\ƒbƒh‚ğsendTextEvent‚É“o˜^
+        //sendTextï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½sendTextEventï¿½É“oï¿½^
         sendTextEvent.AddListener(connector.SendText);
-        //changeStateƒƒ\ƒbƒh‚ğchangeStateEvent‚É“o˜^
+        //changeStateï¿½ï¿½ï¿½\ï¿½bï¿½hï¿½ï¿½changeStateEventï¿½É“oï¿½^
         changeStateEvent.AddListener(ChangeState);
-        //ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
+        //ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½
 
         //gameboard
         gameBoard.Value = new GameBoard();
-        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //ƒCƒ“ƒXƒ^ƒ“ƒX¶¬
-        IgameBoard = gameBoard.Value; //interface‚Ì’è‹`
+        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //ï¿½Cï¿½ï¿½ï¿½Xï¿½^ï¿½ï¿½ï¿½Xï¿½ï¿½ï¿½ï¿½
+        IgameBoard = gameBoard.Value; //interfaceï¿½Ì’ï¿½`
         gameBoard.Value.InitializeGameBoard();
 
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
-        _entrance = entrance; //interface‚Ìó‚¯“n‚µ
-        _entrance.Init(sendTextEvent,changeStateEvent); //‰Šú‰»
-        _state.Subscribe(state => { _entrance.SetState(state); }); //GameCore‚Ìstate‚ğ“n‚·
+        _entrance = entrance; //interfaceï¿½Ìó‚¯“nï¿½ï¿½
+        _entrance.Init(sendTextEvent,changeStateEvent); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        _state.Subscribe(state => { _entrance.SetState(state); }); //GameCoreï¿½ï¿½stateï¿½ï¿½nï¿½ï¿½
         entrance._userName.Subscribe(name => { gameBoard.Value.chatArea.SetUserName(name); });
 
         //fieldTabs
         fieldTabs = this.gameObject.AddComponent<FieldTabsModel>();
-        _fieldTabs = fieldTabs; //interface‚Ìó‚¯“n‚µ
+        _fieldTabs = fieldTabs; //interfaceï¿½Ìó‚¯“nï¿½ï¿½
 
         //spread Sheet
         DataReader = this.gameObject.AddComponent<CardSheetReader>();
@@ -129,7 +129,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private void GetMessage(string msg) {
         string[] message = msg.Split(":::");
         if (message[0] == "0") {//0:::playerNum:::userName
-            gameBoard.Value.PlayerID = int.Parse(message[1]); //player‚ÌID‚ğİ’è
+            gameBoard.Value.PlayerID = int.Parse(message[1]); //playerï¿½ï¿½IDï¿½ï¿½İ’ï¿½
             this.playerID = gameBoard.Value.PlayerID;
         }
         else if (message[0] == "1") { //1:::playerCount 
@@ -142,7 +142,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         }
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
-            //ó‚¯æ‚Á‚½json‚ğƒNƒ‰ƒX‚É•ÏŠ·‚µGameBoard‚É“K—p
+            //ï¿½ó‚¯ï¿½ï¿½ï¿½ï¿½jsonï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½Xï¿½É•ÏŠï¿½ï¿½ï¿½GameBoardï¿½É“Kï¿½p
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
         }
         else if (message[0] == "first") {
@@ -307,7 +307,7 @@ public class CommandPanelModel{
         this.mousePos = mousePos;
     }
 
-    //‘S‚Ä‚ÌƒRƒ}ƒ“ƒhƒpƒlƒ‹‚ğ•Â‚¶‚éƒƒ\ƒbƒh
+    //ï¿½Sï¿½Ä‚ÌƒRï¿½}ï¿½ï¿½ï¿½hï¿½pï¿½lï¿½ï¿½ï¿½ï¿½Â‚ï¿½ï¿½éƒï¿½\ï¿½bï¿½h
     public CommandPanelModel CloseAllPanel() {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -316,7 +316,7 @@ public class CommandPanelModel{
         }
         return new CommandPanelModel(list,this.mousePos);
     }
-    //Å‰‚ÉƒRƒ}ƒ“ƒhƒpƒlƒ‹‚ğŠJ‚­ƒƒ\ƒbƒh
+    //ï¿½Åï¿½ï¿½ÉƒRï¿½}ï¿½ï¿½ï¿½hï¿½pï¿½lï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½bï¿½h
     public CommandPanelModel OpenSmallCommandPanel(CommandPanelView.PanelName panel,Vector3 mousePos) {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -356,7 +356,7 @@ public class CommandPanelModel{
         return new CommandPanelModel(list,mousePos);
     }
 
-    //ŠJ‚¢‚½ƒRƒ}ƒ“ƒhƒpƒlƒ‹‚ğ‘JˆÚ‚³‚¹‚éƒƒ\ƒbƒh
+    //ï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½Rï¿½}ï¿½ï¿½ï¿½hï¿½pï¿½lï¿½ï¿½ï¿½ï¿½Jï¿½Ú‚ï¿½ï¿½ï¿½ï¿½éƒï¿½\ï¿½bï¿½h
     public CommandPanelModel TransitionSmallPanel(CommandPanelView.PanelName panel) {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -396,15 +396,15 @@ public class CommandPanelModel{
         return new CommandPanelModel(list, this.mousePos);
     }
 
-    //commandPanel‚Ìƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«‚ÌƒƒWƒbƒN‚ª‹l‚Ü‚Á‚Ä‚é
+    //commandPanelï¿½Ìƒ{ï¿½^ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ‚ï¿½ï¿½Ìƒï¿½ï¿½Wï¿½bï¿½Nï¿½ï¿½ï¿½lï¿½Ü‚ï¿½ï¿½Ä‚ï¿½
 
 }
 [System.Serializable]public class SendTextEvent : UnityEvent<string> {
 
-} //SendText‚ğqƒNƒ‰ƒX‚É“n‚·‚½‚ß‚ÌƒNƒ‰ƒX
+} //SendTextï¿½ï¿½ï¿½qï¿½Nï¿½ï¿½ï¿½Xï¿½É“nï¿½ï¿½ï¿½ï¿½ï¿½ß‚ÌƒNï¿½ï¿½ï¿½X
 [System.Serializable]public class ChangeStateEvent : UnityEvent<GameState> {
 
-} //ChangeState‚ğqƒNƒ‰ƒX‚É“n‚·‚½‚ß‚ÌƒNƒ‰ƒX
+} //ChangeStateï¿½ï¿½ï¿½qï¿½Nï¿½ï¿½ï¿½Xï¿½É“nï¿½ï¿½ï¿½ï¿½ï¿½ß‚ÌƒNï¿½ï¿½ï¿½X
 public enum GameState {
     entrance,wait,ingame
 }
@@ -417,19 +417,19 @@ public interface IEntrance {
 
 }
 public class Entrance : MonoBehaviour,IEntrance{
-    SendTextEvent sendText; //text‚ğ‘—M‚·‚éEvent
-    ChangeStateEvent changeState; //GameCore‚Ìstate‚ğ•ÏX‚·‚éEvent
-    GameState state; //Œ»İ‚ÌGameCore‚ÌState
-    private ReactiveProperty<string> userName = new ReactiveProperty<string>(""); //ƒ†[ƒU[ƒl[ƒ€
+    SendTextEvent sendText; //textï¿½ğ‘—Mï¿½ï¿½ï¿½ï¿½Event
+    ChangeStateEvent changeState; //GameCoreï¿½ï¿½stateï¿½ï¿½ÏXï¿½ï¿½ï¿½ï¿½Event
+    GameState state; //ï¿½ï¿½ï¿½İ‚ï¿½GameCoreï¿½ï¿½State
+    private ReactiveProperty<string> userName = new ReactiveProperty<string>(""); //ï¿½ï¿½ï¿½[ï¿½Uï¿½[ï¿½lï¿½[ï¿½ï¿½
     public IReadOnlyReactiveProperty<string> _userName => userName;
-    private bool isReady = false; //Player‚Ì€”õó‹µ
+    private bool isReady = false; //Playerï¿½Ìï¿½ï¿½ï¿½ï¿½ï¿½
     
     //setter and getter
     public string UserName {
         get { return userName.Value; }
     }
 
-    //‰Šú‰»
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void Init(SendTextEvent sendTextEvent,ChangeStateEvent changeStateEvent) {
         this.sendText = sendTextEvent;
         this.changeState = changeStateEvent;
@@ -463,7 +463,7 @@ public class FieldTabsModel : MonoBehaviour,IFieldTabs {
     public IReadOnlyReactiveProperty<int> _visibleTabNum => visibleTabNum;
     public void SetVisibleTabNum(int num) {
         visibleTabNum.Value = num;
-    }//tab‚ÌØ‚è‘Ö‚¦
+    }//tabï¿½ÌØ‚ï¿½Ö‚ï¿½
 }
 public interface IGameBoard {
 
@@ -471,8 +471,6 @@ public interface IGameBoard {
 public class GameBoard : IGameBoard {
     public static readonly int SMALLCARD_COUNT = 73;
     public static readonly int LARGECARD_COUNT = 20;
-    private Sprite[] smallCardImageList = new Sprite[SMALLCARD_COUNT];
-    private Sprite[] largeCardImageList = new Sprite[LARGECARD_COUNT];
     private Sprite cardBack;
     
     private int turnPlayerNum = 0;
@@ -502,8 +500,6 @@ public class GameBoard : IGameBoard {
     }
     public GameBoard InitializeGameBoard() {
         for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
-        smallCardImageList = Resources.LoadAll("deck_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
-        largeCardImageList = Resources.LoadAll("monster_and_leader_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
         cardBack = Resources.Load("back") as Sprite;
         deckArea.Init();
         monsterArea.Init();
@@ -512,7 +508,7 @@ public class GameBoard : IGameBoard {
             pa.Init(0);
         }
         return this;
-    } //‰Šú‰»
+    } //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public GameBoard ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.deckArea.DataToDeck(gbd.mainDeck);
@@ -521,19 +517,8 @@ public class GameBoard : IGameBoard {
         board.monsterArea.DataToList(gbd.monsterCardList);
         board.chatArea.ApplyLog(gbd.chatLog);
         board.DataToPlayerList(gbd.playerList);
-        board.ApplyView(gbd,gbv);
         return board;
-    } //GameBoard‚ğXV‚·‚é
-    public void ApplyView(GameBoardData gbd,GameBoardView gbv) {
-        gbv.ApplyHand(gbd.playerList[playerID.Value].playerHandList,smallCardImageList); //èD‚Éƒf[ƒ^‚ğ“K—p
-        for(int i = 0; i < 6; i++) {
-            gbv.ApplyHero(gbd.playerList[i].playerHeroCardList,smallCardImageList,i);
-            gbv.ApplySlayedMonster(gbd.playerList[i].slayedMonsterList,largeCardImageList,i);
-        } //ƒq[ƒ[ƒŠƒXƒg‚Éƒf[ƒ^‚ğ“K—p
-        gbv.ApplyDiscardPile(gbd.discardPile, smallCardImageList);
-        gbv.ApplyMonster(gbd.monsterCardList, largeCardImageList);
-        
-    } //XV‚µ‚½GameBoard‚ğ‰æ–Ê‚É“K—p‚·‚é
+    } //GameBoardï¿½ï¿½ï¿½Xï¿½Vï¿½ï¿½ï¿½ï¿½
     public GameBoardData GameBoardToData(GameBoard gb) {
         GameBoardData gbd = new GameBoardData();
         gbd.turnPlayerNum = 1;
@@ -545,20 +530,20 @@ public class GameBoard : IGameBoard {
         gbd.playerList = gb.PlayerListToData();
         gbd.chatLog = gb.chatArea._chatLog.Value;
         return gbd;
-    }//GameBoard‚Ìƒ‚ƒfƒ‹‚ğƒf[ƒ^‚É•ÏŠ·‚·‚é
+    }//GameBoardï¿½Ìƒï¿½ï¿½fï¿½ï¿½ï¿½ï¿½ï¿½fï¿½[ï¿½^ï¿½É•ÏŠï¿½ï¿½ï¿½ï¿½ï¿½
     public List<PlayerData> PlayerListToData() {
         List<PlayerData> data = new List<PlayerData>();
         foreach(PlayerArea a in playerAreaList) {
             data.Add(a.PlayerAreaToData());
         }
         return data;
-    } //playerAreaList‚ğdata‚É
+    } //playerAreaListï¿½ï¿½dataï¿½ï¿½
     public void DataToPlayerList(List<PlayerData> playerList) {
         playerAreaList.Clear();
         foreach(PlayerData pd in playerList) {
             playerAreaList.Add(new PlayerArea(pd));
         }
-    } //data‚ğplayerAreaList‚É
+    } //dataï¿½ï¿½playerAreaListï¿½ï¿½
     public GameBoard DeckShuffle() {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.deckArea.Shuffle();
@@ -581,7 +566,7 @@ public class GameBoard : IGameBoard {
         if ((From.area == Area.monsterList) || (From.area == Area.monsterDeck) || (From.area == Area.slayedMonster)) {
             isLarge = true;
         }
-        //ƒJ[ƒh‚ğ‚¢‚Ç‚¤‚³‚¹‚é
+        //ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½Ç‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (isLarge) {
             LargeCard moveCard;
             switch (From.area) {
@@ -658,7 +643,7 @@ public class GameBoard : IGameBoard {
         chatArea.AddLog(logText);
         
         return copy;
-    } //ƒJ[ƒh‚ğˆÚ“®‚³‚¹‚é(ƒoƒJ‚·‚¬‚éÀ‘•‚È‚Ì‚Å‚¢‚¸‚ê’¼‚·)
+    } //ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½Ú“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½oï¿½Jï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚Ì‚Å‚ï¿½ï¿½ï¿½ï¿½ê’¼ï¿½ï¿½)
     public GameBoard Sample() {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.turnPlayerNum = 20;
@@ -682,20 +667,20 @@ public class DeckArea {
     public void Init() {
         //mainDeck init
         for(int i = 0; i <= GameBoard.SMALLCARD_COUNT; i++) {
-            if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2–‡
+            if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2ï¿½ï¿½
                 mainDeck.Add(new SmallCard(i, ""));
                 mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 60 || (i >= 62 && i <= 64)) { //4–‡
+            else if (i == 60 || (i >= 62 && i <= 64)) { //4ï¿½ï¿½
                 for (int j = 0; j < 4; j++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 61) { //9–‡
+            else if (i == 61) { //9ï¿½ï¿½
                 for (int k = 0; k < 9; k++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 73) { //14–‡
+            else if (i == 73) { //14ï¿½ï¿½
                 for (int l = 0; l < 14; l++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else mainDeck.Add(new SmallCard(i, "")); //1–‡
+            else mainDeck.Add(new SmallCard(i, "")); //1ï¿½ï¿½
 
         }
         mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
@@ -721,42 +706,42 @@ public class DeckArea {
             data.Add(card.ID);
         }
         return data;
-    } //MainDeck‚ğdata‚É
+    } //MainDeckï¿½ï¿½dataï¿½ï¿½
     public void DataToDeck(List<int> data) {
         mainDeck.Clear();
         foreach (int id in data) {
             mainDeck.Add(new SmallCard(id, ""));
         }
-    } //data‚ğMainDeck‚É
+    } //dataï¿½ï¿½MainDeckï¿½ï¿½
     public List<int> PileToData() {
         List<int> data = new List<int>();
         foreach(SmallCard card in discardPile) {
             data.Add(card.ID);
         }
         return data;
-    } //DiscardPile‚ğdata‚É
+    } //DiscardPileï¿½ï¿½dataï¿½ï¿½
     public void DataToPile(List<int> data) {
         discardPile.Clear();
         foreach(int id in data) {
             discardPile.Add(new SmallCard(id, ""));
         }
-    } //data‚ğDiscardPile‚É
+    } //dataï¿½ï¿½DiscardPileï¿½ï¿½
     public SmallCard PopDeck() {
         SmallCard tmp = mainDeck[0];
         mainDeck.RemoveAt(0);
         return tmp;
-    } //deck‚Ì“ª‚ğæ‚èo‚·
+    } //deckï¿½Ì“ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushDeck(SmallCard tmp) {
         mainDeck.Insert(0, tmp);
-    } //deck‚Ì“ª‚ÉƒJ[ƒh‚ğ’Ç‰Á
+    } //deckï¿½Ì“ï¿½ï¿½ÉƒJï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½
     public SmallCard PickDiscard(int order) {
         SmallCard tmp = discardPile[order];
         discardPile.RemoveAt(order);
         return tmp;
-    } //discardPile‚Ìw’è‚ÌƒJ[ƒh‚ğæ‚èo‚·
+    } //discardPileï¿½Ìwï¿½ï¿½ÌƒJï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushDiscard(SmallCard tmp) {
         discardPile.Add(tmp);
-    } //discardPile‚ÌÅŒã‚ÉƒJ[ƒh‚ğ’Ç‰Á
+    } //discardPileï¿½ÌÅŒï¿½ÉƒJï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½
 }
 public class MonsterArea {
     public List<LargeCard> monsterCardList = new List<LargeCard>();
@@ -774,39 +759,39 @@ public class MonsterArea {
             data.Add(card.ID);
         }
         return data;
-    } //Œ»İoŒ»‚µ‚Ä‚¢‚éƒ‚ƒ“ƒXƒ^[‚ÌƒŠƒXƒg‚ğdata‚É
+    } //ï¿½ï¿½ï¿½İoï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½éƒ‚ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½Ìƒï¿½ï¿½Xï¿½gï¿½ï¿½dataï¿½ï¿½
     public void DataToList(List<int> data) {
         monsterCardList.Clear();
         foreach(int id in data) {
             monsterCardList.Add(new LargeCard(id, ""));
         }
-    } //data‚ğŒ»İoŒ»‚µ‚Ä‚¢‚éƒ‚ƒ“ƒXƒ^[‚ÌƒŠƒXƒg‚É
+    } //dataï¿½ï¿½ï¿½ï¿½ï¿½İoï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½éƒ‚ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½Ìƒï¿½ï¿½Xï¿½gï¿½ï¿½
     public List<int> DeckToData() {
         List<int> data = new List<int>();
         foreach(LargeCard card in monsterDeck) {
             data.Add(card.ID);
         }
         return data;
-    } //MonsterDeck‚ğdata‚É
+    } //MonsterDeckï¿½ï¿½dataï¿½ï¿½
     public void DataToDeck(List<int> data) {
         monsterDeck.Clear();
         foreach(int id in data) {
             monsterDeck.Add(new LargeCard(id, ""));
         }
-    } //data‚ğMonsterDeck‚É
+    } //dataï¿½ï¿½MonsterDeckï¿½ï¿½
     public LargeCard PopDeck() {
         LargeCard tmp = monsterDeck[0];
         monsterDeck.RemoveAt(0);
         return tmp;
-    } //monsterDeck‚Ìæ“ª‚ğæ‚èo‚·
+    } //monsterDeckï¿½Ìæ“ªï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushDeck(LargeCard tmp) {
         monsterDeck.Insert(0, tmp);
-    } //monsterDeck‚Ì“ª‚ÉƒJ[ƒh‚ğ’Ç‰Á
+    } //monsterDeckï¿½Ì“ï¿½ï¿½ÉƒJï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½
     public LargeCard PopList(int order) {
         LargeCard tmp = monsterCardList[order];
         monsterCardList.RemoveAt(order);
         return tmp;
-    } //monsterList‚©‚çƒJ[ƒh‚ğæ‚èo‚·
+    } //monsterListï¿½ï¿½ï¿½ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushList(LargeCard tmp,int order) {
         if (monsterCardList.Count < 3) monsterCardList.Add(tmp);
         else {
@@ -814,7 +799,7 @@ public class MonsterArea {
             monsterCardList.RemoveAt(order);
             monsterCardList.Add(tmp); 
         }
-    } //monsterList‚ª3–‡–¢–‚È‚çƒJ[ƒh‚ğ’Ç‰Á‚·‚é,3–‡ˆÈã‚È‚çˆê–‡–ß‚µ‚Ä‚©‚ç’Ç‰Á‚·‚é
+    } //monsterListï¿½ï¿½3ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È‚ï¿½Jï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½,3ï¿½ï¿½ï¿½Èï¿½È‚ï¿½ê–‡ï¿½ß‚ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
 
 }
 public interface IChatArea {
@@ -840,7 +825,7 @@ public class ChatArea {
         userName = name;
     }
     public void AddLog(string text) {
-        //chatLog‚Étext‚ğ’Ç‰Á‚·‚é
+        //chatLogï¿½ï¿½textï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
         dt = DateTime.Now;
         chatLog.Value = chatLog.Value + "\n" + userName + ":" + dt.ToString("HH:mm:ss") + "\n" + text;
     }
@@ -876,13 +861,13 @@ public class PlayerArea {
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
-    } //ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    } //ï¿½Rï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½Nï¿½^
     //method
     public void Init(int num) {
         leaderCardID.Value = num;
         playerHandList.Clear();
         playerHeroCardList.Clear();
-    } //‰Šú‰»
+    } //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public PlayerData PlayerAreaToData() {
         PlayerData playerData = new PlayerData();
         playerData.playerID = "";
@@ -891,27 +876,27 @@ public class PlayerArea {
         playerData.playerHeroCardList = HeroListToData();
         playerData.slayedMonsterList = SlayedListToData();
         return playerData;
-    } //ƒvƒŒƒCƒ„[‚Ìî•ñ‚ğdata‚É
+    } //ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½dataï¿½ï¿½
     public void DataToPlayerArea(PlayerData playerData) {
         this.playerID = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
-    } //data‚ğƒvƒŒƒCƒ„[‚Ìî•ñ‚É
+    } //dataï¿½ï¿½ï¿½vï¿½ï¿½ï¿½Cï¿½ï¿½ï¿½[ï¿½Ìï¿½ï¿½ï¿½
     public List<int> HandToData() {
         List<int> data = new List<int>();
         foreach(SmallCard card in playerHandList) {
             data.Add(card.ID);
         }
         return data;
-    } //èD‚ğdata‚É
+    } //ï¿½ï¿½Dï¿½ï¿½dataï¿½ï¿½
     public void DataToHand(List<int> data) {
         playerHandList.Clear();
         foreach(int id in data) {
             playerHandList.Add(new SmallCard(id, ""));
         }
-    } //data‚ğèD‚É
+    } //dataï¿½ï¿½ï¿½ï¿½Dï¿½ï¿½
     public List<HeroCardData> HeroListToData() {
         List<HeroCardData> data = new List<HeroCardData>();
         foreach(HeroCard card in playerHeroCardList) {
@@ -926,7 +911,7 @@ public class PlayerArea {
             data.Add(cardData);
         }
         return data;
-    } //ƒq[ƒ[ƒŠƒXƒg‚ğdata‚É
+    } //ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½dataï¿½ï¿½
     public void DataToHeroList(List<HeroCardData> data) {
         playerHeroCardList.Clear();
         foreach(HeroCardData hero in data) {
@@ -938,55 +923,55 @@ public class PlayerArea {
             }
             
         }
-    } //data‚ğƒq[ƒ[ƒŠƒXƒg‚É
+    } //dataï¿½ï¿½ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½
     public List<int> SlayedListToData() {
         List<int> data = new List<int>();
         foreach(LargeCard card in slayedMonsterList) {
             data.Add(card.ID);
         }
         return data;
-    } //“|‚µ‚½ƒ‚ƒ“ƒXƒ^[‚ğdata‚É
+    } //ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½ï¿½dataï¿½ï¿½
     public void DataToSlayedList(List<int> data) {
         slayedMonsterList.Clear();
         foreach(int id in data) {
             slayedMonsterList.Add(new LargeCard(id, ""));
         }
-    } //data‚ğ“|‚µ‚½ƒ‚ƒ“ƒXƒ^[‚É
+    } //dataï¿½ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½ï¿½
     public SmallCard PickHand(int order) {
         SmallCard tmp = playerHandList[order];
         playerHandList.RemoveAt(order);
         return tmp;
-    } //èD‚©‚çˆê–‡ƒJ[ƒh‚ğæ‚èo‚·
+    } //ï¿½ï¿½Dï¿½ï¿½ï¿½ï¿½ê–‡ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushHand(SmallCard tmp) {
         playerHandList.Add(tmp);
-    }//ƒJ[ƒh‚ğèD‚É’Ç‰Á‚·‚é
+    }//ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ï¿½Dï¿½É’Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
     public HeroCard PickHeroCard(int order) {
         Debug.Log(playerHeroCardList.Count);
         HeroCard tmp = playerHeroCardList[order];
         playerHeroCardList.RemoveAt(order);
         return tmp;
-    }//ƒq[ƒ[ƒŠƒXƒg‚Ì’†‚©‚çƒJ[ƒh‚ğˆê–‡æ‚èo‚·
+    }//ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½Ì’ï¿½ï¿½ï¿½ï¿½ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ê–‡ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushHeroCard(HeroCard tmp) {
         playerHeroCardList.Add(tmp);
-    }//ƒq[ƒ[ƒŠƒXƒg‚ÉƒJ[ƒh‚ğ’Ç‰Á‚·‚é
+    }//ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ÉƒJï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
     public SmallCard PickArmedCard(int order) {
         SmallCard tmp = playerHeroCardList[order].equip;
         playerHeroCardList[order].equip = null;
         return tmp;
-    } //ƒq[ƒ[‚ª‘•”õ‚µ‚Ä‚¢‚éƒAƒCƒeƒ€‚ğæ‚èo‚·
+    } //ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä‚ï¿½ï¿½ï¿½Aï¿½Cï¿½eï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oï¿½ï¿½
     public void AttachArmedCard(SmallCard tmp,int order) {
         Debug.Log(playerHeroCardList.Count+","+ order);
-        if (order >= playerHeroCardList.Count) throw new Exception("‘¶İ‚µ‚È‚¢ƒq[ƒ[‚ğw’è‚µ‚Ä‚¢‚Ü‚·");
+        if (order >= playerHeroCardList.Count) throw new Exception("ï¿½ï¿½ï¿½İ‚ï¿½ï¿½È‚ï¿½ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½wï¿½è‚µï¿½Ä‚ï¿½ï¿½Ü‚ï¿½");
         playerHeroCardList[order].equip = tmp;
-    } //ƒq[ƒ[‚ÉƒAƒCƒeƒ€‚ğ‘•”õ‚³‚¹‚é
+    } //ï¿½qï¿½[ï¿½ï¿½ï¿½[ï¿½ÉƒAï¿½Cï¿½eï¿½ï¿½ï¿½ğ‘•”ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public LargeCard PickSlayedMonster(int order) {
         LargeCard tmp = slayedMonsterList[order];
         slayedMonsterList.RemoveAt(order);
         return tmp;
-    } //“¢”°‚µ‚½ƒ‚ƒ“ƒXƒ^[ƒŠƒXƒg‚©‚çƒJ[ƒh‚ğˆê–‡æ‚èo‚·
+    } //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ï¿½ï¿½ï¿½Jï¿½[ï¿½hï¿½ï¿½ï¿½ê–‡ï¿½ï¿½ï¿½oï¿½ï¿½
     public void PushSlayedMonster(LargeCard tmp) {
         slayedMonsterList.Add(tmp);
-    } //“¢”°‚µ‚½ƒ‚ƒ“ƒXƒ^[ƒŠƒXƒg‚ÉƒJ[ƒh‚ğ’Ç‰Á‚·‚é
+    } //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[ï¿½ï¿½ï¿½Xï¿½gï¿½ÉƒJï¿½[ï¿½hï¿½ï¿½Ç‰ï¿½ï¿½ï¿½ï¿½ï¿½
     public void SetLeaderID(int num) {
         leaderCardID.Value = num;
     }
@@ -1092,7 +1077,7 @@ public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour {
                 instance = (T)FindObjectOfType(typeof(T));
 
                 if (instance == null) {
-                    Debug.LogError(typeof(T) + "‚ªƒV[ƒ“‚É‘¶İ‚µ‚Ü‚¹‚ñB");
+                    Debug.LogError(typeof(T) + "ï¿½ï¿½ï¿½Vï¿½[ï¿½ï¿½ï¿½É‘ï¿½ï¿½İ‚ï¿½ï¿½Ü‚ï¿½ï¿½ï¿½B");
                 }
             }
 
