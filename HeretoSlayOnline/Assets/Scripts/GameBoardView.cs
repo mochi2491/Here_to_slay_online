@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameBoardView : MonoBehaviour
@@ -17,8 +18,8 @@ public class GameBoardView : MonoBehaviour
     //�����X�^�[
     public GameObject monsterObject;
 
-    private Sprite[] smallCardImageList = new Sprite[gameCore._gameBoard.SMALLCARD_COUNT];
-    private Sprite[] largeCardImageList = new Sprite[gameCore._gameBoard.LARGECARD_COUNT];
+    private Sprite[] smallCardImageList = new Sprite[GameBoard.SMALLCARD_COUNT];
+    private Sprite[] largeCardImageList = new Sprite[GameBoard.LARGECARD_COUNT];
 
     //private methods
     private void Reset(GameObject content) { 
@@ -47,8 +48,8 @@ public class GameBoardView : MonoBehaviour
             GameObject card = (GameObject)Resources.Load("Card");
             GameObject a = Instantiate(card, parent.transform);
             CardView view = a.AddComponent<CardView>();
-            if(hero.armedCardID != -1) view.ApplyHeroData(heroData[i], smallCardImageList[heroData[i]], armedCardData[i], smallCardImageList[armedCardData[i]],i,area,gameCore,holderNum,isLarge);
-            else view.ApplyHeroData(heroData[i], smallCardImageList[hero.cardID], armedCardData[i], null, i, area, gameCore, holderNum, isLarge);
+            if(armedCardData[i] != -1) view.ApplyHeroData(heroData[i], smallCardImageList[heroData[i]], armedCardData[i], smallCardImageList[armedCardData[i]],i,area,gameCore,holderNum,isLarge);
+            else view.ApplyHeroData(heroData[i], smallCardImageList[heroData[i]], armedCardData[i], null, i, area, gameCore, holderNum, isLarge);
         }
     }
 
@@ -65,11 +66,11 @@ public class GameBoardView : MonoBehaviour
     } //�q�[���[���X�g�Ƀf�[�^��K�p
     public void ApplySlayedMonster(List<int> data,int playerNum){
         Reset(slayedmonsterObject[playerNum]);
-        Apply(data, sprite, slayedmonsterObject[playerNum],Area.slayedMonster,playerNum,true);
+        Apply(data,slayedmonsterObject[playerNum],Area.slayedMonster,playerNum,true);
     } //�|���������X�^�[���X�g�Ƀf�[�^��K�p
     public void ApplyDiscardPile(List<int> data){
         Reset(discardpileObject);
-        Apply(data, sprite,discardpileObject,Area.discardPile,0, false);
+        Apply(data,discardpileObject,Area.discardPile,0, false);
     }
     public void ApplyMonster(List<int> data){
         Reset(monsterObject);

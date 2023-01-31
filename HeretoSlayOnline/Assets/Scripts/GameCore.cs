@@ -498,6 +498,13 @@ public class GameBoard : IGameBoard {
             return this.playerCount;
         }
     }
+    public DeckArea GetdeckArea {
+        get {return this.deckArea;}
+    }
+    public MonsterArea GetmonsterArea {
+        get {return this.monsterArea;}
+    }
+
     public GameBoard InitializeGameBoard() {
         for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         cardBack = Resources.Load("back") as Sprite;
