@@ -1,19 +1,57 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
+using UniRx.Triggers;
+using Unity.VisualScripting;
 
 public class CardView : MonoBehaviour
 {
+    //instance
+    private int heroID = 0;
+    private int itemID = 0;
+    private bool isLarge = false;
+    [SerializeField] private Image heroImage = null;
+    [SerializeField] private Image itemImage = null;
+    public ObservableEventTrigger heroTrigger;
+    public ObservableEventTrigger itemTrigger;
+
+    public int HeroID {
+        get { return heroID; }
+    }
+    public int ItemID {
+        get { return itemID; }
+    }
+    public bool IsLarge {
+        get { return isLarge; }
+    }
+    public void Awake() {
+        heroTrigger = this.transform.Find("hero").AddComponent<ObservableEventTrigger>();
+        itemTrigger = this.transform.Find("item").AddComponent<ObservableEventTrigger>();
+    }
+    public void ApplyData(Sprite heroSprite,Sprite itemSprite) {
+        heroImage.sprite = heroSprite;
+        itemImage.sprite = itemSprite;
+    }
+    public void SetData(int heroID,int itemID,bool isLarge) {
+        this.heroID= heroID;
+        this.itemID= itemID;
+        this.isLarge= isLarge;
+    }
+    public void DestroySelf() {
+        Destroy(this.gameObject);
+    }
+    /*
     private int? cardID = null;
     private Sprite cardSprite = null;
     private int? itemID = null;
     private Image image = null;
     private Image itemImage = null;
     private int holderNum = 0;
-    private int orderNum = 0;@//—Ìˆæ‚Ì’†‚Å‰½ŒÂ–Ú‚É•\¦‚³‚ê‚Ä‚¢‚é‚©
+    private int orderNum = 0;ã€€//é ˜åŸŸã®ä¸­ã§ä½•å€‹ç›®ã«è¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹ã‹
     private Area area;
     private EventTrigger trigger;
     public GameCore gameCore;
@@ -82,7 +120,7 @@ public class CardView : MonoBehaviour
         itemImage.sprite = null;
         itemID = null;
         return itemTmp;
-    }
+    }*/
 }
 
 public class SmallCardView : MonoBehaviour {

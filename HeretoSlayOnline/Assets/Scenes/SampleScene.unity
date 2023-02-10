@@ -2374,6 +2374,7 @@ GameObject:
   - component: {fileID: 402210447}
   - component: {fileID: 402210448}
   - component: {fileID: 402210449}
+  - component: {fileID: 402210450}
   m_Layer: 5
   m_Name: GameBoard
   m_TagString: Untagged
@@ -2439,6 +2440,7 @@ MonoBehaviour:
   - {fileID: 415972329}
   discardpileObject: {fileID: 1471868151}
   monsterObject: {fileID: 496370195}
+  nullSprite: {fileID: 21300000, guid: 366011a3a7d08504290441370fa76139, type: 3}
 --- !u!114 &402210449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2462,6 +2464,20 @@ MonoBehaviour:
   - {fileID: 4799904987859869976}
   - {fileID: 3067858905122896882}
   - {fileID: 4799904988012101686}
+--- !u!114 &402210450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402210446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f235da01a81fed42993d2493b971293, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameCore: {fileID: 2130668452}
+  gameBoardView: {fileID: 402210448}
 --- !u!1 &415972329
 GameObject:
   m_ObjectHideFlags: 0
@@ -21973,7 +21989,6 @@ MonoBehaviour:
   sendTextEvent:
     m_PersistentCalls:
       m_Calls: []
-  gameBoard: {fileID: 0}
   gameBoardView: {fileID: 402210448}
   gameBoardObject: {fileID: 402210446}
   changeStateEvent:

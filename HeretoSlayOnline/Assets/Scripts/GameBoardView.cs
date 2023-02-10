@@ -1,23 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 
 public class GameBoardView : MonoBehaviour
 {
     public GameCore gameCore;
-
-    //��D�\��
     public GameObject handObject;
-    //�e�v���C���[�̃q�[���[
     public List<GameObject> heroObject;
-    //�|���������X�^�[
     public List<GameObject> slayedmonsterObject;
-    //�̂ĎD
     public GameObject discardpileObject;
-    //�����X�^�[
     public GameObject monsterObject;
 
+    public List<CardView> allCardList;
+
+    [SerializeField]private Sprite nullSprite;
     private Sprite[] smallCardImageList = new Sprite[GameBoard.SMALLCARD_COUNT];
     private Sprite[] largeCardImageList = new Sprite[GameBoard.LARGECARD_COUNT];
 
@@ -30,44 +28,50 @@ public class GameBoardView : MonoBehaviour
     private void Apply(List<int> data,GameObject parent,Area area,int holderNum,bool isLarge) {
         int i = 0;
         foreach (int id in data) {
-            GameObject card = (GameObject)Resources.Load("Card");
+            GameObject card = (GameObject)Resources.Load("CardObject");
             GameObject a = Instantiate(card, parent.transform);
-            CardView view = a.AddComponent<CardView>();
+            CardView view = a.GetComponent<CardView>();
             if(id != -1) {
-                if(isLarge)view.ApplyData(id, largeCardImageList[id], i, area, gameCore, holderNum, isLarge);
-                else view.ApplyData(id, smallCardImageList[id], i, area, gameCore, holderNum, isLarge);
+                if (isLarge) {
+                    view.ApplyData(largeCardImageList[id], nullSprite);
+                }
+                else view.ApplyData(smallCardImageList[id], nullSprite);
             }
             else {
-                view.ApplyData(id, null, i, area, gameCore, holderNum, isLarge);
+                view.ApplyData(nullSprite,nullSprite);
             }
+            view.SetData(data[i], -1, isLarge);
             i++;
+            allCardList.Add(view);
         }
     }
-    private void ApplyHero(List<int> heroData,List<int> armedCardData,GameObject parent,Area area,int holderNum,bool isLarge) {
-        for(int i = 0; i < heroData.Count;i++){
-            GameObject card = (GameObject)Resources.Load("Card");
+    private void Apply(List<int>data ,GameObject parent,Area area,int holderNum,bool isLarge,List<int> armedCardData) {
+        for (int i = 0; i < data.Count; i++) {
+            GameObject card = (GameObject)Resources.Load("CardObject");
             GameObject a = Instantiate(card, parent.transform);
             CardView view = a.AddComponent<CardView>();
-            if(armedCardData[i] != -1) view.ApplyHeroData(heroData[i], smallCardImageList[heroData[i]], armedCardData[i], smallCardImageList[armedCardData[i]],i,area,gameCore,holderNum,isLarge);
-            else view.ApplyHeroData(heroData[i], smallCardImageList[heroData[i]], armedCardData[i], null, i, area, gameCore, holderNum, isLarge);
+            if (armedCardData[i] != -1) view.ApplyData(smallCardImageList[data[i]], nullSprite);
+            else view.ApplyData(largeCardImageList[data[i]], smallCardImageList[armedCardData[i]]);
+            view.SetData(data[i], armedCardData[i], isLarge);
+            allCardList.Add(view);
         }
     }
 
     //public methods
     public void ApplyHand(List<int> data){
-        //hand��������
         Reset(handObject);
         Apply(data,handObject,Area.playerHand,gameCore.playerID,false);
 
-    } //��D�Ƀf�[�^��K�p
+    }
     public void ApplyHero(List<int> heroData, List<int> armedCardData,int playerNum){
         Reset(heroObject[playerNum]);
-        ApplyHero(heroData,armedCardData,heroObject[playerNum],Area.playerHero,playerNum,false);
-    } //�q�[���[���X�g�Ƀf�[�^��K�p
+        Apply(heroData,heroObject[playerNum],Area.playerHero,playerNum,false,armedCardData);
+           
+    }
     public void ApplySlayedMonster(List<int> data,int playerNum){
         Reset(slayedmonsterObject[playerNum]);
         Apply(data,slayedmonsterObject[playerNum],Area.slayedMonster,playerNum,true);
-    } //�|���������X�^�[���X�g�Ƀf�[�^��K�p
+    }
     public void ApplyDiscardPile(List<int> data){
         Reset(discardpileObject);
         Apply(data,discardpileObject,Area.discardPile,0, false);
@@ -77,7 +81,7 @@ public class GameBoardView : MonoBehaviour
         Apply(data, monsterObject,Area.monsterList,0,true);
     }
 
-    private void Start() {
+    private void Awake() {
         smallCardImageList = Resources.LoadAll("deck_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
         largeCardImageList = Resources.LoadAll("monster_and_leader_cards",typeof(Sprite)).Cast<Sprite>().ToArray();
     }

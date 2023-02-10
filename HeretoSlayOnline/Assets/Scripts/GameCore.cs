@@ -33,7 +33,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
-    //Game�̃X�e�[�g
+    //GameState
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
     public IReadOnlyReactiveProperty<GameState> _state => state;
     [HideInInspector]public ChangeStateEvent changeStateEvent;
@@ -651,10 +651,71 @@ public class GameBoard : IGameBoard {
         
         return copy;
     } //�J�[�h���ړ�������(�o�J����������Ȃ̂ł����꒼��)
-    public GameBoard Sample() {
-        GameBoard board = (GameBoard)MemberwiseClone();
-        board.turnPlayerNum = 20;
-        return board;
+    public GameBoardAddress SearchCard(int cardID,bool isLarge) {
+        int playerNum = 0;
+        int orderNum = 0;
+        GameBoardAddress address = new GameBoardAddress();
+        if (isLarge) {
+            address.area = Area.slayedMonster;
+            playerNum = 0;
+            //slayedMonsterListから探索
+            foreach (PlayerArea pa in playerAreaList) {
+                address.playerID = playerNum;
+                orderNum = 0;
+                foreach (LargeCard card in pa.SlayedMonsterList) {
+                    address.order= orderNum;
+                    if(card.ID == cardID) {
+                        return address;
+                    }
+                    orderNum++;
+                }
+                playerNum++;
+            }
+            //monsterListから探索
+            address.area = Area.monsterList;
+            playerNum = 0;
+            orderNum= 0;
+            foreach(LargeCard card in monsterArea.monsterCardList) {
+                address.order= orderNum;
+                if(card.ID == cardID) {
+                    return address;
+                }
+                orderNum++;
+            }
+        }
+        else {
+            foreach(PlayerArea pa in playerAreaList) {
+                address.playerID = playerNum;
+                address.area = Area.playerHand;
+                foreach(SmallCard card in pa.PlayerHandList) {
+                    address.order= orderNum;
+                    if (card.ID == cardID) return address;
+                    orderNum++;
+                }
+                address.area = Area.playerHero;
+                foreach(HeroCard card in pa.PlayerHeroCardList) {
+                    address.order= orderNum;
+                    if (card.hero.ID == cardID) return address;
+                    orderNum++;
+                }
+                address.area = Area.playerHeroItem;
+                foreach(HeroCard card in pa.PlayerHeroCardList) {
+                    address.order= orderNum;
+                    if (card.equip.ID == cardID) return address;
+                    orderNum++;
+                }
+                playerNum++;
+            }
+            playerNum = 0;
+            orderNum = 0;
+            address.area = Area.discardPile;
+            foreach(SmallCard card in deckArea.discardPile) {
+                address.order= orderNum;
+                if (card.ID == cardID) return address;
+                orderNum++;
+            }
+        }
+        return address;
     }
 }
 public interface CardMover {
@@ -670,7 +731,7 @@ public enum Area {
 }
 public class DeckArea {
     private List<SmallCard> mainDeck = new List<SmallCard>();
-    private List<SmallCard> discardPile = new List<SmallCard>();
+    public List<SmallCard> discardPile = new List<SmallCard>();
     public void Init() {
         //mainDeck init
         for(int i = 0; i <= GameBoard.SMALLCARD_COUNT; i++) {
@@ -1021,7 +1082,7 @@ public class ServerConnector : MonoBehaviour{
     private ReactiveProperty<string> receivedMessage=new ReactiveProperty<string>("first");
     public IReactiveProperty<string> _receivedMessage => receivedMessage;
     void Start() {
-        ws = new WebSocket("wss://htsserver.5m8d.net/");
+        ws = new WebSocket("wss://hts-dev.5m8d.net/");
         var context = SynchronizationContext.Current;
         ws.OnOpen += (sender, e) => {
             Debug.Log("Connect to server.");
