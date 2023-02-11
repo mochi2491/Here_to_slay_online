@@ -9,7 +9,7 @@ using CardData;
 public class CardSheetReader : MonoBehaviour
 {
     public string sheetID = "1VvFDN7ruAOAvdo753SgBvfWGQsEZlw2H6VN_t1PWtgs";
-    public string[] sheetNames = {"ƒŠ[ƒ_[","ƒq[ƒ[","ƒ‚ƒ“ƒXƒ^[","ƒAƒCƒeƒ€","ƒ}ƒWƒbƒN","Modifier"};
+    public string[] sheetNames = {"ï¿½ï¿½ï¿½[ï¿½_ï¿½[","ï¿½qï¿½[ï¿½ï¿½ï¿½[","ï¿½ï¿½ï¿½ï¿½ï¿½Xï¿½^ï¿½[","ï¿½Aï¿½Cï¿½eï¿½ï¿½","ï¿½}ï¿½Wï¿½bï¿½N","Modifier"};
     public bool IsLoading { get; private set; }
     public string[][] Datas { get; private set; }
     public CardDataManager cdm = new CardDataManager();
@@ -88,11 +88,11 @@ public class CardSheetReader : MonoBehaviour
 
     static string[][] ConvertCSVtoJaggedArray(string t) {
         var reader = new StringReader(t);
-        reader.ReadLine();  //ƒwƒbƒ_“Ç‚İ”ò‚Î‚µ
+        reader.ReadLine();  //ãƒ˜ãƒƒãƒ€èª­ã¿é£›ã°ã—
         var rows = new List<string[]>();
         while (reader.Peek() >= 0) {
-            var line = reader.ReadLine();        // ˆês‚¸‚Â“Ç‚İ‚İ
-            var elements = line.Split(',');    // s‚ÌƒZƒ‹‚Í,‚Å‹æØ‚ç‚ê‚é
+            var line = reader.ReadLine();        //ä¸€è¡Œãšã¤èª­è¾¼
+            var elements = line.Split(',');    //è¡Œã®ã‚»ãƒ«ã¯,ã§åŒºåˆ‡ã‚‰ã‚Œã‚‹
             for (var i = 0; i < elements.Length; i++) {
                 elements[i] = elements[i].TrimStart('"').TrimEnd('"');
             }

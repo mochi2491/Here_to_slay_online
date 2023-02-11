@@ -5,8 +5,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.Events;
 public class GSSReader : MonoBehaviour {
-    public string SheetID = "“Ç‚İ‚ŞƒV[ƒg‚ÌID";
-    public string SheetName = "“Ç‚İ‚ŞƒV[ƒg";
+    public string SheetID = "èª­ã¿è¾¼ã‚€ã‚·ãƒ¼ãƒˆã®ID";
+    public string SheetName = "èª­ã¿è¾¼ã‚€ã‚·ãƒ¼ãƒˆ";
     public UnityEvent OnLoadEnd;
     public bool IsLoading { get; private set; }
     public string[][] Datas { get; private set; }
@@ -34,11 +34,11 @@ public class GSSReader : MonoBehaviour {
     }
     static string[][] ConvertCSVtoJaggedArray(string t) {
         var reader = new StringReader(t);
-        reader.ReadLine();  //ƒwƒbƒ_“Ç‚İ”ò‚Î‚µ
+        reader.ReadLine();  //ãƒ˜ãƒƒãƒ€èª­ã¿é£›ã°ã—
         var rows = new List<string[]>();
         while (reader.Peek() >= 0) {
-            var line = reader.ReadLine();        // ˆês‚¸‚Â“Ç‚İ‚İ
-            var elements = line.Split(',');    // s‚ÌƒZƒ‹‚Í,‚Å‹æØ‚ç‚ê‚é
+            var line = reader.ReadLine();        // ä¸€è¡Œãšã¤èª­è¾¼
+            var elements = line.Split(',');    // è¡Œã®ã‚»ãƒ«ã¯,ã§åŒºåˆ‡ã‚‰ã‚Œã‚‹
             for (var i = 0; i < elements.Length; i++) {
                 elements[i] = elements[i].TrimStart('"').TrimEnd('"');
             }

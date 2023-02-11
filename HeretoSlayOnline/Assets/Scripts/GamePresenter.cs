@@ -21,24 +21,24 @@ public class GamePresenter : MonoBehaviour
     IDisposable aaa;
     void Start() {
         int i = 0;
-        //view -> model ƒCƒxƒ“ƒg”­‰Î
+        //view -> model ã‚¤ãƒ™ãƒ³ãƒˆç™ºç«
         //entrance
         IEntrance _entrance = gameCore._entrance;
-        //setUserName InputField‚É“ü—Í‚³‚ê‚½•¶Žš—ñ‚ð“K—p
+        //setUserName InputFieldã«å…¥åŠ›ã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’é©ç”¨
         entranceView.userNameText.onValueChanged.AsObservable().Subscribe(
             x => {
                 _entrance.SetUserName(x);
             }
         ).AddTo(this);
 
-        //sendUserName Button‚ª‰Ÿ‚³‚ê‚½‚çUserName‚ð‘—M
+        //sendUserName ButtonãŒæŠ¼ã•ã‚ŒãŸã‚‰UserNameã‚’é€ä¿¡
         entranceView.sendButton.onClick.AsObservable().Subscribe(
             _ => {
                 _entrance.SendUserName();
             }
         ).AddTo(this);
 
-        //isReady IsReady‚Ìó‘Ô‚ð“K—p
+        //isReady IsReadyã®çŠ¶æ…‹ã‚’é©ç”¨
         entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
             x => {
                 _entrance.ApplyIsReady(x);
@@ -46,7 +46,7 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //FieldTabs
-        //tab‚ÌØ‚è‘Ö‚¦
+        //tabã®åˆ‡ã‚Šæ›¿ãˆ
         IFieldTabs _fieldTabs = gameCore._fieldTabs;
         #region
         fieldTabsView.fieldButtons[0].onClick.AsObservable().Subscribe(
@@ -91,7 +91,7 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
         #endregion
 
-        //leader‚ÌØ‚è‘Ö‚¦
+        //leaderã®åˆ‡ã‚Šæ›¿ãˆ
         fieldTabsView.leaderSelector[gameCore.playerID].onValueChanged.AsObservable().Subscribe(
             value => {
                 gameCore.ControlLeaderNum(value);
@@ -146,7 +146,7 @@ public class GamePresenter : MonoBehaviour
         chatView.sendButton.onClick.AsObservable().Subscribe(
             _ => {
                 gameCore.ControlLog(chatView.input.text);
-                chatView.input.text = ""; //input‚ðÁ‹Ž‚·‚é
+                chatView.input.text = ""; //inputï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             }
 
         ).AddTo(this);
@@ -158,11 +158,11 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
 
-        //model -> view ƒŠƒAƒNƒeƒBƒu
+        //model -> view ãƒªã‚¢ã‚¯ãƒ†ã‚£ãƒ–
 
 
         //entrance
-        //isReadyToggle‚Ì‘€ì‚Ì”\”Û‚ÌŠÇ—
+        //isReadyToggleã®æ“ä½œã®èƒ½å¦ã®ç®¡ç†
         gameCore._state.Subscribe(
             state => {
                 if (state == GameState.wait) entranceView.isReadyToggle.interactable = true;
@@ -172,7 +172,7 @@ public class GamePresenter : MonoBehaviour
 
 
         //fieldTabs
-        //tab‚ÌØ‚è‘Ö‚¦
+        //tabã®åˆ‡ã‚Šæ›¿ãˆ
         gameCore.fieldTabs._visibleTabNum.Subscribe(
             num => {
                 i = 0;
@@ -184,7 +184,7 @@ public class GamePresenter : MonoBehaviour
             }
         ).AddTo(this);
 
-        //leaderSelector‚Ì§Œä
+        //leaderSelectorã®åˆ¶å¾¡
         gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
                 i = 0;
@@ -195,7 +195,7 @@ public class GamePresenter : MonoBehaviour
                 }
             }
         ).AddTo(this);
-        //leaderSkillButton‚Ì§Œä
+        //leaderSkillButtonã®åˆ¶å¾¡
         gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
                 i = 0;
@@ -208,7 +208,7 @@ public class GamePresenter : MonoBehaviour
                 fieldTabsView.playerID.text = "ID" + playerID;
             }
         ).AddTo(this);
-        //leaderCard‚ÌŒ©‚½–Ú
+        //leaderCardã®è¦‹ãŸç›®
         #region
         aaa = gameCore._gameBoard
             .Finally(() => {
@@ -228,7 +228,7 @@ public class GamePresenter : MonoBehaviour
 
 
         //chat area
-        //chat‚ÌXV
+        //chatã®æ›´æ–°
         gameCore.gameBoard.Value.chatArea._chatLog.Subscribe(
             log => {
                 chatView.chatLog.text = log;

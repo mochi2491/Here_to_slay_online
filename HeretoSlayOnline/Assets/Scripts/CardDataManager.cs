@@ -29,7 +29,7 @@ namespace CardData {
             return smallCardData[id].GetDescription();
         }
         /// <summary>
-        /// ƒŠ[ƒ_[ƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ãƒªãƒ¼ãƒ€ãƒ¼ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -42,7 +42,7 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒq[ƒ[ƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ãƒ’ãƒ¼ãƒ­ãƒ¼ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -55,7 +55,7 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒ‚ƒ“ƒXƒ^[ƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ãƒ¢ãƒ³ã‚¹ã‚¿ãƒ¼ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -68,7 +68,7 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒAƒCƒeƒ€ƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ã‚¢ã‚¤ãƒ†ãƒ ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -81,7 +81,7 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒ}ƒWƒbƒNƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ãƒã‚¸ãƒƒã‚¯ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -94,7 +94,7 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒ‚ƒfƒBƒtƒ@ƒCƒA\ƒJ[ƒh‚Ìƒf[ƒ^‚ğ“Ç‚İ‚Ş
+        /// ãƒ¢ãƒ‡ã‚£ãƒ•ã‚¡ã‚¤ã‚¢ãƒ¼ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
@@ -107,13 +107,13 @@ namespace CardData {
             return cdm;
         }
         /// <summary>
-        /// ƒ`ƒƒƒŒƒ“ƒWƒJ[ƒh‚Ìƒf[ƒ^‚ğ‚æ‚İ‚±‚Ş
+        /// ãƒãƒ£ãƒ¬ãƒ³ã‚¸ã‚«ãƒ¼ãƒ‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
         public CardDataManager LoadChallengeCard() {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
-            ChallengeCardScript a = new ChallengeCardScript("challenge", "ƒ`ƒƒƒŒƒ“ƒW1”N¶");
+            ChallengeCardScript a = new ChallengeCardScript("challenge", "ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½W1ï¿½Nï¿½ï¿½");
             smallCardData.Add(a);
             return cdm;
         }
@@ -127,11 +127,11 @@ namespace CardData {
         private string effect;
 
         /// <summary>
-        /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+        /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
         /// </summary>
-        /// <param name="name">ƒŠ[ƒ_[ƒJ[ƒh‚Ì–¼‘O</param>
-        /// <param name="className">ƒNƒ‰ƒX‚Ìí—Ş</param>
-        /// <param name="effect">ƒŠ[ƒ_[ƒXƒLƒ‹‚ÌŒø‰Ê</param>
+        /// <param name="name">ãƒªãƒ¼ãƒ€ãƒ¼ã‚«ãƒ¼ãƒ‰ã®åå‰</param>
+        /// <param name="className">ã‚¯ãƒ©ã‚¹ã®ç¨®é¡</param>
+        /// <param name="effect">ãƒªãƒ¼ãƒ€ãƒ¼ã‚¹ã‚­ãƒ«ã®åŠ¹æœ</param>
         internal LeaderCardScript(string name, string className, string effect) {
             this.name = name;
             this.className = className;

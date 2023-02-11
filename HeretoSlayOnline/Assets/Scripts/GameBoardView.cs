@@ -67,12 +67,10 @@ public class GameBoardView : MonoBehaviour
     public void ApplyHand(List<int> data){
         Reset(handObject);
         Apply(data,handObject,Area.playerHand,gameCore.playerID,false);
-
     }
     public void ApplyHero(List<int> heroData, List<int> armedCardData,int playerNum){
         Reset(heroObject[playerNum]);
         Apply(heroData,heroObject[playerNum],Area.playerHero,playerNum,false,armedCardData);
-           
     }
     public void ApplySlayedMonster(List<int> data,int playerNum){
         Reset(slayedmonsterObject[playerNum]);

@@ -81,28 +81,27 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         );
 
 
-        //sendText���\�b�h��sendTextEvent�ɓo�^
+        //sendTextメソッドをsendTextEventに登録
         sendTextEvent.AddListener(connector.SendText);
-        //changeState���\�b�h��changeStateEvent�ɓo�^
+        //changeStateメソッドをchangeStateEventに登録
         changeStateEvent.AddListener(ChangeState);
-        //�C���X�^���X����
 
         //gameboard
         gameBoard.Value = new GameBoard();
-        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //�C���X�^���X����
-        IgameBoard = gameBoard.Value; //interface�̒�`
+        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
+        IgameBoard = gameBoard.Value; //interfaceの宣言
         gameBoard.Value.InitializeGameBoard();
 
         //entrance
         entrance = this.gameObject.AddComponent<Entrance>();
-        _entrance = entrance; //interface�̎󂯓n��
-        _entrance.Init(sendTextEvent,changeStateEvent); //������
-        _state.Subscribe(state => { _entrance.SetState(state); }); //GameCore��state��n��
+        _entrance = entrance; //interfaceの受け渡し
+        _entrance.Init(sendTextEvent,changeStateEvent); //初期化
+        _state.Subscribe(state => { _entrance.SetState(state); }); //GameCoreのstateを渡す
         entrance._userName.Subscribe(name => { gameBoard.Value.chatArea.SetUserName(name); });
 
         //fieldTabs
         fieldTabs = this.gameObject.AddComponent<FieldTabsModel>();
-        _fieldTabs = fieldTabs; //interface�̎󂯓n��
+        _fieldTabs = fieldTabs; //interfaceの受け渡し
 
         //spread Sheet
         DataReader = this.gameObject.AddComponent<CardSheetReader>();
@@ -132,7 +131,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private void GetMessage(string msg) {
         string[] message = msg.Split(":::");
         if (message[0] == "0") {//0:::playerNum:::userName
-            gameBoard.Value.PlayerID = int.Parse(message[1]); //player��ID��ݒ�
+            gameBoard.Value.PlayerID = int.Parse(message[1]); //playerのIDを設定
             this.playerID = gameBoard.Value.PlayerID;
         }
         else if (message[0] == "1") { //1:::playerCount 
@@ -145,7 +144,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         }
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
-            //�󂯎����json���N���X�ɕϊ���GameBoard�ɓK�p
+            //受け取ったjsonをクラスに変換しGameBoardに適用
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
         }
         else if (message[0] == "first") {
@@ -310,7 +309,7 @@ public class CommandPanelModel{
         this.mousePos = mousePos;
     }
 
-    //�S�ẴR�}���h�p�l������郁�\�b�h
+    //全てのコマンドパネルを閉じるメソッド
     public CommandPanelModel CloseAllPanel() {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -319,7 +318,7 @@ public class CommandPanelModel{
         }
         return new CommandPanelModel(list,this.mousePos);
     }
-    //�ŏ��ɃR�}���h�p�l�����J�����\�b�h
+    //最初にコマンドパネルを開くメソッド
     public CommandPanelModel OpenSmallCommandPanel(CommandPanelView.PanelName panel,Vector3 mousePos) {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -359,7 +358,7 @@ public class CommandPanelModel{
         return new CommandPanelModel(list,mousePos);
     }
 
-    //�J�����R�}���h�p�l����J�ڂ����郁�\�b�h
+    //開いたコマンドパネルを遷移させるメソッド
     public CommandPanelModel TransitionSmallPanel(CommandPanelView.PanelName panel) {
         int i = 0;
         List<bool> list = new List<bool>();
@@ -398,16 +397,13 @@ public class CommandPanelModel{
         }
         return new CommandPanelModel(list, this.mousePos);
     }
-
-    //commandPanel�̃{�^�����������Ƃ��̃��W�b�N���l�܂��Ă�
-
 }
 [System.Serializable]public class SendTextEvent : UnityEvent<string> {
 
-} //SendText���q�N���X�ɓn�����߂̃N���X
+} //SendTextを子クラスに渡すためのクラス
 [System.Serializable]public class ChangeStateEvent : UnityEvent<GameState> {
 
-} //ChangeState���q�N���X�ɓn�����߂̃N���X
+} //ChangeStateを子クラスに渡すためのクラス
 public enum GameState {
     entrance,wait,ingame
 }
@@ -420,19 +416,19 @@ public interface IEntrance {
 
 }
 public class Entrance : MonoBehaviour,IEntrance{
-    SendTextEvent sendText; //text�𑗐M����Event
-    ChangeStateEvent changeState; //GameCore��state��ύX����Event
-    GameState state; //���݂�GameCore��State
-    private ReactiveProperty<string> userName = new ReactiveProperty<string>(""); //���[�U�[�l�[��
+    SendTextEvent sendText; //textを送信するためのEvent
+    ChangeStateEvent changeState; //GameCoreのstateを変更するためのEvent
+    GameState state; //現在のGameCoreのState
+    private ReactiveProperty<string> userName = new ReactiveProperty<string>(""); //ユーザーネーム
     public IReadOnlyReactiveProperty<string> _userName => userName;
-    private bool isReady = false; //Player�̏�����
+    private bool isReady = false; //Playerの準備状況
     
     //setter and getter
     public string UserName {
         get { return userName.Value; }
     }
 
-    //������
+    //初期化
     public void Init(SendTextEvent sendTextEvent,ChangeStateEvent changeStateEvent) {
         this.sendText = sendTextEvent;
         this.changeState = changeStateEvent;
@@ -466,7 +462,7 @@ public class FieldTabsModel : MonoBehaviour,IFieldTabs {
     public IReadOnlyReactiveProperty<int> _visibleTabNum => visibleTabNum;
     public void SetVisibleTabNum(int num) {
         visibleTabNum.Value = num;
-    }//tab�̐؂�ւ�
+    }//tabの切り替え
 }
 public interface IGameBoard {
 
@@ -518,7 +514,7 @@ public class GameBoard : IGameBoard {
             pa.Init(0);
         }
         return this;
-    } //������
+    } //初期化
     public GameBoard ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.deckArea.DataToDeck(gbd.mainDeck);
@@ -528,7 +524,7 @@ public class GameBoard : IGameBoard {
         board.chatArea.ApplyLog(gbd.chatLog);
         board.DataToPlayerList(gbd.playerList);
         return board;
-    } //GameBoard���X�V����
+    } //GameBoardを更新する
     public GameBoardData GameBoardToData(GameBoard gb) {
         GameBoardData gbd = new GameBoardData();
         gbd.turnPlayerNum = 1;
@@ -540,20 +536,20 @@ public class GameBoard : IGameBoard {
         gbd.playerList = gb.PlayerListToData();
         gbd.chatLog = gb.chatArea._chatLog.Value;
         return gbd;
-    }//GameBoard�̃��f�����f�[�^�ɕϊ�����
+    }//GameBoardのモデルをデータに変換する
     public List<PlayerData> PlayerListToData() {
         List<PlayerData> data = new List<PlayerData>();
         foreach(PlayerArea a in playerAreaList) {
             data.Add(a.PlayerAreaToData());
         }
         return data;
-    } //playerAreaList��data��
+    } //playerAreaListをdataに
     public void DataToPlayerList(List<PlayerData> playerList) {
         playerAreaList.Clear();
         foreach(PlayerData pd in playerList) {
             playerAreaList.Add(new PlayerArea(pd));
         }
-    } //data��playerAreaList��
+    } //dataをplayerAreaListに
     public GameBoard DeckShuffle() {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.deckArea.Shuffle();
@@ -576,7 +572,7 @@ public class GameBoard : IGameBoard {
         if ((From.area == Area.monsterList) || (From.area == Area.monsterDeck) || (From.area == Area.slayedMonster)) {
             isLarge = true;
         }
-        //�J�[�h�����ǂ�������
+        //カードを移動させる
         if (isLarge) {
             LargeCard moveCard;
             switch (From.area) {
@@ -653,7 +649,7 @@ public class GameBoard : IGameBoard {
         chatArea.AddLog(logText);
         
         return copy;
-    } //�J�[�h���ړ�������(�o�J����������Ȃ̂ł����꒼��)
+    } //カードを移動させるあまりよくない実装なのでいずれなおす
     public GameBoardAddress SearchCard(int cardID,bool isLarge) {
         int playerNum = 0;
         int orderNum = 0;
@@ -741,20 +737,20 @@ public class DeckArea {
     public void Init() {
         //mainDeck init
         for(int i = 0; i <= GameBoard.SMALLCARD_COUNT; i++) {
-            if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2��
+            if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72) { //2枚
                 mainDeck.Add(new SmallCard(i, ""));
                 mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 60 || (i >= 62 && i <= 64)) { //4��
+            else if (i == 60 || (i >= 62 && i <= 64)) { //4枚
                 for (int j = 0; j < 4; j++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 61) { //9��
+            else if (i == 61) { //9枚
                 for (int k = 0; k < 9; k++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else if (i == 73) { //14��
+            else if (i == 73) { //14枚
                 for (int l = 0; l < 14; l++) mainDeck.Add(new SmallCard(i, ""));
             }
-            else mainDeck.Add(new SmallCard(i, "")); //1��
+            else mainDeck.Add(new SmallCard(i, "")); //1枚
 
         }
         mainDeck = mainDeck.OrderBy(a => Guid.NewGuid()).ToList();
@@ -780,42 +776,42 @@ public class DeckArea {
             data.Add(card.ID);
         }
         return data;
-    } //MainDeck��data��
+    } //MainDeckをdataに
     public void DataToDeck(List<int> data) {
         mainDeck.Clear();
         foreach (int id in data) {
             mainDeck.Add(new SmallCard(id, ""));
         }
-    } //data��MainDeck��
+    } //dataをMainDeckに
     public List<int> PileToData() {
         List<int> data = new List<int>();
         foreach(SmallCard card in discardPile) {
             data.Add(card.ID);
         }
         return data;
-    } //DiscardPile��data��
+    } //DiscardPileをdataに
     public void DataToPile(List<int> data) {
         discardPile.Clear();
         foreach(int id in data) {
             discardPile.Add(new SmallCard(id, ""));
         }
-    } //data��DiscardPile��
+    } //dataをDiscardPileに
     public SmallCard PopDeck() {
         SmallCard tmp = mainDeck[0];
         mainDeck.RemoveAt(0);
         return tmp;
-    } //deck�̓������o��
+    } //deckの頭を取り出す
     public void PushDeck(SmallCard tmp) {
         mainDeck.Insert(0, tmp);
-    } //deck�̓��ɃJ�[�h��ǉ�
+    } //deckの頭にカードを追加
     public SmallCard PickDiscard(int order) {
         SmallCard tmp = discardPile[order];
         discardPile.RemoveAt(order);
         return tmp;
-    } //discardPile�̎w��̃J�[�h�����o��
+    } //discardPileの指定のカードを取り出す
     public void PushDiscard(SmallCard tmp) {
         discardPile.Add(tmp);
-    } //discardPile�̍Ō�ɃJ�[�h��ǉ�
+    } //discardPileの最後にカードを追加
 }
 public class MonsterArea {
     public List<LargeCard> monsterCardList = new List<LargeCard>();
@@ -833,39 +829,39 @@ public class MonsterArea {
             data.Add(card.ID);
         }
         return data;
-    } //���ݏo�����Ă��郂���X�^�[�̃��X�g��data��
+    } //現在出現しているモンスターのリストをdataに
     public void DataToList(List<int> data) {
         monsterCardList.Clear();
         foreach(int id in data) {
             monsterCardList.Add(new LargeCard(id, ""));
         }
-    } //data�����ݏo�����Ă��郂���X�^�[�̃��X�g��
+    } //dataを現在出現しているモンスターのリストに
     public List<int> DeckToData() {
         List<int> data = new List<int>();
         foreach(LargeCard card in monsterDeck) {
             data.Add(card.ID);
         }
         return data;
-    } //MonsterDeck��data��
+    } //MonsterDeckをdataに
     public void DataToDeck(List<int> data) {
         monsterDeck.Clear();
         foreach(int id in data) {
             monsterDeck.Add(new LargeCard(id, ""));
         }
-    } //data��MonsterDeck��
+    } //dataをMonsterDeckに
     public LargeCard PopDeck() {
         LargeCard tmp = monsterDeck[0];
         monsterDeck.RemoveAt(0);
         return tmp;
-    } //monsterDeck�̐擪�����o��
+    } //monsterDeckの先頭を取り出す
     public void PushDeck(LargeCard tmp) {
         monsterDeck.Insert(0, tmp);
-    } //monsterDeck�̓��ɃJ�[�h��ǉ�
+    } //monsterDeckの頭にカードを追加
     public LargeCard PopList(int order) {
         LargeCard tmp = monsterCardList[order];
         monsterCardList.RemoveAt(order);
         return tmp;
-    } //monsterList����J�[�h�����o��
+    } //monsterListからカードを取り出す
     public void PushList(LargeCard tmp,int order) {
         if (monsterCardList.Count < 3) monsterCardList.Add(tmp);
         else {
@@ -873,7 +869,7 @@ public class MonsterArea {
             monsterCardList.RemoveAt(order);
             monsterCardList.Add(tmp); 
         }
-    } //monsterList��3�������Ȃ�J�[�h��ǉ�����,3���ȏ�Ȃ�ꖇ�߂��Ă���ǉ�����
+    } //monsterListが3枚未満ならカードを追加する、3枚以上なら一枚戻してから追加する
 
 }
 public interface IChatArea {
@@ -899,7 +895,7 @@ public class ChatArea {
         userName = name;
     }
     public void AddLog(string text) {
-        //chatLog��text��ǉ�����
+        //chatLogにtextを追加する
         dt = DateTime.Now;
         chatLog.Value = chatLog.Value + "\n" + userName + ":" + dt.ToString("HH:mm:ss") + "\n" + text;
     }
@@ -935,13 +931,13 @@ public class PlayerArea {
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
-    } //�R���X�g���N�^
+    } //コンストラクタ
     //method
     public void Init(int num) {
         leaderCardID.Value = num;
         playerHandList.Clear();
         playerHeroCardList.Clear();
-    } //������
+    } //初期化
     public PlayerData PlayerAreaToData() {
         PlayerData playerData = new PlayerData();
         playerData.playerID = "";
@@ -950,27 +946,27 @@ public class PlayerArea {
         playerData.playerHeroCardList = HeroListToData();
         playerData.slayedMonsterList = SlayedListToData();
         return playerData;
-    } //�v���C���[�̏���data��
+    } //プレイヤーの情報をdataに
     public void DataToPlayerArea(PlayerData playerData) {
         this.playerID = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
         DataToSlayedList(playerData.slayedMonsterList);
-    } //data���v���C���[�̏���
+    } //dataをプレイヤーの情報に
     public List<int> HandToData() {
         List<int> data = new List<int>();
         foreach(SmallCard card in playerHandList) {
             data.Add(card.ID);
         }
         return data;
-    } //��D��data��
+    } //手札をdataに
     public void DataToHand(List<int> data) {
         playerHandList.Clear();
         foreach(int id in data) {
             playerHandList.Add(new SmallCard(id, ""));
         }
-    } //data����D��
+    } //dataを手札に
     public List<HeroCardData> HeroListToData() {
         List<HeroCardData> data = new List<HeroCardData>();
         foreach(HeroCard card in playerHeroCardList) {
@@ -985,7 +981,7 @@ public class PlayerArea {
             data.Add(cardData);
         }
         return data;
-    } //�q�[���[���X�g��data��
+    } //ヒーローリストをdataに
     public void DataToHeroList(List<HeroCardData> data) {
         playerHeroCardList.Clear();
         foreach(HeroCardData hero in data) {
@@ -997,55 +993,55 @@ public class PlayerArea {
             }
             
         }
-    } //data���q�[���[���X�g��
+    } //dataをヒーローリストに
     public List<int> SlayedListToData() {
         List<int> data = new List<int>();
         foreach(LargeCard card in slayedMonsterList) {
             data.Add(card.ID);
         }
         return data;
-    } //�|���������X�^�[��data��
+    } //倒したモンスターをdataに
     public void DataToSlayedList(List<int> data) {
         slayedMonsterList.Clear();
         foreach(int id in data) {
             slayedMonsterList.Add(new LargeCard(id, ""));
         }
-    } //data��|���������X�^�[��
+    } //dataを倒したモンスターに
     public SmallCard PickHand(int order) {
         SmallCard tmp = playerHandList[order];
         playerHandList.RemoveAt(order);
         return tmp;
-    } //��D����ꖇ�J�[�h�����o��
+    } //手札から一枚カードを取り出す
     public void PushHand(SmallCard tmp) {
         playerHandList.Add(tmp);
-    }//�J�[�h����D�ɒǉ�����
+    }//カードを手札に追加する
     public HeroCard PickHeroCard(int order) {
         Debug.Log(playerHeroCardList.Count+","+order);
         HeroCard tmp = playerHeroCardList[order];
         playerHeroCardList.RemoveAt(order);
         return tmp;
-    }//�q�[���[���X�g�̒�����J�[�h���ꖇ���o��
+    }//カードリストの中からカードを一枚取り出す
     public void PushHeroCard(HeroCard tmp) {
         playerHeroCardList.Add(tmp);
-    }//�q�[���[���X�g�ɃJ�[�h��ǉ�����
+    }//ヒーローリストにカードを追加する
     public SmallCard PickArmedCard(int order) {
         SmallCard tmp = playerHeroCardList[order].equip;
         playerHeroCardList[order].equip = null;
         return tmp;
-    } //�q�[���[���������Ă���A�C�e�������o��
+    } //ヒーローが装備しているアイテムを取り出す
     public void AttachArmedCard(SmallCard tmp,int order) {
         Debug.Log(playerHeroCardList.Count+","+ order);
         if (order >= playerHeroCardList.Count) throw new Exception("���݂��Ȃ��q�[���[���w�肵�Ă��܂�");
         playerHeroCardList[order].equip = tmp;
-    } //�q�[���[�ɃA�C�e���𑕔�������
+    } //ヒーローにアイテムを装備させる
     public LargeCard PickSlayedMonster(int order) {
         LargeCard tmp = slayedMonsterList[order];
         slayedMonsterList.RemoveAt(order);
         return tmp;
-    } //�������������X�^�[���X�g����J�[�h���ꖇ���o��
+    } //討伐したモンスターリストからカードを一枚取り出す
     public void PushSlayedMonster(LargeCard tmp) {
         slayedMonsterList.Add(tmp);
-    } //�������������X�^�[���X�g�ɃJ�[�h��ǉ�����
+    } //討伐したモンスターリストにカードを追加する
     public void SetLeaderID(int num) {
         leaderCardID.Value = num;
     }
