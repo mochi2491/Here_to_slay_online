@@ -17,15 +17,15 @@ using Zenject.SpaceFighter;
 
 public class GameCore : SingletonMonoBehaviour<GameCore>
 {
-    //�T�[�o�Ƃ̒ʐM���s��
+    //サーバとの通信
     public ServerConnector connector;
     [HideInInspector]public SendTextEvent sendTextEvent;
 
-    //GoogleSpreadSheet����f�[�^��ǂݍ���
+    //GoogleSpreadSheet
     private CardSheetReader DataReader;
     private CardDataManager CardDataManager = new CardDataManager();
 
-    //GameBoard�̎���
+    //GameBoard
     public ReactiveProperty<GameBoard> gameBoard;
     public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
     public IGameBoard IgameBoard;
@@ -108,6 +108,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         DataReader = this.gameObject.AddComponent<CardSheetReader>();
         DataReader.callBack.AddListener(SetCardData);
         DataReader.Load();
+
+        entranceObject.SetActive(true);
+        gameBoardObject.SetActive(false);
 
         
     }
@@ -685,6 +688,7 @@ public class GameBoard : IGameBoard {
         }
         else {
             foreach(PlayerArea pa in playerAreaList) {
+                orderNum = 0;
                 address.playerID = playerNum;
                 address.area = Area.playerHand;
                 foreach(SmallCard card in pa.PlayerHandList) {
@@ -693,11 +697,13 @@ public class GameBoard : IGameBoard {
                     orderNum++;
                 }
                 address.area = Area.playerHero;
+                orderNum = 0;
                 foreach(HeroCard card in pa.PlayerHeroCardList) {
                     address.order= orderNum;
                     if (card.hero.ID == cardID) return address;
                     orderNum++;
                 }
+                orderNum = 0;
                 address.area = Area.playerHeroItem;
                 foreach(HeroCard card in pa.PlayerHeroCardList) {
                     address.order= orderNum;
@@ -1014,7 +1020,7 @@ public class PlayerArea {
         playerHandList.Add(tmp);
     }//�J�[�h����D�ɒǉ�����
     public HeroCard PickHeroCard(int order) {
-        Debug.Log(playerHeroCardList.Count);
+        Debug.Log(playerHeroCardList.Count+","+order);
         HeroCard tmp = playerHeroCardList[order];
         playerHeroCardList.RemoveAt(order);
         return tmp;

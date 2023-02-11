@@ -14,8 +14,8 @@ public class CardView : MonoBehaviour
     private int heroID = 0;
     private int itemID = 0;
     private bool isLarge = false;
-    [SerializeField] private Image heroImage = null;
-    [SerializeField] private Image itemImage = null;
+    [SerializeField] private Image heroImage;
+    [SerializeField] private Image itemImage;
     public ObservableEventTrigger heroTrigger;
     public ObservableEventTrigger itemTrigger;
 
@@ -28,10 +28,6 @@ public class CardView : MonoBehaviour
     public bool IsLarge {
         get { return isLarge; }
     }
-    public void Awake() {
-        heroTrigger = this.transform.Find("hero").AddComponent<ObservableEventTrigger>();
-        itemTrigger = this.transform.Find("item").AddComponent<ObservableEventTrigger>();
-    }
     public void ApplyData(Sprite heroSprite,Sprite itemSprite) {
         heroImage.sprite = heroSprite;
         itemImage.sprite = itemSprite;
@@ -40,6 +36,9 @@ public class CardView : MonoBehaviour
         this.heroID= heroID;
         this.itemID= itemID;
         this.isLarge= isLarge;
+        if(itemID == -1) {
+            this.transform.Find("item").gameObject.SetActive(false);
+        }
     }
     public void DestroySelf() {
         Destroy(this.gameObject);

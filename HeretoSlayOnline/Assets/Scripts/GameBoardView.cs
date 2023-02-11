@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 using UniRx;
 using UnityEngine;
+using Zenject.Asteroids;
 
 public class GameBoardView : MonoBehaviour
 {
@@ -13,7 +15,8 @@ public class GameBoardView : MonoBehaviour
     public GameObject discardpileObject;
     public GameObject monsterObject;
 
-    public List<CardView> allCardList;
+    public GameObject cardImageIndicator;
+    public List<GameObject> allCardList;
 
     [SerializeField]private Sprite nullSprite;
     private Sprite[] smallCardImageList = new Sprite[GameBoard.SMALLCARD_COUNT];
@@ -31,6 +34,7 @@ public class GameBoardView : MonoBehaviour
             GameObject card = (GameObject)Resources.Load("CardObject");
             GameObject a = Instantiate(card, parent.transform);
             CardView view = a.GetComponent<CardView>();
+            if (view.heroTrigger == null) Debug.Log("gg");
             if(id != -1) {
                 if (isLarge) {
                     view.ApplyData(largeCardImageList[id], nullSprite);
@@ -42,18 +46,20 @@ public class GameBoardView : MonoBehaviour
             }
             view.SetData(data[i], -1, isLarge);
             i++;
-            allCardList.Add(view);
+            allCardList.Add(a);
         }
     }
     private void Apply(List<int>data ,GameObject parent,Area area,int holderNum,bool isLarge,List<int> armedCardData) {
         for (int i = 0; i < data.Count; i++) {
             GameObject card = (GameObject)Resources.Load("CardObject");
             GameObject a = Instantiate(card, parent.transform);
-            CardView view = a.AddComponent<CardView>();
-            if (armedCardData[i] != -1) view.ApplyData(smallCardImageList[data[i]], nullSprite);
-            else view.ApplyData(largeCardImageList[data[i]], smallCardImageList[armedCardData[i]]);
+            CardView view = a.GetComponent<CardView>();
+            if (armedCardData[i] != -1) view.ApplyData(smallCardImageList[data[i]], smallCardImageList[armedCardData[i]]);
+            else {
+                view.ApplyData(smallCardImageList[data[i]], nullSprite); 
+            }
             view.SetData(data[i], armedCardData[i], isLarge);
-            allCardList.Add(view);
+            allCardList.Add(a);
         }
     }
 
@@ -79,6 +85,22 @@ public class GameBoardView : MonoBehaviour
     public void ApplyMonster(List<int> data){
         Reset(monsterObject);
         Apply(data, monsterObject,Area.monsterList,0,true);
+    }
+    public void OpenIndicator(int cardID , bool isLarge,GameObject card) {
+        float movex = 0.5f;
+        float movey = 0.5f;
+        if (isLarge) {
+            movex = 1;
+            movey = -2.5f;
+        }   
+        Vector3 a = new Vector3(card.transform.position.x+movex,card.transform.position.y+movey,card.transform.position.z);
+        cardImageIndicator.transform.position = a;
+        if (isLarge) cardImageIndicator.GetComponent<Image>().sprite = largeCardImageList[cardID];
+        else cardImageIndicator.GetComponent<Image>().sprite = smallCardImageList[cardID];
+        cardImageIndicator.SetActive(true);
+    }
+    public void CloseIndicator() {
+        cardImageIndicator.SetActive(false);
     }
 
     private void Awake() {
