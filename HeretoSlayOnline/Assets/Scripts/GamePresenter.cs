@@ -93,11 +93,20 @@ public class GamePresenter : MonoBehaviour
         #endregion
 
         //leaderの切り替え
-        fieldTabsView.leaderSelector[gameCore.playerID].onValueChanged.AsObservable().Subscribe(
+        /*fieldTabsView.leaderSelector[gameCore.playerID].onValueChanged.AsObservable().Subscribe(
+            value => {
+                gameCore.ControlLeaderNum(value);
+            }
+        ).AddTo(this);*/
+        for (i = 0; i < 6; i++) {
+            fieldTabsView.leaderSelector[i].onValueChanged.AsObservable().Subscribe(
             value => {
                 gameCore.ControlLeaderNum(value);
             }
         ).AddTo(this);
+        }
+
+
         //leaderSkillButton
         #region
         fieldTabsView.LeaderSkillButton[0].onClick.AsObservable().Subscribe(
@@ -212,7 +221,7 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //leaderSelectorの制御
-        /*gameCore.gameBoard.Value._playerID.Subscribe(
+        gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
                 i = 0;
                 foreach (TMP_Dropdown selector in fieldTabsView.leaderSelector) {
@@ -221,7 +230,8 @@ public class GamePresenter : MonoBehaviour
                     i++;
                 }
             }
-        ).AddTo(this);*/
+        ).AddTo(this);
+
         //leaderSkillButtonの制御
         gameCore.gameBoard.Value._playerID.Subscribe(
             playerID => {
@@ -236,12 +246,8 @@ public class GamePresenter : MonoBehaviour
             }
         ).AddTo(this);
         //leaderCardの見た目
-        #region
-        aaa = gameCore._gameBoard
-            .Finally(() => {
-                Debug.Log("daa");
-            })
-            .Subscribe(
+        //handの枚数表示
+        gameCore._gameBoard.Subscribe(
             board => {
                 fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[board.playerAreaList[1]._leaderCardID.Value];
@@ -249,10 +255,18 @@ public class GamePresenter : MonoBehaviour
                 fieldTabsView.leaderImage[3].sprite = fieldTabsView.leaderSprite[board.playerAreaList[3]._leaderCardID.Value];
                 fieldTabsView.leaderImage[4].sprite = fieldTabsView.leaderSprite[board.playerAreaList[4]._leaderCardID.Value];
                 fieldTabsView.leaderImage[5].sprite = fieldTabsView.leaderSprite[board.playerAreaList[5]._leaderCardID.Value];
+
+                fieldTabsView.handCount[0].text = board.playerAreaList[0].PlayerHandList.Count.ToString();
+                fieldTabsView.handCount[1].text = board.playerAreaList[1].PlayerHandList.Count.ToString();
+                fieldTabsView.handCount[2].text = board.playerAreaList[2].PlayerHandList.Count.ToString();
+                fieldTabsView.handCount[3].text = board.playerAreaList[3].PlayerHandList.Count.ToString();
+                fieldTabsView.handCount[4].text = board.playerAreaList[4].PlayerHandList.Count.ToString();
+                fieldTabsView.handCount[5].text = board.playerAreaList[5].PlayerHandList.Count.ToString();
             }
             ).AddTo(this);
-        #endregion
 
+        
+        
 
         //chat area
         //chatの更新

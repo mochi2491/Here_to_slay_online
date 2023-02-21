@@ -13,13 +13,14 @@ public class FieldTabsView : MonoBehaviour
 {
     public int visibleTabNum = 0;
     public TextMeshProUGUI playerID;
-    public List<GameObject> fieldTabs;
-    public List<Button> fieldButtons;
+    public GameObject[] fieldTabs;
+    public Button[] fieldButtons;
 
-    public List<TMP_Dropdown> leaderSelector;
-    public List<Image> leaderImage;
+    public TMP_Dropdown[] leaderSelector;
+    public Image[] leaderImage;
     public Sprite[] leaderSprite = new Sprite[20];
     public ObservableEventTrigger[] leaderDescriptionTrigger;
+    public TextMeshProUGUI[] handCount;
 
     public List<Button> LeaderSkillButton;
     private void Start() {
