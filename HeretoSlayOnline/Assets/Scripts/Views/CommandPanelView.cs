@@ -4,6 +4,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CommandPanelView : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class CommandPanelView : MonoBehaviour
     public List<GameObject> largePanels;
     public GameObject closerPanel;
     public ObservableEventTrigger closerTrigger;
+
+    public Button[] smallButtons;
 
     private void Start() {
         closerTrigger = closerTrigger.GetComponent<ObservableEventTrigger>();

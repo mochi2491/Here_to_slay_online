@@ -33,12 +33,13 @@ public class CardPresenter : MonoBehaviour
                 gameBoardView.ApplyMonster(board.GetmonsterArea.ListToData());
                 foreach (GameObject a in gameBoardView.allCardList) {
                     CardView cv = a.GetComponent<CardView>();
+
+                    //ヒーローカードがクリックされたとき
                     cv.heroTrigger.OnPointerDownAsObservable()
                         .Subscribe(
                             x => {
                                 if (x.pointerId == -1) { //left click
-                                    gameCore.leftClickIsLarge = cv.IsLarge;
-                                    gameCore.SetClickedID(cv.HeroID);
+                                    gameCore.IndicateCard(cv.IsLarge,cv.HeroID);
                                 }
                                 else if (x.pointerId == -2) { //right click
                                     GameBoardAddress gba = new GameBoardAddress();
@@ -51,6 +52,8 @@ public class CardPresenter : MonoBehaviour
                                 
                             }
                             );
+
+                    //ヒーローカードの上にポインターが来た時
                     const float mouse_over_time = 0.75f;
                     cv.heroTrigger.OnPointerEnterAsObservable()
                         .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(mouse_over_time)))
@@ -67,12 +70,13 @@ public class CardPresenter : MonoBehaviour
                                 gameBoardView.CloseIndicator();
                             }
                             );
+
+                    //アイテムカードがクリックされた時
                     cv.itemTrigger.OnPointerDownAsObservable()
                         .Subscribe(
                             x => {
                                 if (x.pointerId == -1) { //left click
-                                    gameCore.leftClickIsLarge = cv.IsLarge;
-                                    gameCore.SetClickedID(cv.ItemID);
+                                    gameCore.IndicateCard(cv.IsLarge, cv.ItemID);
                                 }
                                 if (x.pointerId == -2) { //right click
                                     GameBoardAddress gba = new GameBoardAddress();
@@ -84,6 +88,7 @@ public class CardPresenter : MonoBehaviour
                                 }
                             }
                             );
+                    //アイテムカードの上にポインターが来た時
                     cv.itemTrigger.OnPointerEnterAsObservable()
                         .SelectMany(_ => Observable.Timer(TimeSpan.FromSeconds(mouse_over_time)))
                         .TakeUntil(cv.heroTrigger.OnPointerExitAsObservable()) //PointerExitされたらストリームをリセットする

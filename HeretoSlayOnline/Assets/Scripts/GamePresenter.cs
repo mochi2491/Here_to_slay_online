@@ -93,11 +93,7 @@ public class GamePresenter : MonoBehaviour
         #endregion
 
         //leaderの切り替え
-        /*fieldTabsView.leaderSelector[gameCore.playerID].onValueChanged.AsObservable().Subscribe(
-            value => {
-                gameCore.ControlLeaderNum(value);
-            }
-        ).AddTo(this);*/
+        
         for (i = 0; i < 6; i++) {
             fieldTabsView.leaderSelector[i].onValueChanged.AsObservable().Subscribe(
             value => {
@@ -140,23 +136,13 @@ public class GamePresenter : MonoBehaviour
             }
         );
         #endregion
-        //leaderDescription
-        #region
-        fieldTabsView.leaderDescriptionTrigger[0].OnPointerDownAsObservable()
-            .Subscribe(
-            _ => {
-                gameCore.leftClickIsLarge = true;
-                gameCore.SetClickedID(gameCore.gameBoard.Value.playerAreaList[0]._leaderCardID.Value);
-            }
-        ).AddTo(this);
-
-        #endregion
+        
         //chat area
         //send message
         chatView.sendButton.onClick.AsObservable().Subscribe(
             _ => {
                 gameCore.ControlLog(chatView.input.text);
-                chatView.input.text = ""; //input����������
+                chatView.input.text = ""; 
             }
 
         ).AddTo(this);
@@ -194,9 +180,14 @@ public class GamePresenter : MonoBehaviour
                 gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.CloseAllPanel();
             }
         );
+        commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe(
+            _ => {
+                //ここにスキルの発動処理を書く
+            }
+            );
+
+
         //model -> view リアクティブ
-
-
         //entrance
         //isReadyToggleの操作の能否の管理
         gameCore._state.Subscribe(
@@ -278,18 +269,15 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //description area
-        gameCore._leftClickedID.Subscribe(
+        //カードをポイントした時のカード表示
+        gameCore._cardIndicatorModel.Subscribe(
             x => {
-                if (gameCore.leftClickIsLarge) {
-                    descriptionView.text.text = gameCore.cardDataManager.GetLargeScript(x);
-                }
-                else {
-                    descriptionView.text.text = gameCore.cardDataManager.GetSmallScript(x);
-                }
+                if (x.IsLarge) descriptionView.text.text = gameCore.cardDataManager.GetLargeScript(x.GetID);
+                else descriptionView.text.text = gameCore.cardDataManager.GetSmallScript(x.GetID);
             }
-            ).AddTo(this);
+            );
+
         //commandPanel
-        
         gameCore._commandPanelModel.Subscribe(
             x => {
                 commandPanelView.ApplyModel(x);

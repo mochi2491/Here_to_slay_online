@@ -55,9 +55,9 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 
     //GUI
     public EventTrigger trigger ;
-    public bool leftClickIsLarge = false;
-    private ReactiveProperty<int> leftClickedID = new ReactiveProperty<int>(0);
-    public IReadOnlyReactiveProperty<int> _leftClickedID => leftClickedID;
+
+    private ReactiveProperty<CardIndicatorModel> cardIndicatorModel = new ReactiveProperty<CardIndicatorModel>(new CardIndicatorModel());
+    public IReadOnlyReactiveProperty<CardIndicatorModel> _cardIndicatorModel => cardIndicatorModel;
     public CommandPanelView commandPanelView;
     [HideInInspector]public ReactiveProperty<CommandPanelModel> commandPanelModel = new ReactiveProperty<CommandPanelModel>(new CommandPanelModel());
     public IReadOnlyReactiveProperty<CommandPanelModel> _commandPanelModel=> commandPanelModel;
@@ -121,8 +121,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         }
     }
 
-    public void SetClickedID(int id) {
-        leftClickedID.Value = id;
+    public void IndicateCard(bool isLarge,int cardID) {
+        cardIndicatorModel.Value = _cardIndicatorModel.Value.Indicate(isLarge,cardID);
     }
     public void SetCardData() {
         cardDataManager = DataReader.cdm;
@@ -184,7 +184,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private GameBoardData JsonToGameBoard(string json) {
         return JsonConvert.DeserializeObject<GameBoardData>(json);
     }
-
     public void SetToPlayerNum(int num) {
         ToAddress.playerID = num;
         if (isHeroItem) {
@@ -305,6 +304,28 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 #endif
     }
 
+}
+public class CardIndicatorModel {
+    private bool isLarge;
+    private int cardID;
+    public CardIndicatorModel() {
+        isLarge = false;
+        cardID = 0;
+    }
+    public int GetID {
+        get { return cardID; }
+    }
+    public bool IsLarge {
+        get { return isLarge; }
+    }
+    private CardIndicatorModel(bool isLarge,int cardID) {
+        this.isLarge = isLarge;
+        this.cardID = cardID;
+    }
+    public CardIndicatorModel Indicate(bool isLarge,int cardID) {
+        if (cardID < 0) throw new Exception("存在しないカードIDです");
+        return new CardIndicatorModel(isLarge,cardID);
+    }
 }
 public class MenuPanelModel {
     public bool isActive = false;
