@@ -166,7 +166,6 @@ public class GamePresenter : MonoBehaviour
         );
         menuPanelView.OpenButton.OnClickAsObservable().Subscribe(
             _ => {
-                Debug.Log("safs");
                 gameCore.menuPanelModel.Value = gameCore.menuPanelModel.Value.Open();
             }
         );
@@ -224,16 +223,16 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //leaderSkillButtonの制御
-        gameCore.gameBoard.Value._playerID.Subscribe(
-            playerID => {
+        gameCore.gameBoard.Subscribe(
+            board => {
                 i = 0;
                 foreach (Button button in fieldTabsView.LeaderSkillButton) {
-                    if (i == playerID) button.interactable = true;
+                    if (i == board.PlayerID) button.interactable = true;
                     else button.interactable = false;
                     i++;
                 }
 
-                fieldTabsView.playerID.text = "ID" + playerID;
+                fieldTabsView.playerID.text = "ID:" + board.PlayerID + ",Name:" + gameCore.entrance.UserName;
             }
         ).AddTo(this);
         //leaderCardの見た目

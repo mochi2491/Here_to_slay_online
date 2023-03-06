@@ -522,6 +522,7 @@ public interface IGameBoard {
 
 }
 public class GameBoard : IGameBoard {
+    //定数
     public static readonly int SMALLCARD_COUNT = 73;
     public static readonly int LARGECARD_COUNT = 20;
     private Sprite cardBack;
@@ -959,7 +960,7 @@ public class ChatArea {
 }
 public class PlayerArea {
     //instance
-    private string playerID = "";
+    private string playerName = "";
     public ReactiveProperty<int> leaderCardID = new ReactiveProperty<int>(0);
     public IReactiveProperty<int> _leaderCardID => leaderCardID;
     private List<SmallCard> playerHandList = new List<SmallCard>();
@@ -967,6 +968,9 @@ public class PlayerArea {
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
     
     //getter and setter
+    public String PlayerName {
+        get { return this.playerName; }
+    }
     public List<SmallCard> PlayerHandList {
         get { return playerHandList; }
     }
@@ -980,7 +984,7 @@ public class PlayerArea {
 
     }
     public PlayerArea(PlayerData playerData) {
-        this.playerID = playerData.playerID;
+        this.playerName = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
@@ -1002,7 +1006,7 @@ public class PlayerArea {
         return playerData;
     } //プレイヤーの情報をdataに
     public void DataToPlayerArea(PlayerData playerData) {
-        this.playerID = playerData.playerID;
+        this.playerName = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);

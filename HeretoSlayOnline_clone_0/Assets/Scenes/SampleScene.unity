@@ -2421,7 +2421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 291, y: 198}
+  m_AnchoredPosition: {x: 253.1, y: 198}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &146910505
@@ -5829,7 +5829,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1820595798}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.9999927
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -29072,7 +29072,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 4, y: -219.99933}
+  m_AnchoredPosition: {x: 4, y: -219.99988}
   m_SizeDelta: {x: -4.0000153, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1872256894
@@ -33425,7 +33425,6 @@ MonoBehaviour:
   fieldTabs: {fileID: 0}
   playerID: 0
   trigger: {fileID: 0}
-  leftClickIsLarge: 0
   commandPanelView: {fileID: 402210449}
   tabs:
   - {fileID: 501847670}
