@@ -5,12 +5,15 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class CommandPanelView : MonoBehaviour
 {
     public GameObject smallCommandPanel;
     public List<GameObject> smallPanels;
-    public TMPro.TMP_Dropdown orderList;
+    public List<TextMeshProUGUI> smallPlayerButtonTexts;
+    public List<TextMeshProUGUI> largePlayerButtonTexts;
+    public TMP_Dropdown orderList;
     public GameObject largeCommandPanel;
     public List<GameObject> largePanels;
     public GameObject closerPanel;
@@ -19,6 +22,10 @@ public class CommandPanelView : MonoBehaviour
     public Button[] smallButtons;
 
     private void Start() {
+        for (int i = 0; i < smallPanels[1].transform.childCount; i++) {
+            smallPlayerButtonTexts.Add(smallPanels[1].transform.GetChild(i).transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>());
+            largePlayerButtonTexts.Add(largePanels[1].transform.GetChild(i).transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>());
+        }
         closerTrigger = closerTrigger.GetComponent<ObservableEventTrigger>();
     }
 

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UniRx;
 using System;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 
 public class GamePresenter : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class GamePresenter : MonoBehaviour
         //view -> model イベント発火
         //entrance
         IEntrance _entrance = gameCore._entrance;
+
         //setUserName InputFieldに入力された文字列を適用
         entranceView.userNameText.onValueChanged.AsObservable().Subscribe(
             x => {
@@ -38,6 +40,7 @@ public class GamePresenter : MonoBehaviour
                 _entrance.SendUserName();
             }
         ).AddTo(this);
+
 
         //isReady IsReadyの状態を適用
         entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
@@ -188,6 +191,7 @@ public class GamePresenter : MonoBehaviour
 
         //model -> view リアクティブ
         //entrance
+        
         //isReadyToggleの操作の能否の管理
         gameCore._state.Subscribe(
             state => {
@@ -223,6 +227,7 @@ public class GamePresenter : MonoBehaviour
         ).AddTo(this);
 
         //leaderSkillButtonの制御
+        //IDとUserNameの表示
         gameCore.gameBoard.Subscribe(
             board => {
                 i = 0;
@@ -280,6 +285,19 @@ public class GamePresenter : MonoBehaviour
         gameCore._commandPanelModel.Subscribe(
             x => {
                 commandPanelView.ApplyModel(x);
+            }
+            );
+        gameCore.gameBoard.Subscribe(
+            board => {
+                int i = 0;
+                gameCore.gameBoard.Value.playerAreaList[gameCore.playerID].UserName =  gameCore.entrance.UserName;
+                if (commandPanelView.smallPlayerButtonTexts.Count > 0 && commandPanelView.largePlayerButtonTexts.Count > 0) {
+                    foreach (string name in board.GetUserNameList()) {
+                        commandPanelView.smallPlayerButtonTexts[i].text = name;
+                        commandPanelView.largePlayerButtonTexts[i].text = name;
+                        i++;
+                    }
+                }
             }
             );
 

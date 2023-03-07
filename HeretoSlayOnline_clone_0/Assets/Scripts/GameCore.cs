@@ -27,6 +27,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     private CardDataManager CardDataManager = new CardDataManager();
 
     //GameBoard
+    public List<string> playerNameList = new List<string>();
     public ReactiveProperty<GameBoard> gameBoard;
     public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
     public IGameBoard IgameBoard;
@@ -136,18 +137,25 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
             gameBoard.Value.PlayerID = int.Parse(message[1]); //playerのIDを設定
             this.playerID = gameBoard.Value.PlayerID;
         }
-        else if (message[0] == "1") { //1:::playerCount 
+        else if (message[0] == "1") { //1:::playerCount:::[name1,name2,...]
             if (state.Value != GameState.wait) return;
             gameBoard.Value.PlayerCount = int.Parse(message[1]);
-            //gameBoard.InitializeGameBoard();
+            playerNameList = message[2].Split(",").ToList();
+            int i = 0;
+            foreach (string name in playerNameList) {
+                gameBoard.Value.playerAreaList[i].UserName = name;
+                i++;
+            }
             entranceObject.SetActive(false);
             gameBoardObject.SetActive(true);
             state.Value = GameState.ingame;
+            Debug.Log(gameBoard.Value.playerAreaList[0].UserName + "," + gameBoard.Value.playerAreaList[1].UserName);
         }
         else if (message[0] == "2") { //2:::json
             if (state.Value != GameState.ingame) return;
             //受け取ったjsonをクラスに変換しGameBoardに適用
             gameBoard.Value = gameBoard.Value.ApplyNewBoard(JsonToGameBoard(message[1]),gameBoardView);
+            Debug.Log(gameBoard.Value.playerAreaList[0].UserName + "," + gameBoard.Value.playerAreaList[1].UserName);
         }
         else if (message[0] == "first") {
         }
@@ -461,7 +469,7 @@ public class CommandPanelModel{
 public enum GameState {
     entrance,wait,ingame
 }
-public interface IEntrance { 
+public interface IEntrance {
     public void Init(SendTextEvent sendText,ChangeStateEvent changeState);
     public void SetState(GameState state);
     public void SetUserName(string name);
@@ -529,6 +537,7 @@ public class GameBoard : IGameBoard {
     
     private int playerCount = 0;
     private IntReactiveProperty playerID = new IntReactiveProperty(0);
+    private List<String> userNameList = new List<String>();
     public IReadOnlyReactiveProperty<int> _playerID => playerID;
     private DeckArea deckArea = new DeckArea();
     public MonsterArea monsterArea = new MonsterArea();
@@ -571,6 +580,7 @@ public class GameBoard : IGameBoard {
     } //初期化
     public GameBoard ApplyNewBoard(GameBoardData gbd,GameBoardView gbv) {
         GameBoard board = (GameBoard)MemberwiseClone();
+
         board.deckArea.DataToDeck(gbd.mainDeck);
         board.deckArea.DataToPile(gbd.discardPile);
         board.monsterArea.DataToDeck(gbd.monsterDeck);
@@ -604,6 +614,13 @@ public class GameBoard : IGameBoard {
             playerAreaList.Add(new PlayerArea(pd));
         }
     } //dataをplayerAreaListに
+    public List<String> GetUserNameList() {
+        List<String> userNameList = new List<String>();
+        foreach(PlayerArea player in playerAreaList) {
+            userNameList.Add(player.UserName);
+        }
+        return userNameList;
+    } //userNameのListを返す
     public GameBoard DeckShuffle() {
         GameBoard board = (GameBoard)MemberwiseClone();
         board.deckArea.Shuffle();
@@ -960,7 +977,7 @@ public class ChatArea {
 }
 public class PlayerArea {
     //instance
-    private string playerName = "";
+    private string userName = "";
     public ReactiveProperty<int> leaderCardID = new ReactiveProperty<int>(0);
     public IReactiveProperty<int> _leaderCardID => leaderCardID;
     private List<SmallCard> playerHandList = new List<SmallCard>();
@@ -968,8 +985,9 @@ public class PlayerArea {
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
     
     //getter and setter
-    public String PlayerName {
-        get { return this.playerName; }
+    public String UserName {
+        get { return this.userName; }
+        set { this.userName = value; }
     }
     public List<SmallCard> PlayerHandList {
         get { return playerHandList; }
@@ -984,7 +1002,7 @@ public class PlayerArea {
 
     }
     public PlayerArea(PlayerData playerData) {
-        this.playerName = playerData.playerID;
+        this.userName = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
@@ -998,7 +1016,7 @@ public class PlayerArea {
     } //初期化
     public PlayerData PlayerAreaToData() {
         PlayerData playerData = new PlayerData();
-        playerData.playerID = "";
+        playerData.playerID = this.userName;
         playerData.leaderCardID = leaderCardID.Value;
         playerData.playerHandList = HandToData();
         playerData.playerHeroCardList = HeroListToData();
@@ -1006,7 +1024,7 @@ public class PlayerArea {
         return playerData;
     } //プレイヤーの情報をdataに
     public void DataToPlayerArea(PlayerData playerData) {
-        this.playerName = playerData.playerID;
+        this.userName = playerData.playerID;
         this.leaderCardID.Value = playerData.leaderCardID;
         DataToHand(playerData.playerHandList);
         DataToHeroList(playerData.playerHeroCardList);
