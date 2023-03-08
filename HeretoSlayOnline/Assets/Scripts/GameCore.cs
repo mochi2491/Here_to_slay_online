@@ -35,6 +35,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
+    //PeepPanel
+    public ReactiveProperty<PeepPanelModel> peepPanelModel = new ReactiveProperty<PeepPanelModel>(new PeepPanelModel());
+    public IReadOnlyReactiveProperty<PeepPanelModel> _peepPanelModel => peepPanelModel;
+
     //GameState
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
     public IReadOnlyReactiveProperty<GameState> _state => state;
@@ -64,7 +68,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public IReadOnlyReactiveProperty<CommandPanelModel> _commandPanelModel=> commandPanelModel;
     public GameObject[] tabs;
     public ReactiveProperty<MenuPanelModel> menuPanelModel = new ReactiveProperty<MenuPanelModel>(new MenuPanelModel());
-    //private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     
     public bool isHeroItem = false;
     public TMP_Dropdown heroNum;
@@ -310,6 +313,23 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 #else
     Application.Quit();//ゲームプレイ終了
 #endif
+    }
+
+}
+public class PeepPanelModel {
+    private bool isActive = false;
+    private int handNum = 0;
+    public PeepPanelModel() { }
+    private PeepPanelModel(bool a,int num) {
+        if (handNum < 0 || handNum > 5) throw new Exception("handNumの値が異常です");
+        isActive = a;
+        handNum = num;
+    }
+    public PeepPanelModel SetHandNum(int num) {
+        return new PeepPanelModel(this.isActive, num);
+    }
+    public PeepPanelModel SetActive(bool a) {
+        return new PeepPanelModel(a, this.handNum);
     }
 
 }

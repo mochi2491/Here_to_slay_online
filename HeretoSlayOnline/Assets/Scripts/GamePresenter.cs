@@ -19,6 +19,7 @@ public class GamePresenter : MonoBehaviour
     [SerializeField] private DescriptionView descriptionView;
     [SerializeField] private CommandPanelView commandPanelView;
     [SerializeField] private MenuPanelView menuPanelView;
+    [SerializeField] private PeepPanelView peepPanelView;
 
     IDisposable aaa;
     void Start() {
@@ -188,6 +189,23 @@ public class GamePresenter : MonoBehaviour
             }
             );
 
+        //peepPanel
+        //quitボタンが押されたらパネルを閉じる
+        peepPanelView.quitButton.OnClickAsObservable().Subscribe(
+            _ => {
+                gameCore.peepPanelModel.Value =  gameCore.peepPanelModel.Value.SetActive(false);
+            }
+            );
+        for(i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.peepButton[i].OnClickAsObservable().Subscribe(
+                _ => {
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetActive(true);
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetHandNum(count);
+                    Debug.Log(count);
+                }
+                );
+        }
 
         //model -> view リアクティブ
         //entrance
