@@ -318,18 +318,23 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 }
 public class PeepPanelModel {
     private bool isActive = false;
-    private int handNum = 0;
-    public PeepPanelModel() { }
-    private PeepPanelModel(bool a,int num) {
-        if (handNum < 0 || handNum > 5) throw new Exception("handNumの値が異常です");
-        isActive = a;
-        handNum = num;
+    private List<SmallCard> handList = new List<SmallCard>();
+    public bool IsActive {
+        get { return isActive; }
     }
-    public PeepPanelModel SetHandNum(int num) {
-        return new PeepPanelModel(this.isActive, num);
+    public List<SmallCard> HandList {
+        get { return handList; }
+    }
+    public PeepPanelModel() { }
+    private PeepPanelModel(bool a,List<SmallCard> handList) {
+        isActive = a;
+        this.handList = handList;
     }
     public PeepPanelModel SetActive(bool a) {
-        return new PeepPanelModel(a, this.handNum);
+        return new PeepPanelModel(a, this.handList);
+    }
+    public PeepPanelModel SetHandList(List<SmallCard> handList) {
+        return new PeepPanelModel(this.isActive, handList);
     }
 
 }

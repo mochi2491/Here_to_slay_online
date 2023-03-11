@@ -200,9 +200,11 @@ public class GamePresenter : MonoBehaviour
             int count = i;
             fieldTabsView.peepButton[i].OnClickAsObservable().Subscribe(
                 _ => {
+                    //覗くパネルをアクティブにする
                     gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetActive(true);
-                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetHandNum(count);
-                    Debug.Log(count);
+
+                    //覗く手札を表示する
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
                 }
                 );
         }
@@ -325,6 +327,13 @@ public class GamePresenter : MonoBehaviour
                 menuPanelView.MenuPanel.SetActive(x.isActive);
             }
             );
+        gameCore.peepPanelModel.Subscribe(
+            x => {
+                peepPanelView.peepPanel.SetActive(x.IsActive);
+                peepPanelView.ApplyView(x.HandList);
+            }
+            );
+
     }
     void Update()
     { 
