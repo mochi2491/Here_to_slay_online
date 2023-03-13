@@ -6,6 +6,7 @@ using TMPro;
 using UniRx;
 using System;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Cysharp.Threading.Tasks.Triggers;
 
 public class GamePresenter : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GamePresenter : MonoBehaviour
     [SerializeField] private DescriptionView descriptionView;
     [SerializeField] private CommandPanelView commandPanelView;
     [SerializeField] private MenuPanelView menuPanelView;
+    [SerializeField] private PeepPanelView peepPanelView;
 
     IDisposable aaa;
     void Start() {
@@ -188,6 +190,27 @@ public class GamePresenter : MonoBehaviour
             }
             );
 
+        //peepPanel
+        //quitボタンが押されたらパネルを閉じる
+        peepPanelView.quitButton.OnClickAsObservable().Subscribe(
+            _ => {
+                gameCore.peepPanelModel.Value =  gameCore.peepPanelModel.Value.SetActive(false);
+            }
+            );
+        for(i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.peepButton[i].OnClickAsObservable().Subscribe(
+                _ => {
+                    //覗くパネルをアクティブにする
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetActive(true);
+
+                    //覗く手札を表示する
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
+                }
+                );
+        }
+        //pull
+
 
         //model -> view リアクティブ
         //entrance
@@ -260,8 +283,20 @@ public class GamePresenter : MonoBehaviour
             }
             ).AddTo(this);
 
-        
-        
+
+        //pull
+        gameCore._gameBoard.Subscribe(
+            board => {
+                int j = 0;
+                foreach(PlayerArea pa in board.playerAreaList) {
+                    fieldTabsView.pullSelector[j].ClearOptions();
+                    for(int i = 0; i < pa.PlayerHandList.Count;i++) {
+                        fieldTabsView.pullSelector[j].options.Add(new TMP_Dropdown.OptionData(i.ToString()));
+                    }
+                    j++;
+                }
+            }
+            );
 
         //chat area
         //chatの更新
@@ -307,6 +342,13 @@ public class GamePresenter : MonoBehaviour
                 menuPanelView.MenuPanel.SetActive(x.isActive);
             }
             );
+        gameCore.peepPanelModel.Subscribe(
+            x => {
+                peepPanelView.peepPanel.SetActive(x.IsActive);
+                peepPanelView.ApplyView(x.HandList);
+            }
+            );
+
     }
     void Update()
     { 
