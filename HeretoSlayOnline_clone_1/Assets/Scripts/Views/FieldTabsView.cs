@@ -22,7 +22,10 @@ public class FieldTabsView : MonoBehaviour
     public ObservableEventTrigger[] leaderDescriptionTrigger;
     public TextMeshProUGUI[] handCount;
 
-    public List<Button> LeaderSkillButton;
+    public Button[] LeaderSkillButton;
+    public Button[] peepButton;
+    public TMP_Dropdown[] pullSelector;
+    public Button[] pullButton;
     private void Start() {
         leaderSprite = Resources.LoadAll("monster_and_leader_cards", typeof(Sprite)).Cast<Sprite>().ToArray();
     }

@@ -1007,7 +1007,10 @@ public class PlayerArea {
     private List<SmallCard> playerHandList = new List<SmallCard>();
     private List<HeroCard> playerHeroCardList = new List<HeroCard>();
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
-    
+
+    //pull no model
+    public int pullNum = 0;
+
     //getter and setter
     public String UserName {
         get { return this.userName; }

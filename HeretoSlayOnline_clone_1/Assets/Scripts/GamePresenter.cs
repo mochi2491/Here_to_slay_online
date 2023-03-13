@@ -6,6 +6,7 @@ using TMPro;
 using UniRx;
 using System;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Cysharp.Threading.Tasks.Triggers;
 
 public class GamePresenter : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class GamePresenter : MonoBehaviour
     [SerializeField] private DescriptionView descriptionView;
     [SerializeField] private CommandPanelView commandPanelView;
     [SerializeField] private MenuPanelView menuPanelView;
+    [SerializeField] private PeepPanelView peepPanelView;
 
     IDisposable aaa;
     void Start() {
@@ -184,10 +186,54 @@ public class GamePresenter : MonoBehaviour
         );
         commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe(
             _ => {
+                gameCore.gameBoard.Value.AddLog(gameCore.playerID+"use hero skill.");
                 //ここにスキルの発動処理を書く
             }
             );
 
+        //peepPanel
+        //quitボタンが押されたらパネルを閉じる
+        peepPanelView.quitButton.OnClickAsObservable().Subscribe(
+            _ => {
+                gameCore.peepPanelModel.Value =  gameCore.peepPanelModel.Value.SetActive(false);
+            }
+            );
+        for(i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.peepButton[i].OnClickAsObservable().Subscribe(
+                _ => {
+                    //覗くパネルをアクティブにする
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetActive(true);
+
+                    //覗く手札を表示する
+                    gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.SetHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
+                }
+                );
+        }
+        //pull
+        for (i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.pullSelector[count].onValueChanged.AsObservable().Subscribe(
+                value => {
+                    gameCore.gameBoard.Value.playerAreaList[count].pullNum = value;
+                }
+                );
+        }
+        for (i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.pullButton[count].OnClickAsObservable().Subscribe(
+                _ => {
+                    GameBoardAddress from = new GameBoardAddress();
+                    from.playerID = count;
+                    from.area = Area.playerHand;
+                    from.order = gameCore.gameBoard.Value.playerAreaList[count].pullNum;
+                    GameBoardAddress to = new GameBoardAddress();
+                    to.playerID = gameCore.playerID;
+                    to.area = Area.playerHand;
+                    gameCore.gameBoard.Value = gameCore.gameBoard.Value.ControlBoard(from,to);
+                }
+                );
+        }
 
         //model -> view リアクティブ
         //entrance
@@ -260,8 +306,21 @@ public class GamePresenter : MonoBehaviour
             }
             ).AddTo(this);
 
-        
-        
+
+        //pull
+        //各プレイヤーエリアのpullSelectorの選択肢を設定する。
+        gameCore._gameBoard.Subscribe(
+            board => {
+                int j = 0;
+                foreach(PlayerArea pa in board.playerAreaList) {
+                    fieldTabsView.pullSelector[j].ClearOptions();
+                    for(int i = 0; i < pa.PlayerHandList.Count;i++) {
+                        fieldTabsView.pullSelector[j].options.Add(new TMP_Dropdown.OptionData(i.ToString()));
+                    }
+                    j++;
+                }
+            }
+            );
 
         //chat area
         //chatの更新
@@ -307,6 +366,13 @@ public class GamePresenter : MonoBehaviour
                 menuPanelView.MenuPanel.SetActive(x.isActive);
             }
             );
+        gameCore.peepPanelModel.Subscribe(
+            x => {
+                peepPanelView.peepPanel.SetActive(x.IsActive);
+                peepPanelView.ApplyView(x.HandList);
+            }
+            );
+
     }
     void Update()
     { 
