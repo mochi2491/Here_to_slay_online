@@ -591,7 +591,6 @@ public class GameBoard : IGameBoard {
     public MonsterArea GetmonsterArea {
         get {return this.monsterArea;}
     }
-
     public GameBoard InitializeGameBoard() {
         for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         cardBack = Resources.Load("back") as Sprite;

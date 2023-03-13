@@ -6,6 +6,7 @@ using TMPro;
 using UniRx;
 using System;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using Cysharp.Threading.Tasks.Triggers;
 
 public class GamePresenter : MonoBehaviour
 {
@@ -208,6 +209,8 @@ public class GamePresenter : MonoBehaviour
                 }
                 );
         }
+        //pull
+
 
         //model -> view リアクティブ
         //entrance
@@ -280,8 +283,20 @@ public class GamePresenter : MonoBehaviour
             }
             ).AddTo(this);
 
-        
-        
+
+        //pull
+        gameCore._gameBoard.Subscribe(
+            board => {
+                int j = 0;
+                foreach(PlayerArea pa in board.playerAreaList) {
+                    fieldTabsView.pullSelector[j].ClearOptions();
+                    for(int i = 0; i < pa.PlayerHandList.Count;i++) {
+                        fieldTabsView.pullSelector[j].options.Add(new TMP_Dropdown.OptionData(i.ToString()));
+                    }
+                    j++;
+                }
+            }
+            );
 
         //chat area
         //chatの更新

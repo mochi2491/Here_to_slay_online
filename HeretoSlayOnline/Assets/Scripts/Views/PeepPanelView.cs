@@ -19,7 +19,13 @@ public class PeepPanelView : MonoBehaviour
     private void Start() {
         peepPanel.SetActive(false);
     }
+    private void Reset(GameObject content) {
+        foreach (CardView a in content.GetComponentsInChildren<CardView>()) {
+            a.DestroySelf();
+        }
+    }
     public void ApplyView(List<SmallCard> list) {
+        Reset(content);
         foreach(SmallCard sc in list) {
             GameObject card = (GameObject)Resources.Load("CardObject");
             GameObject a = Instantiate(card, content.transform);
