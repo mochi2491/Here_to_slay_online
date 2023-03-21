@@ -59,7 +59,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public CardDataManager cardDataManager = new CardDataManager();
 
     //GUI
-    public EventTrigger trigger ;
+    public EventTrigger trigger;
 
     private ReactiveProperty<CardIndicatorModel> cardIndicatorModel = new ReactiveProperty<CardIndicatorModel>(new CardIndicatorModel());
     public IReadOnlyReactiveProperty<CardIndicatorModel> _cardIndicatorModel => cardIndicatorModel;
@@ -500,6 +500,7 @@ public interface IEntrance {
     public void SetUserName(string name);
     public void SendUserName();
     public void ApplyIsReady(bool isReady);
+    public void QuitGame();
 
 }
 public class Entrance : MonoBehaviour,IEntrance{
@@ -539,6 +540,13 @@ public class Entrance : MonoBehaviour,IEntrance{
         this.isReady = isReady;
         if (this.isReady) sendText.Invoke("1:::1");
         else sendText.Invoke("1:::0");
+    }
+    public void QuitGame() {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+#else
+    Application.Quit();//ゲームプレイ終了
+#endif
     }
 }
 public interface IFieldTabs {
@@ -1007,7 +1015,10 @@ public class PlayerArea {
     private List<SmallCard> playerHandList = new List<SmallCard>();
     private List<HeroCard> playerHeroCardList = new List<HeroCard>();
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
-    
+
+    //pull no model
+    public int pullNum = 0;
+
     //getter and setter
     public String UserName {
         get { return this.userName; }

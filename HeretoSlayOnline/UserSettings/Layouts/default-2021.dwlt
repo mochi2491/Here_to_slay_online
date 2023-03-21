@@ -121,7 +121,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 200}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 94
+  controlID: 90
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -146,7 +146,7 @@ MonoBehaviour:
   m_MinSize: {x: 100, y: 200}
   m_MaxSize: {x: 8096, y: 16192}
   vertical: 1
-  controlID: 99
+  controlID: 95
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -166,8 +166,8 @@ MonoBehaviour:
     y: 0
     width: 905
     height: 504
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -650,9 +650,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 1.3769728, y: -0.38397476, z: 65.623276}
+    m_Target: {x: -1.2541407, y: -0.035736874, z: 61.763752}
     speed: 2
-    m_Value: {x: 1.3769728, y: -0.38397476, z: 65.623276}
+    m_Value: {x: -1.2541407, y: -0.035736874, z: 61.763752}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -703,9 +703,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 6.343069
+    m_Target: 5.828763
     speed: 2
-    m_Value: 6.343069
+    m_Value: 5.828763
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -791,21 +791,21 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 8ef0ffff94f0ffff2afbffff1c6a0000b26a0000646b0000c06c00001c6d0000766e00000e70000004740000
+      m_ExpandedIDs: 2afbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: LeaderSkillButton
-        m_OriginalName: LeaderSkillButton
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: 29416
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_ClientGUIView: {fileID: 9}
       m_SearchString: 
@@ -856,22 +856,22 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets/Scripts/Views
     m_Globs: []
     m_OriginalText: 
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts
+  - Assets/Scripts/Views
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Unity\Here_to_slay_online\HeretoSlayOnline
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 46760000
-    m_LastClickedID: 30278
-    m_ExpandedIDs: 00000000447600004676000000ca9a3b
+    m_SelectedIDs: 3c790000
+    m_LastClickedID: 31036
+    m_ExpandedIDs: 00000000267900003879000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -899,7 +899,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000004476000046760000
+    m_ExpandedIDs: 0000000026790000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

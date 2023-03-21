@@ -43,13 +43,20 @@ public class GamePresenter : MonoBehaviour
             }
         ).AddTo(this);
 
-
         //isReady IsReadyの状態を適用
         entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
             x => {
                 _entrance.ApplyIsReady(x);
             }
         ).AddTo(this);
+
+        //quitButton
+        entranceView.quitButton.OnClickAsObservable().Subscribe(
+            _ => {
+                _entrance.QuitGame();
+            }
+            );
+
 
         //FieldTabs
         //tabの切り替え
@@ -186,6 +193,7 @@ public class GamePresenter : MonoBehaviour
         );
         commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe(
             _ => {
+                gameCore.gameBoard.Value.AddLog(gameCore.playerID+"use hero skill.");
                 //ここにスキルの発動処理を書く
             }
             );
@@ -210,7 +218,29 @@ public class GamePresenter : MonoBehaviour
                 );
         }
         //pull
-
+        for (i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.pullSelector[count].onValueChanged.AsObservable().Subscribe(
+                value => {
+                    gameCore.gameBoard.Value.playerAreaList[count].pullNum = value;
+                }
+                );
+        }
+        for (i = 0; i < 6; i++) {
+            int count = i;
+            fieldTabsView.pullButton[count].OnClickAsObservable().Subscribe(
+                _ => {
+                    GameBoardAddress from = new GameBoardAddress();
+                    from.playerID = count;
+                    from.area = Area.playerHand;
+                    from.order = gameCore.gameBoard.Value.playerAreaList[count].pullNum;
+                    GameBoardAddress to = new GameBoardAddress();
+                    to.playerID = gameCore.playerID;
+                    to.area = Area.playerHand;
+                    gameCore.gameBoard.Value = gameCore.gameBoard.Value.ControlBoard(from,to);
+                }
+                );
+        }
 
         //model -> view リアクティブ
         //entrance
@@ -285,6 +315,7 @@ public class GamePresenter : MonoBehaviour
 
 
         //pull
+        //各プレイヤーエリアのpullSelectorの選択肢を設定する。
         gameCore._gameBoard.Subscribe(
             board => {
                 int j = 0;

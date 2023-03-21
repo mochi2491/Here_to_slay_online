@@ -35,6 +35,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
+    //PeepPanel
+    public ReactiveProperty<PeepPanelModel> peepPanelModel = new ReactiveProperty<PeepPanelModel>(new PeepPanelModel());
+    public IReadOnlyReactiveProperty<PeepPanelModel> _peepPanelModel => peepPanelModel;
+
     //GameState
     private ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
     public IReadOnlyReactiveProperty<GameState> _state => state;
@@ -55,7 +59,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public CardDataManager cardDataManager = new CardDataManager();
 
     //GUI
-    public EventTrigger trigger ;
+    public EventTrigger trigger;
 
     private ReactiveProperty<CardIndicatorModel> cardIndicatorModel = new ReactiveProperty<CardIndicatorModel>(new CardIndicatorModel());
     public IReadOnlyReactiveProperty<CardIndicatorModel> _cardIndicatorModel => cardIndicatorModel;
@@ -64,7 +68,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public IReadOnlyReactiveProperty<CommandPanelModel> _commandPanelModel=> commandPanelModel;
     public GameObject[] tabs;
     public ReactiveProperty<MenuPanelModel> menuPanelModel = new ReactiveProperty<MenuPanelModel>(new MenuPanelModel());
-    //private IntReactiveProperty visibleTabNum = new IntReactiveProperty(0);
     
     public bool isHeroItem = false;
     public TMP_Dropdown heroNum;
@@ -313,6 +316,28 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     }
 
 }
+public class PeepPanelModel {
+    private bool isActive = false;
+    private List<SmallCard> handList = new List<SmallCard>();
+    public bool IsActive {
+        get { return isActive; }
+    }
+    public List<SmallCard> HandList {
+        get { return handList; }
+    }
+    public PeepPanelModel() { }
+    private PeepPanelModel(bool a,List<SmallCard> handList) {
+        isActive = a;
+        this.handList = handList;
+    }
+    public PeepPanelModel SetActive(bool a) {
+        return new PeepPanelModel(a, this.handList);
+    }
+    public PeepPanelModel SetHandList(List<SmallCard> handList) {
+        return new PeepPanelModel(this.isActive, handList);
+    }
+
+}
 public class CardIndicatorModel {
     private bool isLarge;
     private int cardID;
@@ -475,6 +500,7 @@ public interface IEntrance {
     public void SetUserName(string name);
     public void SendUserName();
     public void ApplyIsReady(bool isReady);
+    public void QuitGame();
 
 }
 public class Entrance : MonoBehaviour,IEntrance{
@@ -514,6 +540,13 @@ public class Entrance : MonoBehaviour,IEntrance{
         this.isReady = isReady;
         if (this.isReady) sendText.Invoke("1:::1");
         else sendText.Invoke("1:::0");
+    }
+    public void QuitGame() {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;//ゲームプレイ終了
+#else
+    Application.Quit();//ゲームプレイ終了
+#endif
     }
 }
 public interface IFieldTabs {
@@ -566,7 +599,6 @@ public class GameBoard : IGameBoard {
     public MonsterArea GetmonsterArea {
         get {return this.monsterArea;}
     }
-
     public GameBoard InitializeGameBoard() {
         for (int i = 0; i < 6; i++) playerAreaList.Add(new PlayerArea());
         cardBack = Resources.Load("back") as Sprite;
@@ -983,7 +1015,10 @@ public class PlayerArea {
     private List<SmallCard> playerHandList = new List<SmallCard>();
     private List<HeroCard> playerHeroCardList = new List<HeroCard>();
     private List<LargeCard> slayedMonsterList = new List<LargeCard>();
-    
+
+    //pull no model
+    public int pullNum = 0;
+
     //getter and setter
     public String UserName {
         get { return this.userName; }
