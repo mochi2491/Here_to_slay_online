@@ -43,13 +43,20 @@ public class GamePresenter : MonoBehaviour
             }
         ).AddTo(this);
 
-
         //isReady IsReadyの状態を適用
         entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
             x => {
                 _entrance.ApplyIsReady(x);
             }
         ).AddTo(this);
+
+        //quitButton
+        entranceView.quitButton.OnClickAsObservable().Subscribe(
+            _ => {
+                _entrance.QuitGame();
+            }
+            );
+
 
         //FieldTabs
         //tabの切り替え

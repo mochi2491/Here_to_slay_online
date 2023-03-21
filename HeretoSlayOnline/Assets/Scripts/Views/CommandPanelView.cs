@@ -41,8 +41,8 @@ public class CommandPanelView : MonoBehaviour
     }
     public void SetPosition(Vector3 pos) {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 10.0f));
-        if(mousePos.y < -2.5f) {
-            mousePos.y = -2.5f;
+        if(mousePos.y < -2.0f) {
+            mousePos.y = -2.0f;
         }
         smallCommandPanel.transform.position = mousePos;
         largeCommandPanel.transform.position = mousePos;
