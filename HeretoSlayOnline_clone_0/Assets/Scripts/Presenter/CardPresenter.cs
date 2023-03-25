@@ -38,13 +38,13 @@ public class CardPresenter : MonoBehaviour
                     cv.heroTrigger.OnPointerDownAsObservable()
                         .Subscribe(
                             x => {
-                                if (x.pointerId == -1) { //left click
+                                if (x.pointerId == -1) { //左クリック
                                     gameCore.IndicateCard(cv.IsLarge,cv.HeroID);
                                 }
-                                else if (x.pointerId == -2) { //right click
+                                else if (x.pointerId == -2) { //右クリック
                                     GameBoardAddress gba = new GameBoardAddress();
                                     gba = gameCore.gameBoard.Value.SearchCard(cv.HeroID, cv.IsLarge);
-                                    Debug.Log(gba.area + "," + gba.playerID + "," + gba.order);
+                                    //Debug.Log(gba.area + "," + gba.playerID + "," + gba.order);
                                     gameCore.SetFromAddress(gba);
                                     if (cv.IsLarge) gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.OpenLargeCommandPanel(CommandPanelView.PanelName.main, Input.mousePosition);
                                     else gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.OpenSmallCommandPanel(CommandPanelView.PanelName.main, Input.mousePosition);

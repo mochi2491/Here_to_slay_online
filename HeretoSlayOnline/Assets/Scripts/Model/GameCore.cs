@@ -74,6 +74,8 @@ public class GameCore : SingletonMonoBehaviour<GameCore> {
     public GameBoardAddress FromAddress = new GameBoardAddress();
     public GameBoardAddress ToAddress = new GameBoardAddress();
 
+    
+
     private void Awake() {
         heroNum = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
@@ -608,8 +610,6 @@ public interface IGameBoard {
 public class GameBoard : IGameBoard {
 
     //定数
-    //public static readonly int SMALLCARD_COUNT = 73;
-    //public static readonly int LARGECARD_COUNT = 20;
     private Sprite cardBack;
 
     private int playerCount = 0;
@@ -669,6 +669,7 @@ public class GameBoard : IGameBoard {
         board.monsterArea.DataToList(gbd.monsterCardList);
         board.chatArea.ApplyLog(gbd.chatLog);
         board.DataToPlayerList(gbd.playerList);
+
         return board;
     } //GameBoardを更新する
 
@@ -1377,6 +1378,8 @@ public struct GameBoardData {
     public int turnPlayerNum;
     public int playerCount;
     public List<PlayerData> playerList;
+
+    public int selectedID;
 }
 
 public struct PlayerData {

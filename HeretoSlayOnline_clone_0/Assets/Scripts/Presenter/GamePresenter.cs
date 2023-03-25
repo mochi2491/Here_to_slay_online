@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using System;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -10,13 +12,13 @@ public class GamePresenter : MonoBehaviour {
 
     //view
     [SerializeField] private EntranceView entranceView;
-
     [SerializeField] private FieldTabsView fieldTabsView;
     [SerializeField] private ChatView chatView;
     [SerializeField] private DescriptionView descriptionView;
     [SerializeField] private CommandPanelView commandPanelView;
     [SerializeField] private MenuPanelView menuPanelView;
     [SerializeField] private PeepPanelView peepPanelView;
+    [SerializeField] private ChallengePanelView challengePanelView;
 
     private void Start() {
         BindPeepPanel();
@@ -185,12 +187,33 @@ public class GamePresenter : MonoBehaviour {
                 gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.CloseAllPanel();
             }
         );
-        commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe(
+        commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe( //Use Skill
             _ => {
-                gameCore.gameBoard.Value.AddLog(gameCore.playerID + "use hero skill.");
+                gameCore.gameBoard.Value.AddLog(gameCore.playerID + ":" + "" + "use hero skill.");
                 //ここにスキルの発動処理を書く
             }
-            );
+        );
+
+        float displayTime = 2f;
+
+        gameCore.gameBoard.Subscribe(
+            board => {
+                int lastIndex = board.GetdeckArea.discardPile.Count;
+                int cardID = 0;
+                if (lastIndex > 0) {
+                    cardID = board.GetdeckArea.discardPile[lastIndex-1].ID;
+                    }
+                if(cardID == 73) {
+                    challengePanelView.challengePanel.SetActive( true );
+                    Observable.Timer(TimeSpan.FromSeconds(displayTime))
+                    .Subscribe(_ => 
+                    {
+                        challengePanelView.challengePanel.SetActive( false );
+                    }
+                    );
+                }
+            }
+        );
 
         //pull
         for (i = 0; i < 6; i++) {
