@@ -5,7 +5,8 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GamePresenter : MonoBehaviour {
+public class GamePresenter : MonoBehaviour
+{
 
     //model
     [SerializeField] private GameCore gameCore;
@@ -20,82 +21,62 @@ public class GamePresenter : MonoBehaviour {
     [SerializeField] private PeepPanelView peepPanelView;
     [SerializeField] private ChallengePanelView challengePanelView;
 
-    private void Start() {
+    private void Start()
+    {
         BindPeepPanel();
+        BindEntrace();
         int i = 0;
         //view -> model イベント発火
-        //entrance
-        IEntrance _entrance = gameCore._entrance;
-
-        //setUserName InputFieldに入力された文字列を適用
-        entranceView.userNameText.onValueChanged.AsObservable().Subscribe(
-            x => {
-                _entrance.SetUserName(x);
-            }
-        ).AddTo(this);
-
-        //sendUserName Buttonが押されたらUserNameを送信
-        entranceView.sendButton.onClick.AsObservable().Subscribe(
-            _ => {
-                _entrance.SendUserName();
-            }
-        ).AddTo(this);
-
-        //isReady IsReadyの状態を適用
-        entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
-            x => {
-                _entrance.ApplyIsReady(x);
-            }
-        ).AddTo(this);
-
-        //quitButton
-        entranceView.quitButton.OnClickAsObservable().Subscribe(
-            _ => {
-                _entrance.QuitGame();
-            }
-            );
 
         //FieldTabs
         //tabの切り替え
         IFieldTabs _fieldTabs = gameCore._fieldTabs;
         #region
         fieldTabsView.fieldButtons[0].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(0);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[1].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(1);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[2].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(2);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[3].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(3);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[4].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(4);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[5].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(5);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[6].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(6);
             }
         ).AddTo(this);
         fieldTabsView.fieldButtons[7].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 _fieldTabs.SetVisibleTabNum(7);
             }
         ).AddTo(this);
@@ -103,9 +84,11 @@ public class GamePresenter : MonoBehaviour {
 
         //leaderの切り替え
 
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
             fieldTabsView.leaderSelector[i].onValueChanged.AsObservable().Subscribe(
-            value => {
+            value =>
+            {
                 gameCore.ControlLeaderNum(value);
             }
         ).AddTo(this);
@@ -114,32 +97,38 @@ public class GamePresenter : MonoBehaviour {
         //leaderSkillButton
         #region
         fieldTabsView.LeaderSkillButton[0].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player1 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[1].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player2 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[2].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player3 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[3].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player4 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[4].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player5 use leader skill.");
             }
         );
         fieldTabsView.LeaderSkillButton[5].onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog("player6 use leader skill.");
             }
         );
@@ -148,7 +137,8 @@ public class GamePresenter : MonoBehaviour {
         //chat area
         //send message
         chatView.sendButton.onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.ControlLog(chatView.input.text);
                 chatView.input.text = "";
             }
@@ -156,39 +146,46 @@ public class GamePresenter : MonoBehaviour {
         ).AddTo(this);
         //dice roll
         chatView.diceButton.onClick.AsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.ControlLog("rolled" + UnityEngine.Random.Range(1, 6) + "," + UnityEngine.Random.Range(1, 6));
             }
         ).AddTo(this);
 
         //menuPanel
         menuPanelView.QuitButton.OnClickAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.QuitGame();
             }
         ).AddTo(this);
         menuPanelView.ResetButton.OnClickAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.ResetBoard();
             }
         );
         menuPanelView.OpenButton.OnClickAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.menuPanelModel.Value = gameCore.menuPanelModel.Value.Open();
             }
         );
         menuPanelView.CloseButton.OnClickAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.menuPanelModel.Value = gameCore.menuPanelModel.Value.Close();
             }
         );
         commandPanelView.closerTrigger.OnPointerDownAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 gameCore.commandPanelModel.Value = gameCore.commandPanelModel.Value.CloseAllPanel();
             }
         );
         commandPanelView.smallButtons[0].OnClickAsObservable().Subscribe( //Use Skill
-            _ => {
+            _ =>
+            {
                 gameCore.gameBoard.Value.AddLog(gameCore.playerID + ":" + "" + "use hero skill.");
                 //ここにスキルの発動処理を書く
             }
@@ -197,18 +194,21 @@ public class GamePresenter : MonoBehaviour {
         float displayTime = 2f;
 
         gameCore.gameBoard.Subscribe(
-            board => {
+            board =>
+            {
                 int lastIndex = board.GetdeckArea.discardPile.Count;
                 int cardID = 0;
-                if (lastIndex > 0) {
-                    cardID = board.GetdeckArea.discardPile[lastIndex-1].ID;
-                    }
-                if(cardID == 73) {
-                    challengePanelView.challengePanel.SetActive( true );
+                if (lastIndex > 0)
+                {
+                    cardID = board.GetdeckArea.discardPile[lastIndex - 1].ID;
+                }
+                if (cardID == 73)
+                {
+                    challengePanelView.challengePanel.SetActive(true);
                     Observable.Timer(TimeSpan.FromSeconds(displayTime))
-                    .Subscribe(_ => 
+                    .Subscribe(_ =>
                     {
-                        challengePanelView.challengePanel.SetActive( false );
+                        challengePanelView.challengePanel.SetActive(false);
                     }
                     );
                 }
@@ -216,18 +216,22 @@ public class GamePresenter : MonoBehaviour {
         );
 
         //pull
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
             int count = i;
             fieldTabsView.pullSelector[count].onValueChanged.AsObservable().Subscribe(
-                value => {
+                value =>
+                {
                     gameCore.gameBoard.Value.playerAreaList[count].pullNum = value;
                 }
                 );
         }
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
             int count = i;
             fieldTabsView.pullButton[count].OnClickAsObservable().Subscribe(
-                _ => {
+                _ =>
+                {
                     GameBoardAddress from = new GameBoardAddress();
                     from.playerID = count;
                     from.area = Area.playerHand;
@@ -241,22 +245,15 @@ public class GamePresenter : MonoBehaviour {
         }
 
         //model -> view リアクティブ
-        //entrance
-
-        //isReadyToggleの操作の能否の管理
-        gameCore._state.Subscribe(
-            state => {
-                if (state == GameState.wait) entranceView.isReadyToggle.interactable = true;
-                else entranceView.isReadyToggle.interactable = false;
-            }
-        ).AddTo(this);
 
         //fieldTabs
         //tabの切り替え
         gameCore.fieldTabs._visibleTabNum.Subscribe(
-            num => {
+            num =>
+            {
                 i = 0;
-                foreach (GameObject tab in fieldTabsView.fieldTabs) {
+                foreach (GameObject tab in fieldTabsView.fieldTabs)
+                {
                     if (i == num) tab.SetActive(true);
                     else tab.SetActive(false);
                     i++;
@@ -266,9 +263,11 @@ public class GamePresenter : MonoBehaviour {
 
         //leaderSelectorの制御
         gameCore.gameBoard.Value._playerID.Subscribe(
-            playerID => {
+            playerID =>
+            {
                 i = 0;
-                foreach (TMP_Dropdown selector in fieldTabsView.leaderSelector) {
+                foreach (TMP_Dropdown selector in fieldTabsView.leaderSelector)
+                {
                     if (i == playerID) selector.interactable = true;
                     else selector.interactable = false;
                     i++;
@@ -279,9 +278,11 @@ public class GamePresenter : MonoBehaviour {
         //leaderSkillButtonの制御
         //IDとUserNameの表示
         gameCore.gameBoard.Subscribe(
-            board => {
+            board =>
+            {
                 i = 0;
-                foreach (Button button in fieldTabsView.LeaderSkillButton) {
+                foreach (Button button in fieldTabsView.LeaderSkillButton)
+                {
                     if (i == board.PlayerID) button.interactable = true;
                     else button.interactable = false;
                     i++;
@@ -293,7 +294,8 @@ public class GamePresenter : MonoBehaviour {
         //leaderCardの見た目
         //handの枚数表示
         gameCore._gameBoard.Subscribe(
-            board => {
+            board =>
+            {
                 fieldTabsView.leaderImage[0].sprite = fieldTabsView.leaderSprite[board.playerAreaList[0]._leaderCardID.Value];
                 fieldTabsView.leaderImage[1].sprite = fieldTabsView.leaderSprite[board.playerAreaList[1]._leaderCardID.Value];
                 fieldTabsView.leaderImage[2].sprite = fieldTabsView.leaderSprite[board.playerAreaList[2]._leaderCardID.Value];
@@ -313,11 +315,14 @@ public class GamePresenter : MonoBehaviour {
         //pull
         //各プレイヤーエリアのpullSelectorの選択肢を設定する。
         gameCore._gameBoard.Subscribe(
-            board => {
+            board =>
+            {
                 int j = 0;
-                foreach (PlayerArea pa in board.playerAreaList) {
+                foreach (PlayerArea pa in board.playerAreaList)
+                {
                     fieldTabsView.pullSelector[j].ClearOptions();
-                    for (int i = 0; i < pa.PlayerHandList.Count; i++) {
+                    for (int i = 0; i < pa.PlayerHandList.Count; i++)
+                    {
                         fieldTabsView.pullSelector[j].options.Add(new TMP_Dropdown.OptionData(i.ToString()));
                     }
                     j++;
@@ -328,7 +333,8 @@ public class GamePresenter : MonoBehaviour {
         //chat area
         //chatの更新
         gameCore.gameBoard.Value.chatArea._chatLog.Subscribe(
-            log => {
+            log =>
+            {
                 chatView.chatLog.text = log;
                 chatView.scrollRect.verticalNormalizedPosition = 0f;
             }
@@ -337,7 +343,8 @@ public class GamePresenter : MonoBehaviour {
         //description area
         //カードをポイントした時のカード表示
         gameCore._cardIndicatorModel.Subscribe(
-            x => {
+            x =>
+            {
                 if (x.IsLarge) descriptionView.text.text = gameCore.cardDataManager.GetLargeScript(x.GetID);
                 else descriptionView.text.text = gameCore.cardDataManager.GetSmallScript(x.GetID);
             }
@@ -345,16 +352,20 @@ public class GamePresenter : MonoBehaviour {
 
         //commandPanel
         gameCore._commandPanelModel.Subscribe(
-            x => {
+            x =>
+            {
                 commandPanelView.ApplyModel(x);
             }
             );
         gameCore.gameBoard.Subscribe(
-            board => {
+            board =>
+            {
                 int i = 0;
                 gameCore.gameBoard.Value.playerAreaList[gameCore.playerID].UserName = gameCore.entrance.UserName;
-                if (commandPanelView.smallPlayerButtonTexts.Count > 0 && commandPanelView.largePlayerButtonTexts.Count > 0) {
-                    foreach (string name in board.GetUserNameList()) {
+                if (commandPanelView.smallPlayerButtonTexts.Count > 0 && commandPanelView.largePlayerButtonTexts.Count > 0)
+                {
+                    foreach (string name in board.GetUserNameList())
+                    {
                         commandPanelView.smallPlayerButtonTexts[i].text = name;
                         commandPanelView.largePlayerButtonTexts[i].text = name;
                         i++;
@@ -365,40 +376,102 @@ public class GamePresenter : MonoBehaviour {
 
         //menuPanel
         gameCore.menuPanelModel.Subscribe(
-            x => {
+            x =>
+            {
                 menuPanelView.MenuPanel.SetActive(x.isActive);
             }
             );
     }
 
-    private void BindPeepPanel() {
+    private void BindPeepPanel()
+    {
         /*gameCore.peepPanelModel.Subscribe(
             x => {
                 peepPanelView.ApplyView(x.handList);
             }
             );*/
         gameCore.peepPanelModel._handList.Subscribe(
-            x => { 
+            x =>
+            {
                 peepPanelView.ApplyView(x);
             });
         //peepPanel
         //quitボタンが押されたらパネルを閉じる
         peepPanelView.quitButton.OnClickAsObservable().Subscribe(
-            _ => {
+            _ =>
+            {
                 peepPanelView.peepPanel.SetActive(false);
             }
             );
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 6; i++)
+        {
             int count = i;
             fieldTabsView.peepButton[i].OnClickAsObservable().Subscribe(
-                _ => {
+                _ =>
+                {
                     //覗くパネルをアクティブにする
                     peepPanelView.peepPanel.SetActive(true);
                     //覗く手札を表示する
                     //gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.WithHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
                     gameCore.peepPanelModel.SetHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
-                }   
+                }
                 );
         }
+    }
+    private void BindEntrace()
+    {
+        IEntrance _entrance = gameCore._entrance;
+
+        //view -> model
+        //setUserName InputFieldに入力された文字列を適用
+        entranceView.userNameText.onValueChanged.AsObservable().Subscribe(
+            x =>
+            {
+                _entrance.SetUserName(x);
+            }
+        ).AddTo(this);
+
+        //sendUserName Buttonが押されたらUserNameを送信
+        entranceView.sendButton.onClick.AsObservable().Subscribe(
+            _ =>
+            {
+                if (gameCore._state.Value == GameState.entrance)
+                {
+                    gameCore.connector.SendText("0:::" + _entrance.GetUserName());
+                    gameCore.ChangeState(GameState.wait);
+                }
+                _entrance.SendUserName();
+            }
+        ).AddTo(this);
+
+        //isReady IsReadyの状態を適用
+        entranceView.isReadyToggle.onValueChanged.AsObservable().Subscribe(
+            x =>
+            {
+                _entrance.ApplyIsReady(x);
+                if (gameCore._state.Value != GameState.wait) return;
+                if (x) gameCore.connector.SendText("1:::1");
+                else gameCore.connector.SendText("1:::0");
+            }
+        ).AddTo(this);
+
+        //quitButton
+        entranceView.quitButton.OnClickAsObservable().Subscribe(
+            _ =>
+            {
+                _entrance.QuitGame();
+            }
+            );
+        //entrance
+
+        //model -> view
+        //isReadyToggleの操作の能否の管理
+        gameCore._state.Subscribe(
+            state =>
+            {
+                if (state == GameState.wait) entranceView.isReadyToggle.interactable = true;
+                else entranceView.isReadyToggle.interactable = false;
+            }
+        ).AddTo(this);
     }
 }
