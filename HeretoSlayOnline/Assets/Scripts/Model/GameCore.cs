@@ -14,31 +14,30 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public ServerConnector connector;
     //GoogleSpreadSheet
     private CardSheetReader DataReader;
-
     private CardDataManager CardDataManager = new CardDataManager();
+
     //GameBoard
     public List<string> playerNameList = new List<string>();
 
+    //GameBoard
     public ReactiveProperty<GameBoard> gameBoard;
     public IReadOnlyReactiveProperty<GameBoard> _gameBoard => gameBoard;
     public IGameBoard IgameBoard;
+
+    //GameState
+    ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
+    public IReadOnlyReactiveProperty<GameState> _state => state;
+
+
     public GameBoardView gameBoardView;
     public GameObject gameBoardObject;
 
     //PeepPanel
     public PeepPanelModel peepPanelModel { get; private set; } = new PeepPanelModel(new List<SmallCard>());
-
-    //GameState
-    ReactiveProperty<GameState> state = new ReactiveProperty<GameState>(GameState.entrance);
-
-    public IReadOnlyReactiveProperty<GameState> _state => state;
-
     //Entrance
     public Entrance entrance;
-
     public IEntrance _entrance;
     public GameObject entranceObject;
-
     //FieldTabs
     public FieldTabsModel fieldTabs;
 
@@ -65,13 +64,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public GameBoardAddress FromAddress = new GameBoardAddress();
     public GameBoardAddress ToAddress = new GameBoardAddress();
 
-
-
     private void Awake()
     {
         heroNum = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
-
         connector._receivedMessage.Subscribe(
             x =>
             {
@@ -81,7 +77,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 
         //gameboard
         gameBoard.Value = new GameBoard();
-        //gameBoard = this.gameObject.AddComponent<GameBoard>(); //インスタンス生成
         IgameBoard = gameBoard.Value; //interfaceの宣言
         gameBoard.Value.InitializeGameBoard();
 
@@ -104,20 +99,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         entranceObject.SetActive(true);
         gameBoardObject.SetActive(false);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
-        }
-    }
-
     public void IndicateCard(bool isLarge, int cardID)
     {
         cardIndicatorModel.Value = _cardIndicatorModel.Value.Indicate(isLarge, cardID);
     }
-
     public void SetCardData()
     {
         cardDataManager = DataReader.cdm;
@@ -346,14 +331,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         board = gameBoard.Value.GameBoardToData(gameBoard.Value.DeckShuffle());
         connector.SendText("2:::" + GameBoardToJson(board));
     }
-
     public void ResetBoard()
     {
         GameBoard board = new GameBoard();
         GameBoardData boardData = gameBoard.Value.GameBoardToData(board.InitializeGameBoard());
         connector.SendText("2:::" + GameBoardToJson(boardData));
     }
-
     public void QuitGame()
     {
 #if UNITY_EDITOR
@@ -367,7 +350,6 @@ public enum GameState
 {
     entrance, wait, ingame
 }
-
 public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T instance;
