@@ -2,30 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CardData {
-    public class CardDataManager {
+namespace CardData
+{
+    public class CardDataManager
+    {
         //instance
         private List<CardData> largeCardData;
         private List<CardData> smallCardData;
 
         //constructor
-        public CardDataManager() { 
+        public CardDataManager()
+        {
             largeCardData = new List<CardData>();
             smallCardData = new List<CardData>();
         }
-        private CardDataManager(List<CardData>largeList ,List<CardData>smallList) {
+        private CardDataManager(List<CardData> largeList, List<CardData> smallList)
+        {
             largeCardData = largeList;
             smallCardData = smallList;
         }
         //private method
 
         //public method
-        public string GetLargeScript(int id) {
-            if (largeCardData.Count==0) return "";
+        public string GetLargeScript(int id)
+        {
+            if (largeCardData.Count == 0) return "";
             return largeCardData[id].GetDescription();
         }
-        public string GetSmallScript(int id) {
-            if (smallCardData.Count==0) return "";
+        public string GetSmallScript(int id)
+        {
+            if (smallCardData.Count == 0) return "";
             return smallCardData[id].GetDescription();
         }
         /// <summary>
@@ -33,9 +39,11 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadLeader(string[][] dataList) {
-            CardDataManager cdm = new CardDataManager(largeCardData,smallCardData);
-            foreach (string[] data in dataList) {
+        public CardDataManager LoadLeader(string[][] dataList)
+        {
+            CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
+            foreach (string[] data in dataList)
+            {
                 LeaderCardScript a = new LeaderCardScript(data[0], data[1], data[2]);
                 largeCardData.Add(a);
             }
@@ -46,9 +54,11 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadHeroCard(string[][] dataList) {
-            CardDataManager cdm = new CardDataManager(largeCardData,smallCardData);
-            foreach (string[] data in dataList) {
+        public CardDataManager LoadHeroCard(string[][] dataList)
+        {
+            CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
+            foreach (string[] data in dataList)
+            {
                 HeroCardScript a = new HeroCardScript(data[0], data[1], data[2], data[3]);
                 smallCardData.Add(a);
             }
@@ -59,9 +69,11 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadMonsterCard(string[][] dataList) {
+        public CardDataManager LoadMonsterCard(string[][] dataList)
+        {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
-            foreach (string[] data in dataList) {
+            foreach (string[] data in dataList)
+            {
                 MonsterCardScript a = new MonsterCardScript(data[0], data[1], data[2], data[3], data[4], data[5], data[6]);
                 largeCardData.Add(a);
             }
@@ -72,9 +84,11 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadItemCard(string[][] dataList) {
+        public CardDataManager LoadItemCard(string[][] dataList)
+        {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
-            foreach (string[] data in dataList) {
+            foreach (string[] data in dataList)
+            {
                 ItemCardScript a = new ItemCardScript(data[0], data[1], data[2]);
                 smallCardData.Add(a);
             }
@@ -85,9 +99,11 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadMagicCard(string[][] dataList) {
+        public CardDataManager LoadMagicCard(string[][] dataList)
+        {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
-            foreach (string[] data in dataList) {
+            foreach (string[] data in dataList)
+            {
                 MagicCardScript a = new MagicCardScript(data[0], data[1]);
                 smallCardData.Add(a);
             }
@@ -98,10 +114,12 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadModifierCard(string[][] dataList) {
+        public CardDataManager LoadModifierCard(string[][] dataList)
+        {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
-            foreach (string[] data in dataList) {
-                ModifierCardScript a = new ModifierCardScript(data[0], data[1]); 
+            foreach (string[] data in dataList)
+            {
+                ModifierCardScript a = new ModifierCardScript(data[0], data[1]);
                 smallCardData.Add(a);
             }
             return cdm;
@@ -111,17 +129,20 @@ namespace CardData {
         /// </summary>
         /// <param name="dataList"></param>
         /// <returns></returns>
-        public CardDataManager LoadChallengeCard() {
+        public CardDataManager LoadChallengeCard()
+        {
             CardDataManager cdm = new CardDataManager(largeCardData, smallCardData);
             ChallengeCardScript a = new ChallengeCardScript("challenge", "You may play this card when another player attempts to play a Hero, Item, or Magic card. CHALLENGE that card.");
             smallCardData.Add(a);
             return cdm;
         }
     }
-    public interface CardData {
+    public interface CardData
+    {
         public string GetDescription();
     }
-    public class LeaderCardScript : CardData{
+    public class LeaderCardScript : CardData
+    {
         private string name;
         private string className;
         private string effect;
@@ -132,33 +153,39 @@ namespace CardData {
         /// <param name="name">リーダーカードの名前</param>
         /// <param name="className">クラスの種類</param>
         /// <param name="effect">リーダースキルの効果</param>
-        internal LeaderCardScript(string name, string className, string effect) {
+        internal LeaderCardScript(string name, string className, string effect)
+        {
             this.name = name;
             this.className = className;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + className + "\n" + effect;
             return description;
         }
     }
-    public class HeroCardScript : CardData{
+    public class HeroCardScript : CardData
+    {
         private string name;
         private string className;
         private string dice;
         private string effect;
-        internal HeroCardScript(string name, string className, string dice, string effect) {
+        internal HeroCardScript(string name, string className, string dice, string effect)
+        {
             this.name = name;
             this.className = className;
             this.dice = dice;
             this.effect = effect;
         }
-        public string GetDescription() {
-            string description = name +"\n" + className + "\n" + dice + "\n" + effect ;
+        public string GetDescription()
+        {
+            string description = name + "\n" + className + "\n" + dice + "\n" + effect;
             return description;
         }
     }
-    public class MonsterCardScript : CardData {
+    public class MonsterCardScript : CardData
+    {
         private string name;
         private string requirement;
         private string range_A;
@@ -166,7 +193,8 @@ namespace CardData {
         private string effect_A;
         private string effect_B;
         private string effect;
-        internal MonsterCardScript(string name, string requirement, string range_A, string effect_A, string range_B, string effect_B, string effect) {
+        internal MonsterCardScript(string name, string requirement, string range_A, string effect_A, string range_B, string effect_B, string effect)
+        {
             this.name = name;
             this.requirement = requirement;
             this.range_A = range_A;
@@ -175,57 +203,70 @@ namespace CardData {
             this.effect_B = effect_B;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + requirement + "\n" + range_A + ":" + effect_A + "\n" + range_B + ":" + effect_B + "\n" + effect;
             return description;
         }
     }
-    public class ItemCardScript : CardData {
+    public class ItemCardScript : CardData
+    {
         private string name;
         private string type;
         private string effect;
-        internal ItemCardScript(string name, string type, string effect) {
+        internal ItemCardScript(string name, string type, string effect)
+        {
             this.name = name;
             this.type = type;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + type + "\n" + effect;
             return description;
         }
     }
-    public class MagicCardScript : CardData{
+    public class MagicCardScript : CardData
+    {
         private string name;
         private string effect;
-        internal MagicCardScript(string name, string effect) {
+        internal MagicCardScript(string name, string effect)
+        {
             this.name = name;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + effect;
             return description;
         }
     }
-    public class ModifierCardScript : CardData {
+    public class ModifierCardScript : CardData
+    {
         private string name;
         private string effect;
-        internal ModifierCardScript(string name, string effect) {
+        internal ModifierCardScript(string name, string effect)
+        {
             this.name = name;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + effect;
             return description;
         }
     }
-    public class ChallengeCardScript : CardData{
+    public class ChallengeCardScript : CardData
+    {
         private string name;
         private string effect;
-        public ChallengeCardScript(string name, string effect) {
+        public ChallengeCardScript(string name, string effect)
+        {
             this.name = name;
             this.effect = effect;
         }
-        public string GetDescription() {
+        public string GetDescription()
+        {
             string description = name + "\n" + effect;
             return description;
         }
