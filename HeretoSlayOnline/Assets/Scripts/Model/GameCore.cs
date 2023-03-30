@@ -60,13 +60,12 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     public ReactiveProperty<MenuPanelModel> menuPanelModel = new ReactiveProperty<MenuPanelModel>(new MenuPanelModel());
 
     public bool isHeroItem = false;
-    public TMP_Dropdown heroNum;
+    public int heroNum_ = 0;
     public GameBoardAddress FromAddress = new GameBoardAddress();
     public GameBoardAddress ToAddress = new GameBoardAddress();
 
     private void Awake()
     {
-        heroNum = commandPanelView.smallPanels[2].transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>();
         connector = this.gameObject.AddComponent<ServerConnector>();
         connector._receivedMessage.Subscribe(
             x =>
@@ -107,12 +106,10 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
     {
         cardDataManager = DataReader.cdm;
     }
-
     public void ChangeState(GameState state)
     {
         this.state.Value = state;
     }
-
     private void GetMessage(string msg)
     {
         string[] message = msg.Split(":::");
@@ -299,7 +296,7 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
 
     public void SetToHeroNum()
     {
-        ToAddress.order = heroNum.value;
+        ToAddress.order = heroNum_;
         commandPanelModel.Value = commandPanelModel.Value.CloseAllPanel();
         ControlBoard(FromAddress);
     }
@@ -312,7 +309,6 @@ public class GameCore : SingletonMonoBehaviour<GameCore>
         from.area = Area.deck;
         ControlBoard(from);
     }
-
     public void DrawMonster()
     {
         if (gameBoard.Value.monsterArea.monsterCardList.Count < 3)

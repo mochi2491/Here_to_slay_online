@@ -34,11 +34,6 @@ public class GamePresenter : MonoBehaviour
 
     private void BindPeepPanel()
     {
-        /*gameCore.peepPanelModel.Subscribe(
-            x => {
-                peepPanelView.ApplyView(x.handList);
-            }
-            );*/
         gameCore.peepPanelModel._handList.Subscribe(
             x =>
             {
@@ -61,7 +56,6 @@ public class GamePresenter : MonoBehaviour
                     //覗くパネルをアクティブにする
                     peepPanelView.peepPanel.SetActive(true);
                     //覗く手札を表示する
-                    //gameCore.peepPanelModel.Value = gameCore.peepPanelModel.Value.WithHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
                     gameCore.peepPanelModel.SetHandList(gameCore.gameBoard.Value.playerAreaList[count].PlayerHandList);
                 }
                 );
@@ -84,12 +78,12 @@ public class GamePresenter : MonoBehaviour
         entranceView.sendButton.onClick.AsObservable().Subscribe(
             _ =>
             {
+                _entrance.SendUserName();
                 if (gameCore._state.Value == GameState.entrance)
                 {
                     gameCore.connector.SendText("0:::" + _entrance.GetUserName());
                     gameCore.ChangeState(GameState.wait);
                 }
-                _entrance.SendUserName();
             }
         ).AddTo(this);
 
@@ -110,7 +104,7 @@ public class GamePresenter : MonoBehaviour
             {
                 _entrance.QuitGame();
             }
-            );
+            ).AddTo(this);
         //entrance
 
         //model -> view
@@ -368,6 +362,14 @@ public class GamePresenter : MonoBehaviour
             {
                 gameCore.gameBoard.Value.AddLog(gameCore.playerID + ":" + "" + "use hero skill.");
                 //ここにスキルの発動処理を書く
+            }
+        );
+
+        //orderNum設定
+        commandPanelView.orderList.onValueChanged.AsObservable().Subscribe(
+            num =>
+            {
+                gameCore.heroNum_ = num;
             }
         );
 
