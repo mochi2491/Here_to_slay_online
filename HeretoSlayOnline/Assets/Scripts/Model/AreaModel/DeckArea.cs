@@ -6,13 +6,13 @@ using UnityEngine;
 
 public class DeckArea
 {
-    private List<SmallCard> mainDeck = new List<SmallCard>();
-    public List<SmallCard> discardPile = new List<SmallCard>();
+    public List<SmallCard> mainDeck { get; private set; } = new List<SmallCard>() { };
+    public List<SmallCard> discardPile { get; private set; } = new List<SmallCard>();
 
     public void Init()
     {
         //mainDeck init
-        for (int i = 0; i <= CardSprites.SMALLCARD_COUNT; i++)
+        for (int i = 0; i < CardSprites.SMALLCARD_COUNT; i++)
         {
             if (i == 52 || i == 54 || i == 57 || (i >= 66 && i <= 69) || i == 72)
             { //2枚
@@ -49,6 +49,7 @@ public class DeckArea
         return this;
     }
 
+    //変更を適用する
     public void ApplyChanges(List<int> deckData, List<int> pileData)
     {
         mainDeck.Clear();

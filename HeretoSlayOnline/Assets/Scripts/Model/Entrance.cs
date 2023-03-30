@@ -25,7 +25,6 @@ public class Entrance : MonoBehaviour, IEntrance
     private bool isReady = false; //Playerの準備状況
     private GameState state; //現在のGameCoreのState
 
-
     //setter and getter
     public string UserName
     {

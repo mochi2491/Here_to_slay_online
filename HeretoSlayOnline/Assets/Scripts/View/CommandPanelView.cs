@@ -21,34 +21,51 @@ public class CommandPanelView : MonoBehaviour
 
     public Button[] smallButtons;
 
-    private void Start() {
-        for (int i = 0; i < smallPanels[1].transform.childCount; i++) {
+    private void Start()
+    {
+        for (int i = 0; i < smallPanels[1].transform.childCount; i++)
+        {
             smallPlayerButtonTexts.Add(smallPanels[1].transform.GetChild(i).transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>());
             largePlayerButtonTexts.Add(largePanels[1].transform.GetChild(i).transform.GetChild(0).gameObject.GetComponent<TextMeshProUGUI>());
         }
         closerTrigger = closerTrigger.GetComponent<ObservableEventTrigger>();
     }
 
-    public void ApplyModel(CommandPanelModel cpm) {
+    //orderListの選択肢をセットする。
+    public void SetOrderList(int num)
+    {
+        orderList.options.Clear();
+        for (int i = 0; i < num; i++)
+        {
+            orderList.options.Add(new TMP_Dropdown.OptionData(i.ToString()));
+        }
+    }
+    public void ApplyModel(CommandPanelModel cpm)
+    {
         int i = 0;
-        foreach (bool active in cpm.IsActive) {
+        foreach (bool active in cpm.IsActive)
+        {
             if (i < 3) smallPanels[i].SetActive(active);
-            else largePanels[i-3].SetActive(active);
+            else largePanels[i - 3].SetActive(active);
             i++;
         }
         SetPosition(cpm.MousePos);
         closerPanel.SetActive(cpm.closerActive);
     }
-    public void SetPosition(Vector3 pos) {
+    public void SetPosition(Vector3 pos)
+    {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 10.0f));
-        if(mousePos.y < -2.0f) {
+        if (mousePos.y < -2.0f)
+        {
             mousePos.y = -2.0f;
         }
         smallCommandPanel.transform.position = mousePos;
         largeCommandPanel.transform.position = mousePos;
     }
-    public void transitionSmallPanel(PanelName panel) {
-        switch (panel) {
+    public void transitionSmallPanel(PanelName panel)
+    {
+        switch (panel)
+        {
             case PanelName.main:
                 smallPanels[0].SetActive(true);
                 smallPanels[1].SetActive(false);
@@ -66,8 +83,10 @@ public class CommandPanelView : MonoBehaviour
                 break;
         }
     }
-    public void transitionLargePanel(PanelName panel) {
-        switch(panel) { 
+    public void transitionLargePanel(PanelName panel)
+    {
+        switch (panel)
+        {
             case PanelName.main:
                 largePanels[0].SetActive(true);
                 largePanels[1].SetActive(false);
@@ -85,8 +104,9 @@ public class CommandPanelView : MonoBehaviour
                 break;
         }
     }
-    public enum PanelName {
-        main,player,order
+    public enum PanelName
+    {
+        main, player, order
     }
-    
+
 }

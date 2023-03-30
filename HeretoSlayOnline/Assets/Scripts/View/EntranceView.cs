@@ -9,4 +9,10 @@ public class EntranceView : MonoBehaviour
     public Toggle isReadyToggle;
     public Button sendButton;
     public Button quitButton;
+    public GameObject EntranceObject;
+
+    private void Start()
+    {
+        EntranceObject.SetActive(true);
+    }
 }

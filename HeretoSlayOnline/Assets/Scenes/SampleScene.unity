@@ -14138,6 +14138,7 @@ MonoBehaviour:
   isReadyToggle: {fileID: 891185423}
   sendButton: {fileID: 657107499}
   quitButton: {fileID: 691466363}
+  EntranceObject: {fileID: 675803679}
 --- !u!1 &676891997
 GameObject:
   m_ObjectHideFlags: 0
@@ -44741,15 +44742,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   connector: {fileID: 0}
-  sendTextEvent:
-    m_PersistentCalls:
-      m_Calls: []
   playerNameList: []
   gameBoardView: {fileID: 402210448}
   gameBoardObject: {fileID: 402210446}
-  changeStateEvent:
-    m_PersistentCalls:
-      m_Calls: []
   entrance: {fileID: 675803679}
   entranceObject: {fileID: 675803679}
   fieldTabs: {fileID: 0}
@@ -44766,7 +44761,7 @@ MonoBehaviour:
   - {fileID: 812491234}
   - {fileID: 991598050}
   isHeroItem: 0
-  heroNum: {fileID: 0}
+  heroNum_: 0
 --- !u!114 &2130668453
 MonoBehaviour:
   m_ObjectHideFlags: 0
